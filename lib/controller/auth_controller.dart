@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
 import 'package:path/path.dart' as Path;
+
+import '../views/signIn_signUp_screen.dart';
 
 class AuthController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -21,7 +24,8 @@ class AuthController extends GetxController {
       /// Login Success
 
       isLoading(false);
-      //Get.to(() => BottomBarView());
+      print("logged in");
+      Get.to(() => NavBarView());
     }).catchError((e) {
       isLoading(false);
       Get.snackbar('Error', "$e");
@@ -58,5 +62,17 @@ class AuthController extends GetxController {
     }).catchError((e) {
       print("Error in sending password reset email is $e");
     });
+  }
+
+  void signOut() {
+    isLoading(true);
+
+    auth.signOut().then((value) {
+      isLoading(false);
+      Get.to(() => LoginView());
+    }).catchError((e) {
+      Get.snackbar('Error', "$e");
+    });
+    ;
   }
 }

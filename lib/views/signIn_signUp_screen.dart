@@ -269,6 +269,9 @@ class _LoginViewState extends State<LoginView> {
               bool: false,
               text: 'First Name',
               icon: 'assets/userIcon.png',
+              validator: (String input){
+                //return '';
+              },
             ),
             SizedBox(
               height: Get.height * 0.02,
@@ -277,6 +280,9 @@ class _LoginViewState extends State<LoginView> {
               bool: false,
               text: 'Last Name',
               icon: 'assets/userIcon.png',
+              validator: (String input){
+                //return '';
+              },
             ),
             SizedBox(
               height: Get.height * 0.02,
@@ -305,6 +311,9 @@ class _LoginViewState extends State<LoginView> {
               bool: false,
               text: 'Major',
               icon: 'assets/userIcon.png',
+              validator: (String input){
+                //return '';
+              },
             ),
             SizedBox(
               height: Get.height * 0.02,
@@ -313,6 +322,9 @@ class _LoginViewState extends State<LoginView> {
               bool: false,
               text: 'Year Level',
               icon: 'assets/userIcon.png',
+              validator: (String input){
+               // return '';
+              },
             ),
             SizedBox(
               height: Get.height * 0.02,
@@ -321,6 +333,9 @@ class _LoginViewState extends State<LoginView> {
               bool: false,
               text: 'Mobile Phone Number',
               icon: 'assets/userIcon.png',
+              validator: (String input){
+              //  return '';
+              },
             ),
             SizedBox(
               height: Get.height * 0.02,
@@ -366,11 +381,12 @@ class _LoginViewState extends State<LoginView> {
               child: elevatedButton(
                 text: 'Sign Up',
                 onpress: () {
-                  // if(!formKey.currentState!.validate()){
-                  //   return;
-                  // }
-                  // authController.signUp(email: emailController.text.trim(),password: passwordController.text.trim());
-                  //Get.to(() => HomeScreen());
+                  print("hello world");
+                  if(!formKey.currentState!.validate()){
+                    print("failure to sign up");
+                    return '';
+                  }
+                  authController.signUp(email: emailController.text.trim(),password: passwordController.text.trim());
                 },
               ),
             )),
