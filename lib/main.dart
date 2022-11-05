@@ -1,6 +1,8 @@
+import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/loading_screen.dart';
 import 'package:campus_plus/views/loading_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
+import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -27,7 +29,7 @@ class MyApp extends StatelessWidget {
         Theme.of(context).textTheme, // If this is not set, then ThemeData.light().textTheme is used.
       ),
       ),
-      home:  LoginView(),
+      home:  NavBarView(),
     );
   }
 }

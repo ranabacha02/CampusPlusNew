@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:campus_plus/views/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -365,14 +366,11 @@ class _LoginViewState extends State<LoginView> {
               child: elevatedButton(
                 text: 'Sign Up',
                 onpress: () {
-
-                  if(!formKey.currentState!.validate()){
-                    return;
-                  }
-
-                  authController.signUp(email: emailController.text.trim(),password: passwordController.text.trim());
-
-
+                  // if(!formKey.currentState!.validate()){
+                  //   return;
+                  // }
+                  // authController.signUp(email: emailController.text.trim(),password: passwordController.text.trim());
+                  //Get.to(() => HomeScreen());
                 },
               ),
             )),
