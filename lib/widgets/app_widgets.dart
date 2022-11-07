@@ -61,6 +61,9 @@ Widget myTextField(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8.0),
           )),
+      style: TextStyle(
+        color: AppColors.white,
+      ),
     ),
   );
 }

@@ -56,15 +56,20 @@ class AuthController extends GetxController {
         timer = Timer.periodic(Duration(seconds: 3), (timer) async {
           auth.currentUser!.reload();
           if (auth.currentUser!.emailVerified){
-            users.add({
-              'email': email,
-              'firstName': firstName,
-              'lastName':lastName,
-              'major': major,
-              'mobilePhoneNumber':  mobileNumber,
-              'graduationYear':graduationYear,
-              'userId': auth.currentUser!.uid,
-            }).then((value) => print("user added")).catchError((error) => print("Faile to add user: "+ error.toString()));
+            users
+                .add({
+                  'email': email,
+                  'firstName': firstName,
+                  'lastName': lastName,
+                  'major': major,
+                  'mobilePhoneNumber': mobileNumber,
+                  'graduationYear': graduationYear,
+                  'userId': auth.currentUser!.uid,
+                })
+                .then((value) => print("user added"))
+                .catchError((error) =>
+                    print("Failed to add user: " + error.toString()));
+
             /// Navigate user to profile screen
             Get.to(() => NavBarView());
             print("email verified");
