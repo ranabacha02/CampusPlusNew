@@ -1,38 +1,37 @@
-import 'package:campus_plus/views/home_screen.dart';
-import 'package:campus_plus/views/loading_screen.dart';
-import 'package:campus_plus/views/loading_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
-import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  runApp(CampusPlus());
 }
 
-class MyApp extends StatelessWidget {
-  //const MyApp({super.key});
+class CampusPlus extends StatefulWidget {
+  @override
+  State<CampusPlus> createState() => _CampusPlusState();
 
-  // This widget is the root of your application.
+}
+
+class _CampusPlusState extends State<CampusPlus>{
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Campus+',
-      theme: ThemeData(
+        title: 'Campus+',
+        theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
         Theme.of(context).textTheme, // If this is not set, then ThemeData.light().textTheme is used.
-      ),
-      ),
-      home:  LoginView(),
+    ),
+    ),
+    home:  LoginView(),
     );
   }
+
 }
 

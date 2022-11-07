@@ -1,4 +1,6 @@
 import 'package:campus_plus/controller/auth_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -16,9 +18,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       WidgetsBinding.instance.window.devicePixelRatio;
 
   late AuthController authController;
+  CollectionReference users = FirebaseFirestore.instance.collection('Users');
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     authController = Get.put(AuthController());
   }
@@ -41,19 +45,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontSize: 50,
                   ),
                 )),
-                Obx(() => authController.isLoading.value? Center(child: CircularProgressIndicator(),) : Container(
-                    height: 40,
-                    margin: EdgeInsets.symmetric(
-                      vertical: Get.height * 0.03,
-                    ),
-                    width: Get.width,
-                    child:elevatedButton(
-                        text: 'Sign out',
-                        onpress: () {
-                          authController.signOut();
-                        })
+                Obx(() => authController.isLoading.value
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container(
+                        height: 40,
+                        margin: EdgeInsets.symmetric(
+                          vertical: Get.height * 0.03,
+                        ),
+                        width: Get.width,
+                        child: elevatedButton(
+                            text: 'Sign out',
+                            onpress: () {
+                              authController.signOut();
+                            }))),
+                Text(
+                  "User Name: " +
+                      users
+                          .where("userId", isEqualTo: auth.currentUser!.uid)
+                          .get()
+                          .then((value) => value.docs.first.data())
+                          .toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
+                  ),
                 )
-                )],
+              ],
             )));
   }
 }

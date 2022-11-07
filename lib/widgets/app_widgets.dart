@@ -14,16 +14,18 @@ Widget myText({text, style, textAlign}) {
   );
 }
 
-
-
-Widget textField({text,TextEditingController? controller,Function? validator,TextInputType inputType = TextInputType.text}) {
+Widget textField(
+    {text,
+    TextEditingController? controller,
+    Function? validator,
+    TextInputType inputType = TextInputType.text}) {
   return Container(
     height: 48,
     margin: EdgeInsets.only(bottom: Get.height * 0.02),
     child: TextFormField(
       keyboardType: inputType,
       controller: controller,
-      validator: (input)=> validator!(input),
+      validator: (input) => validator!(input),
       decoration: InputDecoration(
           hintText: text,
           errorStyle: TextStyle(fontSize: 0),
@@ -33,16 +35,20 @@ Widget textField({text,TextEditingController? controller,Function? validator,Tex
   );
 }
 
-Widget myTextField({text, String? icon, bool, TextEditingController? controller,Function? validator}) {
+Widget myTextField(
+    {text,
+    String? icon,
+    bool,
+    TextEditingController? controller,
+    Function? validator}) {
   return Container(
     height: 45,
     child: TextFormField(
-
-      validator: (input)=> validator!(input),
+      validator: (input) => validator!(input),
       obscureText: bool,
       controller: controller,
       decoration: InputDecoration(
-          contentPadding:EdgeInsets.only(top: 5),
+          contentPadding: EdgeInsets.only(top: 5),
           errorStyle: TextStyle(fontSize: 0),
           hintStyle: TextStyle(
             color: AppColors.genderTextColor,
@@ -52,21 +58,21 @@ Widget myTextField({text, String? icon, bool, TextEditingController? controller,
             icon!,
             cacheHeight: 20,
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0),)
-      ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          )),
     ),
   );
 }
 
-Widget socialAppsIcons({text,Function? onPressed}) {
+Widget socialAppsIcons({text, Function? onPressed}) {
   return InkWell(
-    onTap: ()=> onPressed!(),
+    onTap: () => onPressed!(),
     child: Container(
       margin: EdgeInsets.all(10),
       width: 48,
       height: 48,
       decoration: BoxDecoration(
-
         image: DecorationImage(
           image: AssetImage(text),
         ),
@@ -76,10 +82,10 @@ Widget socialAppsIcons({text,Function? onPressed}) {
 }
 
 Widget settingIconAndText(
-    Function onPressed, {
-      text,
-      image,
-    }) {
+  Function onPressed, {
+  text,
+  image,
+}) {
   return Container(
     // margin: EdgeInsets.only(top: Get.height * 0.03),
     child: ListTile(
@@ -103,7 +109,6 @@ Widget settingIconAndText(
 Widget elevatedButton({text, Function? onpress}) {
   return ElevatedButton(
     style: ButtonStyle(
-
       backgroundColor: MaterialStateProperty.all<Color>(AppColors.grey),
     ),
     onPressed: () {
@@ -160,34 +165,36 @@ Widget rowContainer(Function onPressed, {text}) {
   );
 }
 
-Widget iconWithTitle({text, Function? func,bool? isShow = true}) {
+Widget iconWithTitle({text, Function? func, bool? isShow = true}) {
   return Row(
     children: [
-      !isShow!? Container(): Expanded(
-        flex: 0,
-        child: InkWell(
-          onTap: () {
-            func!();
-          },
-          child: Container(
-            margin: EdgeInsets.only(
-              left: Get.width * 0.02,
-              top: Get.height * 0.08,
-              bottom: Get.height * 0.02,
-            ),
-            // alignment: Alignment.center,
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              // border: Border.all(width: 1),
-              // borderRadius: BorderRadius.circular(50),
-              image: DecorationImage(
-                image: AssetImage('assets/Header.png'),
+      !isShow!
+          ? Container()
+          : Expanded(
+              flex: 0,
+              child: InkWell(
+                onTap: () {
+                  func!();
+                },
+                child: Container(
+                  margin: EdgeInsets.only(
+                    left: Get.width * 0.02,
+                    top: Get.height * 0.08,
+                    bottom: Get.height * 0.02,
+                  ),
+                  // alignment: Alignment.center,
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    // border: Border.all(width: 1),
+                    // borderRadius: BorderRadius.circular(50),
+                    image: DecorationImage(
+                      image: AssetImage('assets/Header.png'),
+                    ),
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
       Expanded(
         flex: 6,
         child: Container(
@@ -213,19 +220,16 @@ Widget iconWithTitle({text, Function? func,bool? isShow = true}) {
   );
 }
 
-
-
-Widget iconTitleContainer({
-  text,
-  path,
-  Function? onPress,
-  bool isReadOnly = false,
-  TextInputType type = TextInputType.text,
-  TextEditingController? controller,
-  Function? validator,
-  double width = 150,
-  double height=40
-}) {
+Widget iconTitleContainer(
+    {text,
+    path,
+    Function? onPress,
+    bool isReadOnly = false,
+    TextInputType type = TextInputType.text,
+    TextEditingController? controller,
+    Function? validator,
+    double width = 150,
+    double height = 40}) {
   return Container(
     // padding: EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
@@ -235,7 +239,7 @@ Widget iconTitleContainer({
     width: width,
     height: height,
     child: TextFormField(
-      validator: (String? input)=> validator!(input!),
+      validator: (String? input) => validator!(input!),
       controller: controller,
       keyboardType: type,
       readOnly: isReadOnly,
@@ -262,10 +266,10 @@ Widget iconTitleContainer({
           fontWeight: FontWeight.w400,
           color: AppColors.genderTextColor,
         ),
-
         border: isReadOnly
             ? OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xffA6A6A6)),borderRadius: BorderRadius.circular(8))
+                borderSide: BorderSide(color: Color(0xffA6A6A6)),
+                borderRadius: BorderRadius.circular(8))
             : OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
@@ -275,29 +279,25 @@ Widget iconTitleContainer({
 Widget community1st({title, path, style}) {
   return Row(
     children: [
-      path.toString().isEmpty?
-      Container(
-        width: 24,
-        height: 24,
-        decoration:  BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue
-        ),
-        child: Icon(Icons.person,color: Colors.white,),
-
-      )
-          :Container(
-        width: 24,
-        height: 24,
-        decoration:  BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-                image: AssetImage(path),
-                fit: BoxFit.fill
+      path.toString().isEmpty
+          ? Container(
+              width: 24,
+              height: 24,
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
             )
-        ),
-
-      ),
+          : Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: AssetImage(path), fit: BoxFit.fill)),
+            ),
       SizedBox(
         width: 10,
       ),
@@ -309,29 +309,25 @@ Widget community1st({title, path, style}) {
 Widget userProfile({title, path, style}) {
   return Row(
     children: [
-      path.toString().isEmpty?
-      Container(
-        width: 24,
-        height: 24,
-        decoration:  BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.blue
-        ),
-        child: Icon(Icons.person,color: Colors.white,),
-
-      )
-          :Container(
-        width: 24,
-        height: 24,
-        decoration:  BoxDecoration(
-            shape: BoxShape.circle,
-            image: DecorationImage(
-                image: NetworkImage(path),
-                fit: BoxFit.fill
+      path.toString().isEmpty
+          ? Container(
+              width: 24,
+              height: 24,
+              decoration:
+                  BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+              child: Icon(
+                Icons.person,
+                color: Colors.white,
+              ),
             )
-        ),
-
-      ),
+          : Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                      image: NetworkImage(path), fit: BoxFit.fill)),
+            ),
       SizedBox(
         width: 10,
       ),
@@ -339,7 +335,6 @@ Widget userProfile({title, path, style}) {
     ],
   );
 }
-
 
 Widget completeCommunityWidget({
   imagePath,
@@ -423,3 +418,5 @@ Widget completeCommunityWidget({
     ],
   );
 }
+
+

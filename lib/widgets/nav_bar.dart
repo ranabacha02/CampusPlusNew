@@ -91,7 +91,7 @@ class _NavBarViewState extends State<NavBarView> {
                     child: Image.asset(
                         currentIndex == 2
                             ? 'assets/HomeIconPressed.png'
-                            : 'assets/HomeIconNotPresed.png',
+                            : 'assets/HomeIconNotPressed.png',
                         width: 35,
                         height: 35),
                   ),

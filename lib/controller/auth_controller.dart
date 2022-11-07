@@ -1,17 +1,17 @@
-import 'dart:io';
+
+import 'dart:async';
 
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 
-import 'package:path/path.dart' as Path;
 
 import '../views/signIn_signUp_screen.dart';
 
 class AuthController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
+  CollectionReference users = FirebaseFirestore.instance.collection('Users');
 
   var isLoading = false.obs;
 
@@ -22,7 +22,6 @@ class AuthController extends GetxController {
         .signInWithEmailAndPassword(email: email!, password: password!)
         .then((value) {
       /// Login Success
-
       isLoading(false);
       print("logged in");
       Get.to(() => NavBarView());
@@ -30,27 +29,55 @@ class AuthController extends GetxController {
       isLoading(false);
       Get.snackbar('Error', "$e");
 
-      ///Error occured
+      ///Error occurred
     });
   }
-
-  void signUp({String? email, String? password}) {
+  void signUp(
+      {String? email,
+      String? password,
+      String? firstName,
+      String? lastName,
+      int? graduationYear,
+      String? major,
+      int? mobileNumber}) {
     ///here we have to provide two things
     ///1- email
     ///2- password
-
+    Timer timer;
     isLoading(true);
 
     auth
         .createUserWithEmailAndPassword(email: email!, password: password!)
-        .then((value) {
+        .then((value) async {
       isLoading(false);
+      await auth.currentUser?.sendEmailVerification().then((value){
+        Get.snackbar("Email verification sent to: "+email, "Please verify your e-mail.");
+        
+        timer = Timer.periodic(Duration(seconds: 3), (timer) async {
+          auth.currentUser!.reload();
+          if (auth.currentUser!.emailVerified){
+            users.add({
+              'email': email,
+              'firstName': firstName,
+              'lastName':lastName,
+              'major': major,
+              'mobilePhoneNumber':  mobileNumber,
+              'graduationYear':graduationYear,
+              'userId': auth.currentUser!.uid,
+            }).then((value) => print("user added")).catchError((error) => print("Faile to add user: "+ error.toString()));
+            /// Navigate user to profile screen
+            Get.to(() => NavBarView());
+            print("email verified");
+            timer.cancel();
+          }
+          print("i am here");
+        });
+      });
 
-      /// Navigate user to profile screen
-      //Get.to(() => ProfileScreen());
+
     }).catchError((e) {
       /// print error information
-      print("Error in authentication $e");
+      Get.snackbar("Error in authentication:", "$e");
       isLoading(false);
     });
   }
