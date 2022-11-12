@@ -34,19 +34,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: dataController.getUserInfo(),
-      builder: (context, AsyncSnapshot<String> snapshot),
-      type: MaterialType.transparency,
-      child: Container(
-          color: AppColors.grey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-          Center(
-          child: Text(
-          "Profile Screen In Progress...",
-            textAlign: TextAlign.center,
+    return Material(
+        // future: dataController.getUserInfo(),
+        // builder: (context, AsyncSnapshot<String> snapshot),
+        type: MaterialType.transparency,
+        child: Container(
+            color: AppColors.grey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                    child: Text(
+                  "Profile Screen In Progress...",
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 50,
@@ -69,10 +69,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }))),
       Text(
         // "User Name: " + dataController.getUserInfo().then((value) => print(value)).toString(),
-          "User Name: " + await dataController.getUserInfo().toString();
-      style: TextStyle(
-      color: Colors.white,
-      fontSize: 30,
+        "User Name: " + dataController.getUserInfo().toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 30,
                   ),
                 )
               ],
