@@ -6,20 +6,12 @@ class DataController extends GetxController {
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future<Map<String, dynamic>?> getUserInfo() async {
-    Map<String, dynamic> data;
-    await users
-        .where("userId", isEqualTo: auth.currentUser!.uid)
-        .get()
-        .then((value) {
-      data = value.docs.first.data() as Map<String, dynamic>;
-      print(data["firstName"]);
-      return data;
-    }).catchError((err) {
-      print("error");
-    });
-    print("I am here");
-    //return data;
+  Future<Map<String, dynamic>> getUserInfo() async {
+    var data =
+        await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
+    var data2 = data.docs.first.data() as Map<String, dynamic>;
+    //print(data2);
+    return data2;
   }
 
   addUser(String? email, String? firstName, String? lastName,

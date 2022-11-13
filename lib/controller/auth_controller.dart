@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,18 +45,22 @@ class AuthController extends GetxController {
     ///1- email
     ///2- password
     Timer timer;
+    DataController dataController = Get.put(DataController());
     isLoading(true);
 
     auth
         .createUserWithEmailAndPassword(email: email!, password: password!)
         .then((value) async {
       isLoading(false);
-      await auth.currentUser?.sendEmailVerification().then((value){
-        Get.snackbar("Email verification sent to: "+email, "Please verify your e-mail.");
-        
+      await auth.currentUser?.sendEmailVerification().then((value) {
+        Get.snackbar("Email verification sent to: " + email,
+            "Please verify your e-mail.");
+
         timer = Timer.periodic(Duration(seconds: 3), (timer) async {
           auth.currentUser!.reload();
           if (auth.currentUser!.emailVerified) {
+            dataController.addUser(email, firstName, lastName, graduationYear,
+                major, mobileNumber);
             // users
             //     .add({
             //       'email': email,

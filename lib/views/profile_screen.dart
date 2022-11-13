@@ -24,7 +24,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late DataController dataController;
 
-
   @override
   void initState() {
     super.initState();
@@ -34,48 +33,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        // future: dataController.getUserInfo(),
-        // builder: (context, AsyncSnapshot<String> snapshot),
-        type: MaterialType.transparency,
-        child: Container(
-            color: AppColors.grey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                    child: Text(
-                  "Profile Screen In Progress...",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 50,
-                  ),
-                )),
-                Obx(() => authController.isLoading.value
-                    ? Center(
-                        child: CircularProgressIndicator(),
-                      )
-                    : Container(
-                        height: 40,
-                    margin: EdgeInsets.symmetric(
-                      vertical: Get.height * 0.03,
-                    ),
-                    width: Get.width,
-                    child: elevatedButton(
-                        text: 'Sign out',
-                        onpress: () {
-                          authController.signOut();
-                        }))),
-      Text(
-        // "User Name: " + dataController.getUserInfo().then((value) => print(value)).toString(),
-        "User Name: " + dataController.getUserInfo().toString(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30,
-                  ),
-                )
-              ],
-            )));
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          automaticallyImplyLeading: false,
+          centerTitle: false,
+          elevation: 0.2,
+          title: Text(
+            "CAMPUS+",
+            style: TextStyle(
+              fontSize: 30,
+              color: AppColors.aubRed,
+            ),
+          ),
+        ),
+        body: FutureBuilder(
+            future: dataController.getUserInfo(),
+            builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+              print("here");
+              print(snapshot);
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Material(
+                    type: MaterialType.transparency,
+                    child: Container(
+                      color: AppColors.white,
+                      child: Padding(
+                        padding: EdgeInsets.all(12.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: Get.height * 0.01,
+                            ),
+                            Text(
+                              "Profile",
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 25,
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Divider(
+                              color: AppColors.black,
+                            ),
+                            Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    // to be changed
+                                    radius: 50,
+                                    backgroundColor: AppColors.circle,
+                                    foregroundColor: AppColors.white,
+                                    child: Text(
+                                      'XX',
+                                      style: TextStyle(
+                                        color: AppColors.black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 40,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: Get.height * 0.01,
+                                  ),
+                                  Text(
+                                    snapshot.data?["firstName"] +
+                                        " " +
+                                        snapshot.data?["lastName"],
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        color: AppColors.black,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    "" + snapshot.data?["major"] + " | ",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColors.black,
+                                      fontWeight: FontWeight.w300,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Obx(() => authController.isLoading.value
+                                ? Center(
+                                    child: CircularProgressIndicator(),
+                                  )
+                                : Container(
+                                    height: 40,
+                                    margin: EdgeInsets.symmetric(
+                                      vertical: Get.height * 0.03,
+                                    ),
+                                    width: Get.width,
+                                    child: elevatedButton(
+                                        text: 'Sign out',
+                                        onpress: () {
+                                          authController.signOut();
+                                        }))),
+                            Text(
+                              // "User Name: " + dataController.getUserInfo().then((value) => print(value)).toString(),
+                              "User Name: " + snapshot.data?["firstName"],
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 30,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ));
+              } else if (snapshot.connectionState == ConnectionState.none) {
+                return const Text("No data");
+              }
+              return const Center(child: CircularProgressIndicator());
+            }));
   }
 }
