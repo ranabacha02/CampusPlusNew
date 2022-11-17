@@ -127,6 +127,40 @@ Widget elevatedButton({text, Function? onpress}) {
   );
 }
 
+Widget buttonWithRightIcon({text, Function? onpress}){
+  return ElevatedButton(
+      onPressed: (){
+        onpress!();
+      },
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(AppColors.white),
+      ),
+        child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 4, 4, 4),
+                child:Text(
+                    text,
+                    style: TextStyle(
+                      color: AppColors.black,
+                      fontSize: 16,
+                    )
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(4, 0, 10, 0),
+                child: Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: AppColors.black,
+                    size: 20.0
+                ),
+              )
+
+            ]
+        ));
+}
+
 Widget labelTextField({label, hintText}) {
   return Container(
     margin: EdgeInsets.only(top: 20),

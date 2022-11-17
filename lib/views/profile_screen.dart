@@ -1,5 +1,6 @@
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/views/account_settings_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -33,6 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -50,8 +52,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: FutureBuilder(
             future: dataController.getUserInfo(),
             builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-              print("here");
-              print(snapshot);
+              String graduationYear= snapshot.data?["graduationYear"].toString()??"";
+
               if (snapshot.connectionState == ConnectionState.done) {
                 return Material(
                     type: MaterialType.transparency,
@@ -109,16 +111,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    "" + snapshot.data?["major"] + " | ",
+                                    "" + snapshot.data?["major"] + " | " +graduationYear,
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: AppColors.black,
                                       fontWeight: FontWeight.w300,
                                     ),
+                                  ),
+                                  SizedBox(
+                                    height: Get.height * 0.01,
+                                  ),
+                                  Text(
+                                    "Description here...",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: AppColors.grey,
+                                      fontStyle: FontStyle.italic
+                                    )
                                   )
                                 ],
                               ),
                             ),
+                            SizedBox(
+                              height: Get.height * 0.01,
+                            ),
+                          Container(
+                              height: 40,
+                              margin: EdgeInsets.symmetric(
+                                vertical: Get.height * 0.03,
+                              ),
+                              width: Get.width,
+                              child: buttonWithRightIcon(
+                                text: "Account Settings",
+                                onpress:() => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
+                                  )
+                                },
+                              ),
+                          ),
+
                             Obx(() => authController.isLoading.value
                                 ? Center(
                                     child: CircularProgressIndicator(),
