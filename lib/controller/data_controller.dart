@@ -11,8 +11,10 @@ class DataController extends GetxController {
         await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
     var data2 = data.docs.first.data() as Map<String, dynamic>;
     //print(data2);
+    storedData = data2;
     return data2;
   }
+  late var storedData = {};
 
   addUser(String? email, String? firstName, String? lastName,
       int? graduationYear, String? major, int? mobileNumber) {
@@ -31,4 +33,8 @@ class DataController extends GetxController {
         .catchError(
             (error) => print("Failed to add user: " + error.toString()));
   }
+  getLocalData(){
+    return storedData;
+  }
+
 }
