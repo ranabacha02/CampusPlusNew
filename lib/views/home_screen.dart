@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_plus/utils/app_colors.dart';
+import '../widgets/main_card.dart';
+import 'cardForm.dart';
 
-import '../utils/app_colors.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final Stream<QuerySnapshot> cards = FirebaseFirestore.instance.collection('Cards').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
 
@@ -29,7 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             actions: <Widget>[
               IconButton(
-                  onPressed: () => {print("hello world")},
+                  onPressed: () => {
+                    Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context){
+                    return MainCardForm();
+                    })
+                    )
+                  },
                   icon: Image.asset('assets/postIcon.png')),
               IconButton(
                   onPressed: () => {print("hello world")},
@@ -39,16 +49,33 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Image.asset('assets/notificationIcon.png')),
             ]),
         body: Container(
-          color: AppColors.grey,
-          child: Center(
-              child: Text(
-            "Home Screen In Progress...",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 50,
-            ),
-          )),
+          color: AppColors.white,
+         child: StreamBuilder<QuerySnapshot>(
+             stream: cards,
+             builder: (
+                 BuildContext context,
+                 AsyncSnapshot<QuerySnapshot> snapshot,
+             ) {
+               if(snapshot.hasError){
+                 return Text('Something went wrong');
+               }
+               if(snapshot.connectionState == ConnectionState.waiting){
+                 return const Text('Loading');
+
+               }
+               final data = snapshot.requireData;
+               return ListView.builder(
+                 itemCount: data.size,
+                 itemBuilder: (context, index){
+                   return MainCard(event: data.docs[index]['event'], name: data.docs[index]['name']);
+                 },
+               );
+             },
+         )
         ));
   }
 }
+
+
+
+
