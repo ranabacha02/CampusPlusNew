@@ -96,7 +96,7 @@ class _MainCardFormState extends State<MainCardForm> {
       child: Text("Post Card"),
       onPressed: (){
         cards
-            .add({'createdBy': userInfo['userId'] , 'name': userInfo['firstName'], 'event': _eventController.text})
+            .add({'createdBy': userInfo['userId'] , 'name': userInfo['firstName'], 'event': _eventController.text, 'users':[userInfo]})
             .then((value)=> print('Card added'))
             .catchError((error)=> print('Failed to add user: $error'));
         Navigator.pop(context);

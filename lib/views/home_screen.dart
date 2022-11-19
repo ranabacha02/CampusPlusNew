@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_plus/utils/app_colors.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import '../controller/data_controller.dart';
 import '../widgets/main_card.dart';
 import 'cardForm.dart';
 
@@ -15,7 +18,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final Stream<QuerySnapshot> cards = FirebaseFirestore.instance.collection('Cards').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
-
+  late DataController dataController;
+  late final userInfo;
+  @override
+  void initState() {
+    super.initState();
+    dataController = Get.put(DataController());
+    userInfo = dataController.getLocalData();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +77,24 @@ class _HomeScreenState extends State<HomeScreen> {
                return ListView.builder(
                  itemCount: data.size,
                  itemBuilder: (context, index){
-                   return MainCard(event: data.docs[index]['event'], name: data.docs[index]['name']);
+                   if(data.docs[index]['createdBy']== userInfo['userId']){
+                     return MainCard(
+                         cardId: data.docs[index].id,
+                         event: data.docs[index]['event'],
+                         name: data.docs[index]['name'],
+                         personal: true,
+                         userInfo: userInfo,
+                         usersJoined: data.docs[index]['users']
+                     );}
+                   else{
+                    return MainCard(
+                        cardId: data.docs[index].id,
+                        event: data.docs[index]['event'],
+                        name: data.docs[index]['name'],
+                        personal: false,
+                        userInfo: userInfo,
+                        usersJoined: data.docs[index]['users'],
+                    );}
                  },
                );
              },
