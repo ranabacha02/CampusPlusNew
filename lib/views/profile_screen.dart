@@ -24,12 +24,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
+  late final userInfo;
 
   @override
   void initState() {
     super.initState();
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
+    userInfo = dataController.getLocalData();
   }
 
   @override
@@ -49,13 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
-        body: FutureBuilder(
-            future: dataController.getUserInfo(),
-            builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
-              String graduationYear= snapshot.data?["graduationYear"].toString()??"";
-
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Material(
+        body:  Material(
                     type: MaterialType.transparency,
                     child: Container(
                       color: AppColors.white,
@@ -102,16 +98,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     height: Get.height * 0.01,
                                   ),
                                   Text(
-                                    snapshot.data?["firstName"] +
+                                    userInfo?["firstName"] +
                                         " " +
-                                        snapshot.data?["lastName"],
+                                        userInfo?["lastName"],
                                     style: TextStyle(
                                         fontSize: 30,
                                         color: AppColors.black,
                                         fontWeight: FontWeight.w600),
                                   ),
                                   Text(
-                                    "" + snapshot.data?["major"] + " | " +graduationYear,
+                                    "" + userInfo?["major"] + " | " +userInfo["graduationYear"].toString()??"",
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: AppColors.black,
@@ -170,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         }))),
                             Text(
                               // "User Name: " + dataController.getUserInfo().then((value) => print(value)).toString(),
-                              "User Name: " + snapshot.data?["firstName"],
+                              "User Name: " + userInfo?["firstName"],
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 30,
@@ -179,11 +175,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ],
                         ),
                       ),
-                    ));
-              } else if (snapshot.connectionState == ConnectionState.none) {
-                return const Text("No data");
-              }
-              return const Center(child: CircularProgressIndicator());
-            }));
+                    )
+                )
+            );
   }
 }
