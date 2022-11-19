@@ -86,7 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     backgroundColor: AppColors.circle,
                                     foregroundColor: AppColors.white,
                                     child: Text(
-                                      'XX',
+                                      userInfo?["firstName"][0] +  userInfo?["lastName"][0],
                                       style: TextStyle(
                                         color: AppColors.black,
                                         fontWeight: FontWeight.w600,
@@ -132,22 +132,76 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             SizedBox(
                               height: Get.height * 0.01,
                             ),
-                          Container(
+                            Container(
                               height: 40,
                               margin: EdgeInsets.symmetric(
-                                vertical: Get.height * 0.03,
+                                vertical: Get.height * 0.005,
                               ),
                               width: Get.width,
                               child: buttonWithRightIcon(
-                                text: "Account Settings",
+                                text: "Recent Activity",
                                 onpress:() => {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
                                   )
                                 },
+                                width: 0.492,
                               ),
-                          ),
+                            ),
+                            Container(
+                              height: 40,
+                              margin: EdgeInsets.symmetric(
+                                vertical: Get.height * 0.005,
+                              ),
+                              width: Get.width,
+                              child: buttonWithRightIcon(
+                                text: "Followed Tags",
+                                onpress:() => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
+                                  )
+                                },
+                                width: 0.512,
+                              ),
+                            ),
+
+                            Container(
+                              height: 40,
+                              margin: EdgeInsets.symmetric(
+                                vertical: Get.height * 0.005,
+                              ),
+                              width: Get.width,
+                              child: buttonWithRightIcon(
+                                text: "Tutoring Profile",
+                                onpress:() => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
+                                  )
+                                },
+                                width: 0.482,
+                              ),
+                            ),
+                            Container(
+                              height: 40,
+                              margin: EdgeInsets.symmetric(
+                                vertical: Get.height * 0.005,
+                              ),
+                              width: Get.width,
+                              child: buttonWithRightIcon(
+                                text: "Rental Profile",
+                                onpress:() => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
+                                  )
+                                },
+                                width: 0.513,
+                              ),
+                            ),
+
 
                             Obx(() => authController.isLoading.value
                                 ? Center(
@@ -159,19 +213,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       vertical: Get.height * 0.03,
                                     ),
                                     width: Get.width,
-                                    child: elevatedButton(
+                                    child: buttonWithLeftIcon(
                                         text: 'Sign out',
                                         onpress: () {
                                           authController.signOut();
-                                        }))),
-                            Text(
-                              // "User Name: " + dataController.getUserInfo().then((value) => print(value)).toString(),
-                              "User Name: " + userInfo?["firstName"],
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 30,
-                              ),
-                            )
+                                        },
+                                      icon: Icons.logout,
+                                    ))),
                           ],
                         ),
                       ),

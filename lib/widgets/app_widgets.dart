@@ -16,9 +16,9 @@ Widget myText({text, style, textAlign}) {
 
 Widget textField(
     {text,
-    TextEditingController? controller,
-    Function? validator,
-    TextInputType inputType = TextInputType.text}) {
+      TextEditingController? controller,
+      Function? validator,
+      TextInputType inputType = TextInputType.text}) {
   return Container(
     height: 48,
     margin: EdgeInsets.only(bottom: Get.height * 0.02),
@@ -37,10 +37,10 @@ Widget textField(
 
 Widget myTextField(
     {text,
-    String? icon,
-    bool,
-    TextEditingController? controller,
-    Function? validator}) {
+      String? icon,
+      bool,
+      TextEditingController? controller,
+      Function? validator}) {
   return Container(
     height: 45,
     child: TextFormField(
@@ -85,10 +85,10 @@ Widget socialAppsIcons({text, Function? onPressed}) {
 }
 
 Widget settingIconAndText(
-  Function onPressed, {
-  text,
-  image,
-}) {
+    Function onPressed, {
+      text,
+      image,
+    }) {
   return Container(
     // margin: EdgeInsets.only(top: Get.height * 0.03),
     child: ListTile(
@@ -127,7 +127,7 @@ Widget elevatedButton({text, Function? onpress}) {
   );
 }
 
-Widget buttonWithRightIcon({text, Function? onpress}){
+Widget buttonWithRightIcon({text, Function? onpress, width}){
   return ElevatedButton(
       onPressed: (){
         onpress!();
@@ -135,30 +135,66 @@ Widget buttonWithRightIcon({text, Function? onpress}){
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(AppColors.white),
       ),
-        child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.fromLTRB(10, 4, 4, 4),
-                child:Text(
-                    text,
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 16,
-                    )
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(4, 0, 10, 0),
-                child: Icon(
-                    Icons.arrow_forward_ios_rounded,
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(10, 4, 4, 4),
+              child:Text(
+                  text,
+                  style: TextStyle(
                     color: AppColors.black,
-                    size: 20.0
-                ),
-              )
+                    fontSize: 16,
+                  )
+              ),
+            ),
+            SizedBox(
+              width: Get.width * width,
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(4, 0, 10, 0),
+              child: Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.black,
+                  size: 20.0
+              ),
+            )
 
-            ]
-        ));
+          ]
+      ));
+}
+Widget buttonWithLeftIcon({text, Function? onpress, IconData? icon}){
+  return ElevatedButton(
+      onPressed: (){
+        onpress!();
+      },
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(AppColors.white),
+      ),
+      child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.fromLTRB(4, 0, 10, 0),
+              child: Icon(
+                  icon,
+                  color: AppColors.red,
+                  size: 20.0
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.fromLTRB(10, 4, 4, 4),
+              child:Text(
+                  text,
+                  style: TextStyle(
+                    color: AppColors.red,
+                    fontSize: 16,
+                  )
+              ),
+            ),
+
+          ]
+      ));
 }
 
 Widget labelTextField({label, hintText}) {
@@ -208,30 +244,30 @@ Widget iconWithTitle({text, Function? func, bool? isShow = true}) {
       !isShow!
           ? Container()
           : Expanded(
-              flex: 0,
-              child: InkWell(
-                onTap: () {
-                  func!();
-                },
-                child: Container(
-                  margin: EdgeInsets.only(
-                    left: Get.width * 0.02,
-                    top: Get.height * 0.08,
-                    bottom: Get.height * 0.02,
-                  ),
-                  // alignment: Alignment.center,
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    // border: Border.all(width: 1),
-                    // borderRadius: BorderRadius.circular(50),
-                    image: DecorationImage(
-                      image: AssetImage('assets/Header.png'),
-                    ),
-                  ),
-                ),
+        flex: 0,
+        child: InkWell(
+          onTap: () {
+            func!();
+          },
+          child: Container(
+            margin: EdgeInsets.only(
+              left: Get.width * 0.02,
+              top: Get.height * 0.08,
+              bottom: Get.height * 0.02,
+            ),
+            // alignment: Alignment.center,
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              // border: Border.all(width: 1),
+              // borderRadius: BorderRadius.circular(50),
+              image: DecorationImage(
+                image: AssetImage('assets/Header.png'),
               ),
             ),
+          ),
+        ),
+      ),
       Expanded(
         flex: 6,
         child: Container(
@@ -259,14 +295,14 @@ Widget iconWithTitle({text, Function? func, bool? isShow = true}) {
 
 Widget iconTitleContainer(
     {text,
-    path,
-    Function? onPress,
-    bool isReadOnly = false,
-    TextInputType type = TextInputType.text,
-    TextEditingController? controller,
-    Function? validator,
-    double width = 150,
-    double height = 40}) {
+      path,
+      Function? onPress,
+      bool isReadOnly = false,
+      TextInputType type = TextInputType.text,
+      TextEditingController? controller,
+      Function? validator,
+      double width = 150,
+      double height = 40}) {
   return Container(
     // padding: EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
@@ -305,8 +341,8 @@ Widget iconTitleContainer(
         ),
         border: isReadOnly
             ? OutlineInputBorder(
-                borderSide: BorderSide(color: Color(0xffA6A6A6)),
-                borderRadius: BorderRadius.circular(8))
+            borderSide: BorderSide(color: Color(0xffA6A6A6)),
+            borderRadius: BorderRadius.circular(8))
             : OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
@@ -318,23 +354,23 @@ Widget community1st({title, path, style}) {
     children: [
       path.toString().isEmpty
           ? Container(
-              width: 24,
-              height: 24,
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
-              child: Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-            )
+        width: 24,
+        height: 24,
+        decoration:
+        BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+        child: Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      )
           : Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: AssetImage(path), fit: BoxFit.fill)),
-            ),
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+                image: AssetImage(path), fit: BoxFit.fill)),
+      ),
       SizedBox(
         width: 10,
       ),
@@ -348,23 +384,23 @@ Widget userProfile({title, path, style}) {
     children: [
       path.toString().isEmpty
           ? Container(
-              width: 24,
-              height: 24,
-              decoration:
-                  BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
-              child: Icon(
-                Icons.person,
-                color: Colors.white,
-              ),
-            )
+        width: 24,
+        height: 24,
+        decoration:
+        BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
+        child: Icon(
+          Icons.person,
+          color: Colors.white,
+        ),
+      )
           : Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: NetworkImage(path), fit: BoxFit.fill)),
-            ),
+        width: 24,
+        height: 24,
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
+                image: NetworkImage(path), fit: BoxFit.fill)),
+      ),
       SizedBox(
         width: 10,
       ),
@@ -455,5 +491,4 @@ Widget completeCommunityWidget({
     ],
   );
 }
-
 
