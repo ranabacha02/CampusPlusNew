@@ -1,13 +1,10 @@
-
 import 'dart:async';
-
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../views/signIn_signUp_screen.dart';
 
 class AuthController extends GetxController {
@@ -16,8 +13,9 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
 
-  void login({String? email, String? password}) {
+  Future<void> login({String? email, String? password}) async {
     isLoading(true);
+    SharedPreferences pref =await SharedPreferences.getInstance();
 
     auth
         .signInWithEmailAndPassword(email: email!, password: password!)
@@ -25,6 +23,7 @@ class AuthController extends GetxController {
       /// Login Success
       isLoading(false);
       print("logged in");
+      pref.setString("email", email);
       Get.to(() => NavBarView());
     }).catchError((e) {
       isLoading(false);
@@ -61,6 +60,7 @@ class AuthController extends GetxController {
           if (auth.currentUser!.emailVerified) {
             dataController.addUser(email, firstName, lastName, graduationYear,
                 major, mobileNumber);
+            auth.currentUser?.updateDisplayName(firstName!+" "+lastName!);
             // users
             //     .add({
             //       'email': email,
@@ -80,7 +80,6 @@ class AuthController extends GetxController {
             print("email verified");
             timer.cancel();
           }
-          print("i am here");
         });
       });
 
@@ -101,11 +100,13 @@ class AuthController extends GetxController {
     });
   }
 
-  void signOut() {
+  Future<void> signOut() async {
     isLoading(true);
+    SharedPreferences pref = await SharedPreferences.getInstance();
 
     auth.signOut().then((value) {
       isLoading(false);
+      pref.remove("email");
       Get.to(() => LoginView());
     }).catchError((e) {
       Get.snackbar('Error', "$e");

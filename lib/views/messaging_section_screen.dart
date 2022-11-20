@@ -19,7 +19,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
           color: AppColors.grey,
           child:Center(
               child: Text(
-                "Messaging Screen In Progress...",
+                "Messaging Screen in Progress...",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.white,
@@ -29,5 +29,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
           ),
         )
     );
+
   }
+
 }

@@ -12,12 +12,12 @@ import '../widgets/app_widgets.dart';
 import '../widgets/main_course.dart';
 import 'coursesForm.dart';
 
-class TutoringSectionScreen extends StatefulWidget{
+class TutoringProfileScreen extends StatefulWidget{
   @override
-  _TutoringSectionScreenState createState() => _TutoringSectionScreenState();
+  _TutoringProfileScreenState createState() => _TutoringProfileScreenState();
 }
 
-class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
+class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
   final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
@@ -38,6 +38,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,17 +48,31 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
               color: Colors.black, //change your color here
             ),
             title: Text(
-              "Available Tutors",
+              "Enter Name of the course",
               style: TextStyle(
                 fontSize: 20,
                 color: AppColors.aubRed,
               ),
             ),
 
-        ),
+            actions: <Widget>[
+              IconButton(
+                  onPressed: () => {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context){
+                          return MainCourseForm();
+                        })
+                    )
+                  },
+                  icon: Image.asset('assets/postIcon.png')),
+
+            ]),
         body: Container(
             color: AppColors.white,
+
             child: StreamBuilder<QuerySnapshot>(
+
               stream: courses,
               builder: (
                   BuildContext context,
