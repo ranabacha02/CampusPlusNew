@@ -136,32 +136,26 @@ Widget buttonWithRightIcon({text, Function? onpress, width}){
         backgroundColor: MaterialStateProperty.all<Color>(AppColors.white),
       ),
       child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Container(
               padding: EdgeInsets.fromLTRB(10, 4, 4, 4),
-              child:Text(
-                  text,
+              child: Text(text,
                   style: TextStyle(
                     color: AppColors.black,
                     fontSize: 16,
-                  )
-              ),
+                  )),
             ),
-            SizedBox(
-              width: Get.width * width,
-            ),
+            // SizedBox(
+            //   width: Get.width * width,
+            // ),
             Padding(
               padding: EdgeInsets.fromLTRB(4, 0, 10, 0),
-              child: Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: AppColors.black,
-                  size: 20.0
-              ),
+              child: Icon(Icons.arrow_forward_ios_rounded,
+                  color: AppColors.black, size: 20.0),
             )
-
-          ]
-      ));
+          ]));
 }
 Widget buttonWithLeftIcon({text, Function? onpress, IconData? icon}){
   return ElevatedButton(

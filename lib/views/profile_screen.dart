@@ -1,10 +1,12 @@
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
+import 'package:campus_plus/views/edit_account_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
@@ -20,7 +22,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       WidgetsBinding.instance.window.devicePixelRatio;
 
   late AuthController authController;
-  CollectionReference users = FirebaseFirestore.instance.collection('Users');
+
+  //CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
@@ -61,39 +64,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                              height: Get.height * 0.01,
-                            ),
-                            Text(
-                              "Profile",
-                              textAlign: TextAlign.left,
+                    SizedBox(
+                      height: Get.height * 0.01,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Profile",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: Get.width * 0.6),
+                        IconButton(
+                            onPressed: () => {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType
+                                              .bottomToTopJoined,
+                                          child: EditAccountScreen()))
+                                },
+                            icon: Icon(
+                              Icons.edit,
+                              color: AppColors.black,
+                            ))
+                      ],
+                    ),
+                    Divider(
+                      color: AppColors.black,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            // to be changed
+                            radius: 50,
+                            backgroundColor: AppColors.circle,
+                            foregroundColor: AppColors.white,
+                            child: Text(
+                              userInfo?["firstName"][0] +
+                                  userInfo?["lastName"][0],
                               style: TextStyle(
-                                fontSize: 25,
                                 color: AppColors.black,
                                 fontWeight: FontWeight.w600,
+                                fontSize: 40,
                               ),
                             ),
-                            Divider(
-                              color: AppColors.black,
-                            ),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    // to be changed
-                                    radius: 50,
-                                    backgroundColor: AppColors.circle,
-                                    foregroundColor: AppColors.white,
-                                    child: Text(
-                                      userInfo?["firstName"][0] +  userInfo?["lastName"][0],
-                                      style: TextStyle(
-                                        color: AppColors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 40,
-                                      ),
-                                    ),
-                                  ),
+                          ),
                                   SizedBox(
                                     height: Get.height * 0.01,
                                   ),
