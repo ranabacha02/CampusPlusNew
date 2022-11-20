@@ -38,6 +38,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,7 +70,9 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
             ]),
         body: Container(
             color: AppColors.white,
+
             child: StreamBuilder<QuerySnapshot>(
+
               stream: courses,
               builder: (
                   BuildContext context,

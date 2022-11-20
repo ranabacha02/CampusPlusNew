@@ -45,6 +45,15 @@ class MainCourse extends StatelessWidget {
                               Spacer(),
 
                               Text(
+                                name,
+                                style: TextStyle(
+                                  color: AppColors.white,
+                                  fontFamily: 'Georgia',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
                                 event,
                                 style: TextStyle(
                                   color: AppColors.white,
