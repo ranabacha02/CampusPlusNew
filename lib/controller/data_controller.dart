@@ -29,19 +29,24 @@ class DataController extends GetxController {
       'major': major,
       'mobilePhoneNumber': mobileNumber,
       'graduationYear': graduationYear,
-      'userId': auth.currentUser!.uid,
-    })
+          'userId': auth.currentUser!.uid,
+        })
         .then((value) => print("user added"))
         .catchError(
             (error) => print("Failed to add user: " + error.toString()));
   }
-  getLocalData(){
+
+  getLocalData() {
     return storedData;
   }
 
-  getProfilePic(){
-    final storageRef = storage.ref();
-    final profilePicRef = storageRef.child("pp_"+auth.currentUser!.uid+".jpg");
+  setLocalData(data) {
+    storedData = data;
   }
 
+  getProfilePic() {
+    final storageRef = storage.ref();
+    final profilePicRef =
+        storageRef.child("pp_" + auth.currentUser!.uid + ".jpg");
+  }
 }

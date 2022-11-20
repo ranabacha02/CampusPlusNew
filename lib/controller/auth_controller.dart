@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/views/email_verification_page.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../views/signIn_signUp_screen.dart';
@@ -15,16 +17,24 @@ class AuthController extends GetxController {
 
   Future<void> login({String? email, String? password}) async {
     isLoading(true);
-    SharedPreferences pref =await SharedPreferences.getInstance();
+    SharedPreferences pref = await SharedPreferences.getInstance();
 
     auth
         .signInWithEmailAndPassword(email: email!, password: password!)
         .then((value) {
-      /// Login Success
+      //Login Success
       isLoading(false);
       print("logged in");
       pref.setString("email", email);
-      Get.to(() => NavBarView());
+      print(auth.currentUser!.emailVerified.toString());
+      print(auth.currentUser!.uid);
+      if (!auth.currentUser!.emailVerified) {
+        Get.snackbar('Warning',
+            'E-mail is not verified.\nPlease verify your email before proceeding.',
+            colorText: Colors.white, backgroundColor: Colors.blue);
+      } else {
+        Get.to(() => NavBarView());
+      }
     }).catchError((e) {
       isLoading(false);
       Get.snackbar('Error', "$e");
@@ -32,6 +42,7 @@ class AuthController extends GetxController {
       ///Error occurred
     });
   }
+
   void signUp(
       {String? email,
       String? password,
@@ -54,40 +65,51 @@ class AuthController extends GetxController {
       await auth.currentUser?.sendEmailVerification().then((value) {
         Get.snackbar("Email verification sent to: " + email,
             "Please verify your e-mail.");
-
-        timer = Timer.periodic(Duration(seconds: 3), (timer) async {
-          auth.currentUser!.reload();
-          if (auth.currentUser!.emailVerified) {
-            dataController.addUser(email, firstName, lastName, graduationYear,
-                major, mobileNumber);
-            auth.currentUser?.updateDisplayName(firstName!+" "+lastName!);
-            // users
-            //     .add({
-            //       'email': email,
-            //       'firstName': firstName,
-            //       'lastName': lastName,
-            //       'major': major,
-            //       'mobilePhoneNumber': mobileNumber,
-            //       'graduationYear': graduationYear,
-            //       'userId': auth.currentUser!.uid,
-            //     })
-            //     .then((value) => print("user added"))
-            //     .catchError((error) =>
-            //         print("Failed to add user: " + error.toString()));
-
-            /// Navigate user to profile screen
-            Get.to(() => NavBarView());
-            print("email verified");
-            timer.cancel();
-          }
-        });
+        Get.to(() => LoginView());
+        //   Get.to(() => EmailVerificationScreen(email: email));
+        //   verifyingEmail(
+        //       email: email,
+        //       password: password,
+        //       firstName: firstName,
+        //       lastName: lastName,
+        //       graduationYear: graduationYear,
+        //       mobileNumber: mobileNumber,
+        //       major: major);
+        // });
+      }).catchError((e) {
+        /// print error information
+        Get.snackbar("Error in authentication:", "$e");
+        isLoading(false);
       });
+    });
+  }
 
+  void verifyingEmail(
+      {String? email,
+      String? password,
+      String? firstName,
+      String? lastName,
+      int? graduationYear,
+      String? major,
+      int? mobileNumber}) {
+    DataController dataController = Get.put(DataController());
+    int n = 0;
+    Timer timer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      n++;
+      auth.currentUser!.reload();
+      if (auth.currentUser!.emailVerified) {
+        dataController.addUser(
+            email, firstName, lastName, graduationYear, major, mobileNumber);
+        auth.currentUser?.updateDisplayName(firstName! + " " + lastName!);
 
-    }).catchError((e) {
-      /// print error information
-      Get.snackbar("Error in authentication:", "$e");
-      isLoading(false);
+        /// Navigate user to profile screen
+        Get.to(() => NavBarView());
+        print("email verified");
+        timer.cancel();
+      }
+      if (n > 100) {
+        timer.cancel();
+      }
     });
   }
 
@@ -107,6 +129,8 @@ class AuthController extends GetxController {
     auth.signOut().then((value) {
       isLoading(false);
       pref.remove("email");
+      DataController dataController = Get.put(DataController());
+      dataController.setLocalData({});
       Get.to(() => LoginView());
     }).catchError((e) {
       Get.snackbar('Error', "$e");

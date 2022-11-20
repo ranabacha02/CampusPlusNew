@@ -6,10 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
+
+import 'edit_account_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -37,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    print(userInfo.toString());
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -52,180 +55,202 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
-        body:  Material(
-                    type: MaterialType.transparency,
-                    child: Container(
-                      color: AppColors.white,
-                      child: Padding(
-                        padding: EdgeInsets.all(12.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                              height: Get.height * 0.01,
-                            ),
-                            Text(
-                              "Profile",
-                              textAlign: TextAlign.left,
+        body: Material(
+            type: MaterialType.transparency,
+            child: Container(
+              color: AppColors.white,
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: Get.height * 0.01,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Profile",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        SizedBox(width: Get.width * 0.6),
+                        IconButton(
+                            onPressed: () => {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                        type: PageTransitionType.bottomToTop,
+                                        child: EditAccountScreen(
+                                          userInfo: userInfo,
+                                        ),
+                                      ))
+                                },
+                            icon: Icon(
+                              Icons.edit,
+                              color: AppColors.black,
+                            ))
+                      ],
+                    ),
+                    Divider(
+                      color: AppColors.black,
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            // to be changed
+                            radius: 50,
+                            backgroundColor: AppColors.circle,
+                            foregroundColor: AppColors.white,
+                            child: Text(
+                              userInfo?["firstName"][0] +
+                                  userInfo?["lastName"][0],
                               style: TextStyle(
-                                fontSize: 25,
                                 color: AppColors.black,
                                 fontWeight: FontWeight.w600,
+                                fontSize: 40,
                               ),
                             ),
-                            Divider(
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.01,
+                          ),
+                          Text(
+                            userInfo?["firstName"] +
+                                " " +
+                                userInfo?["lastName"],
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: AppColors.black,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          Text(
+                            "" +
+                                    userInfo?["major"] +
+                                    " | " +
+                                    userInfo["graduationYear"].toString() ??
+                                "",
+                            style: TextStyle(
+                              fontSize: 18,
                               color: AppColors.black,
+                              fontWeight: FontWeight.w300,
                             ),
-                            Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    // to be changed
-                                    radius: 50,
-                                    backgroundColor: AppColors.circle,
-                                    foregroundColor: AppColors.white,
-                                    child: Text(
-                                      userInfo?["firstName"][0] +  userInfo?["lastName"][0],
-                                      style: TextStyle(
-                                        color: AppColors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 40,
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: Get.height * 0.01,
-                                  ),
-                                  Text(
-                                    userInfo?["firstName"] +
-                                        " " +
-                                        userInfo?["lastName"],
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        color: AppColors.black,
-                                        fontWeight: FontWeight.w600),
-                                  ),
-                                  Text(
-                                    "" + userInfo?["major"] + " | " +userInfo["graduationYear"].toString()??"",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: AppColors.black,
-                                      fontWeight: FontWeight.w300,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: Get.height * 0.01,
-                                  ),
-                                  Text(
-                                    "Description here...",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.grey,
-                                      fontStyle: FontStyle.italic
-                                    )
-                                  )
-                                ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: Get.height * 0.01,
-                            ),
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(
-                                vertical: Get.height * 0.005,
-                              ),
-                              width: Get.width,
-                              child: buttonWithRightIcon(
-                                text: "Recent Activity",
-                                onpress:() => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
-                                  )
-                                },
-                                width: 0.492,
-                              ),
-                            ),
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(
-                                vertical: Get.height * 0.005,
-                              ),
-                              width: Get.width,
-                              child: buttonWithRightIcon(
-                                text: "Followed Tags",
-                                onpress:() => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
-                                  )
-                                },
-                                width: 0.512,
-                              ),
-                            ),
-
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(
-                                vertical: Get.height * 0.005,
-                              ),
-                              width: Get.width,
-                              child: buttonWithRightIcon(
-                                text: "Tutoring Profile",
-                                onpress:() => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>  TutoringProfileScreen())
-                                  )
-                                },
-                                width: 0.482,
-                              ),
-                            ),
-                            Container(
-                              height: 40,
-                              margin: EdgeInsets.symmetric(
-                                vertical: Get.height * 0.005,
-                              ),
-                              width: Get.width,
-                              child: buttonWithRightIcon(
-                                text: "Rental Profile",
-                                onpress:() => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
-                                  )
-                                },
-                                width: 0.513,
-                              ),
-                            ),
-
-
-                            Obx(() => authController.isLoading.value
-                                ? Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : Container(
-                                    height: 40,
-                                    margin: EdgeInsets.symmetric(
-                                      vertical: Get.height * 0.03,
-                                    ),
-                                    width: Get.width,
-                                    child: buttonWithLeftIcon(
-                                        text: 'Sign out',
-                                        onpress: () {
-                                          authController.signOut();
-                                        },
-                                      icon: Icons.logout,
-                                    ))),
-                          ],
-                        ),
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.01,
+                          ),
+                          Text("Description here...",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.grey,
+                                  fontStyle: FontStyle.italic))
+                        ],
                       ),
-                    )
-                )
-            );
+                    ),
+                    SizedBox(
+                      height: Get.height * 0.01,
+                    ),
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.symmetric(
+                        vertical: Get.height * 0.005,
+                      ),
+                      width: Get.width,
+                      child: buttonWithRightIcon(
+                        text: "Recent Activity",
+                        onpress: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AccountSettingsScreen()))
+                        },
+                        width: 0.492,
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.symmetric(
+                        vertical: Get.height * 0.005,
+                      ),
+                      width: Get.width,
+                      child: buttonWithRightIcon(
+                        text: "Followed Tags",
+                        onpress: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AccountSettingsScreen()))
+                        },
+                        width: 0.512,
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.symmetric(
+                        vertical: Get.height * 0.005,
+                      ),
+                      width: Get.width,
+                      child: buttonWithRightIcon(
+                        text: "Tutoring Profile",
+                        onpress: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      TutoringProfileScreen()))
+                        },
+                        width: 0.482,
+                      ),
+                    ),
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.symmetric(
+                        vertical: Get.height * 0.005,
+                      ),
+                      width: Get.width,
+                      child: buttonWithRightIcon(
+                        text: "Rental Profile",
+                        onpress: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AccountSettingsScreen()))
+                        },
+                        width: 0.513,
+                      ),
+                    ),
+                    Obx(() => authController.isLoading.value
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : Container(
+                            height: 40,
+                            margin: EdgeInsets.symmetric(
+                              vertical: Get.height * 0.03,
+                            ),
+                            width: Get.width,
+                            child: buttonWithLeftIcon(
+                              text: 'Sign out',
+                              onpress: () {
+                                authController.signOut();
+                              },
+                              icon: Icons.logout,
+                            ))),
+                  ],
+                ),
+              ),
+            )));
   }
 }

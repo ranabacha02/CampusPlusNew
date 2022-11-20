@@ -176,6 +176,15 @@ class _LoginViewState extends State<LoginView> {
                           backgroundColor: Colors.blue);
                       return '';
                     }
+
+                    List<String> x = input.split("@");
+                    if (x[1] != "mail.aub.edu") {
+                      Get.snackbar(
+                          'Warning', 'Email should end with @mail.aub.edu',
+                          colorText: Colors.white,
+                          backgroundColor: Colors.blue);
+                      return '';
+                    }
                   },
                   controller: emailController),
               SizedBox(
@@ -317,6 +326,12 @@ class _LoginViewState extends State<LoginView> {
 
               if (!input.contains('@')) {
                 Get.snackbar('Warning', 'E-mail is invalid.',
+                    colorText: Colors.white, backgroundColor: Colors.blue);
+                return '';
+              }
+              List<String> x = input.split("@");
+              if (x[1] != "mail.aub.edu") {
+                Get.snackbar('Warning', 'Email should end with @mail.aub.edu',
                     colorText: Colors.white, backgroundColor: Colors.blue);
                 return '';
               }

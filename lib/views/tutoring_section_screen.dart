@@ -43,17 +43,17 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
     return Scaffold(
         appBar: AppBar(
             backgroundColor: AppColors.white,
-            iconTheme: const IconThemeData(
-              color: Colors.black, //change your color here
+          automaticallyImplyLeading: false,
+          iconTheme: const IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Text(
+            "Available Tutors",
+            style: TextStyle(
+              fontSize: 20,
+              color: AppColors.aubRed,
             ),
-            title: Text(
-              "Available Tutors",
-              style: TextStyle(
-                fontSize: 20,
-                color: AppColors.aubRed,
-              ),
-            ),
-
+          ),
         ),
         body: Container(
             color: AppColors.white,
