@@ -1,5 +1,6 @@
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/views/profile_screen.dart';
+import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -49,7 +50,7 @@ class EditProfileController extends GetxController {
           context,
           PageTransition(
             type: PageTransitionType.topToBottom,
-            child: ProfileScreen(),
+            child: NavBarView(index: 4),
           ));
     }).catchError(
         (error) => print("Failed to update user info: " + error.toString()));

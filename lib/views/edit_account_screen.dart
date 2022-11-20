@@ -169,13 +169,43 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 SizedBox(
                   height: 35,
                 ),
-                buildTextField("First Name", "", false, firstNameController),
-                buildTextField("Last Name", "", false, lastNameController),
-                buildTextField("Major", "", false, majorController),
+                buildTextField("First Name", "", false, firstNameController,
+                    (String input) {}),
+                buildTextField("Last Name", "", false, lastNameController,
+                    (String input) {}),
                 buildTextField(
-                    "Graduation Year", "", false, graduationYearController),
+                    "Major", "", false, majorController, (String input) {}),
                 buildTextField(
-                    "Mobile Number", "", false, mobileNumberController),
+                    "Graduation Year", "", false, graduationYearController,
+                    (String input) {
+                  print("hello i'm here");
+                  if (int.tryParse(input) == null) {
+                    print("only number");
+                    Get.snackbar('Warning', 'Only numbers allowed',
+                        colorText: Colors.white, backgroundColor: Colors.blue);
+                    return '';
+                  } else {
+                    int gradYear = int.parse(input);
+                    int currentYear = DateTime.now().year;
+                    print(currentYear);
+                    if (gradYear < currentYear) {
+                      Get.snackbar(
+                          'Warning', 'Graduation year cannot be in the past.',
+                          colorText: Colors.white,
+                          backgroundColor: Colors.blue);
+                      return '';
+                    }
+                  }
+                }),
+                buildTextField(
+                    "Mobile Number", "", false, mobileNumberController,
+                    (String input) {
+                  if (int.tryParse(input) == null) {
+                    Get.snackbar('Warning', 'Only numbers allowed',
+                        colorText: Colors.white, backgroundColor: Colors.blue);
+                    return '';
+                  }
+                }),
                 SizedBox(
                   height: 35,
                 ),
@@ -185,11 +215,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         ));
   }
 
-  Widget buildTextField(String labelText, String placeholder,
-      bool isPasswordTextField, TextEditingController controller) {
+  Widget buildTextField(
+      String labelText,
+      String placeholder,
+      bool isPasswordTextField,
+      TextEditingController controller,
+      Function? validator) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
-      child: TextField(
+      child: TextFormField(
+        validator: (input) => validator!(input),
         controller: controller,
         obscureText: isPasswordTextField ? showPassword : false,
         decoration: InputDecoration(

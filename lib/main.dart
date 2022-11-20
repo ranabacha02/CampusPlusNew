@@ -29,12 +29,17 @@ class _CampusPlusState extends State<CampusPlus>{
   Widget build(BuildContext context) {
     return GetMaterialApp(
         title: 'Campus+',
-        theme: ThemeData(
+      theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
-        Theme.of(context).textTheme, // If this is not set, then ThemeData.light().textTheme is used.
-    ),
-    ),
-    home:  widget.email==null?LoginView():NavBarView(),
+          Theme.of(context)
+              .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
+        ),
+      ),
+      home: widget.email == null
+          ? LoginView()
+          : NavBarView(
+              index: 2,
+            ),
     );
   }
 

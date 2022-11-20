@@ -13,14 +13,18 @@ import 'package:campus_plus/views/profile_screen.dart';
 import '../controller/data_controller.dart';
 
 class NavBarView extends StatefulWidget {
-  NavBarView({Key? key}) : super(key: key);
+  int index;
+
+  NavBarView({Key? key, required int this.index}) : super(key: key);
 
   @override
-  State<NavBarView> createState() => _NavBarViewState();
+  State<NavBarView> createState() => _NavBarViewState(currentIndex: index);
 }
 
 class _NavBarViewState extends State<NavBarView> {
   int currentIndex = 0;
+
+  _NavBarViewState({required int this.currentIndex});
 
   void onItemTapped(int index) {
     setState(() {

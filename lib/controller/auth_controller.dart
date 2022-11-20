@@ -33,7 +33,7 @@ class AuthController extends GetxController {
             'E-mail is not verified.\nPlease verify your email before proceeding.',
             colorText: Colors.white, backgroundColor: Colors.blue);
       } else {
-        Get.to(() => NavBarView());
+        Get.to(() => NavBarView(index: 2));
       }
     }).catchError((e) {
       isLoading(false);
@@ -103,7 +103,7 @@ class AuthController extends GetxController {
         auth.currentUser?.updateDisplayName(firstName! + " " + lastName!);
 
         /// Navigate user to profile screen
-        Get.to(() => NavBarView());
+        Get.to(() => NavBarView(index: 2));
         print("email verified");
         timer.cancel();
       }
