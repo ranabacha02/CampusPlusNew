@@ -20,13 +20,15 @@ class AuthController extends GetxController {
 
     auth
         .signInWithEmailAndPassword(email: email!, password: password!)
-        .then((value) {
+        .then((value) async {
       //Login Success
       isLoading(false);
       print("logged in");
       pref.setString("email", email);
       print(auth.currentUser!.emailVerified.toString());
       print(auth.currentUser!.uid);
+      DataController dataController = Get.put(DataController());
+      await dataController.getUserInfo();
       if (!auth.currentUser!.emailVerified) {
         Get.snackbar('Warning',
             'E-mail is not verified.\nPlease verify your email before proceeding.',
@@ -129,7 +131,7 @@ class AuthController extends GetxController {
       isLoading(false);
       pref.remove("email");
       DataController dataController = Get.put(DataController());
-      dataController.setLocalData({});
+      dataController.clearLocalData();
       Get.to(() => LoginView());
     }).catchError((e) {
       Get.snackbar('Error', "$e");

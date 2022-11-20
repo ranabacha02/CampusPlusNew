@@ -17,7 +17,7 @@ class MainCard extends StatelessWidget {
   }) : super(key: key);
 
   final String cardId;
-  final Map<String, dynamic> userInfo;
+  final  userInfo;
   final String event;
   final String name;
   final bool personal;

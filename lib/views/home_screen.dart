@@ -19,15 +19,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
   DataController dataController = Get.put(DataController());
-  late Map<String, dynamic> userInfo = dataController.getLocalData();
+  late var userInfo = dataController.getLocalData();
 
   @override
   void initState() {
     super.initState();
+    // print("init1");
+    // print("init2");
   }
 
   @override
   Widget build(BuildContext context) {
+    // print("build");
+    // print(userInfo);
     return Scaffold(
         appBar: AppBar(
             backgroundColor: AppColors.white,
@@ -60,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ]),
         body: Container(
           color: AppColors.white,
+         // child: userInfo ==null ? Text('hello') : Text('Bye'),
          child: StreamBuilder<QuerySnapshot>(
              stream: cards,
              builder: (

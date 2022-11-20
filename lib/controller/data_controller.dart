@@ -8,12 +8,13 @@ class DataController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = FirebaseStorage.instanceFor(bucket: "gs://profile-pictures");
 
-  Future<Map<String, dynamic>> getUserInfo() async {
+  Future getUserInfo() async {
     var data =
     await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
     var data2 = data.docs.first.data() as Map<String, dynamic>;
     //print(data2);
     storedData = data2;
+    // print("set data");
     return data2;
   }
   late Map<String, dynamic> storedData = {};
@@ -36,12 +37,12 @@ class DataController extends GetxController {
             (error) => print("Failed to add user: " + error.toString()));
   }
 
-  Map<String, dynamic> getLocalData() {
+  Map getLocalData() {
     return storedData;
   }
 
-  setLocalData(data) {
-    storedData = data;
+  clearLocalData() {
+    storedData.clear();
   }
 
   getProfilePic() {

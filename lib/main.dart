@@ -2,7 +2,9 @@ import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'controller/data_controller.dart';
 import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +16,11 @@ void main() async {
   );
   SharedPreferences prefs =await SharedPreferences.getInstance();
   var email=prefs.getString("email");
+  DataController dataController = Get.put(DataController());
+  if(email!=null){
+    // print("email not null");
+    await dataController.getUserInfo();
+  }
   runApp(CampusPlus(email: email,));
 }
 
