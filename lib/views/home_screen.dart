@@ -15,17 +15,17 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Stream<QuerySnapshot> cards = FirebaseFirestore.instance.collection('Cards').snapshots();
+  final Stream<QuerySnapshot> cards = FirebaseFirestore.instance.collection('Cards').orderBy('eventStart').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
-  late DataController dataController;
-  late final userInfo;
+  DataController dataController = Get.put(DataController());
+  late Map<String, dynamic> userInfo = dataController.getLocalData();
+
   @override
   void initState() {
     super.initState();
-    dataController = Get.put(DataController());
-    userInfo = dataController.getLocalData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,8 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
                  return Text('Something went wrong');
                }
                if(snapshot.connectionState == ConnectionState.waiting){
-                 return const Text('Loading');
-
+                 return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
                }
                final data = snapshot.requireData;
                return ListView.builder(
@@ -84,7 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                          name: data.docs[index]['name'],
                          personal: true,
                          userInfo: userInfo,
-                         usersJoined: data.docs[index]['users']
+                         usersJoined: data.docs[index]['users'],
+                         date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                      );}
                    else{
                     return MainCard(
@@ -94,6 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         personal: false,
                         userInfo: userInfo,
                         usersJoined: data.docs[index]['users'],
+                        date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                     );}
                  },
                );

@@ -16,7 +16,7 @@ class DataController extends GetxController {
     storedData = data2;
     return data2;
   }
-  late var storedData = {};
+  late Map<String, dynamic> storedData = {};
 
   addUser(String? email, String? firstName, String? lastName,
       int? graduationYear, String? major, int? mobileNumber) {
@@ -36,7 +36,7 @@ class DataController extends GetxController {
             (error) => print("Failed to add user: " + error.toString()));
   }
 
-  getLocalData() {
+  Map<String, dynamic> getLocalData() {
     return storedData;
   }
 
