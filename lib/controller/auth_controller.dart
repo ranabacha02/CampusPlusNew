@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:campus_plus/controller/data_controller.dart';
-import 'package:campus_plus/views/email_verification_page.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
