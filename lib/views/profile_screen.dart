@@ -1,6 +1,7 @@
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
+import 'package:campus_plus/views/tutoring_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -178,7 +179,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 onpress:() => {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) =>  AccountSettingsScreen())
+                                      MaterialPageRoute(builder: (context) =>  TutoringProfileScreen())
                                   )
                                 },
                                 width: 0.482,
