@@ -53,6 +53,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
               controller: _courseController,
               decoration: InputDecoration(
                   labelText: 'Course Name',
+                  prefixIcon: Icon(Icons.emoji_people_rounded),
                   border: OutlineInputBorder()
               ),
             ),
