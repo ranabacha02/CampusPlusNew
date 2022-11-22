@@ -49,15 +49,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(userInfo.toString());
-    print(auth.currentUser!.photoURL);
+    //print(userInfo.toString());
+    //print(auth.currentUser!.photoURL);
     if (auth.currentUser!.photoURL != null) {
       displayImage = Image.network(auth.currentUser!.photoURL!);
     } else {
       AssetImage("assets/default_profile.jpg");
     }
 
-    print("display image in profile screen: " + displayImage.toString());
+    //print("display image in profile screen: " + displayImage.toString());
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,

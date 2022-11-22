@@ -18,7 +18,7 @@ class DataController extends GetxController {
     var data =
         await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
     var data2 = data.docs.first.data() as Map<String, dynamic>;
-    //print(data2);
+
     storedData = data2;
     // print("set data");
     return data2;
@@ -38,11 +38,14 @@ class DataController extends GetxController {
           'mobilePhoneNumber': mobileNumber,
           'graduationYear': graduationYear,
           'userId': auth.currentUser!.uid,
+          'chatsId': [],
         })
         .then((value) => print("user added"))
         .catchError(
             (error) => print("Failed to add user: " + error.toString()));
   }
+
+  updateUserInfo() {} //To do
 
   Map getLocalData() {
     return storedData;
