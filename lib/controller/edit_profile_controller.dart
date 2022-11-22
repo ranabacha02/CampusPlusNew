@@ -36,6 +36,7 @@ class EditProfileController extends GetxController {
       'mobilePhoneNumber': mobileNumber,
       'graduationYear': graduationYear,
       'userId': auth.currentUser!.uid,
+      'chatsId': userInfo["chatsId"],
     }).then((value) async {
       print("user updated");
 

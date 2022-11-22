@@ -76,6 +76,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
         backgroundColor: AppColors.white,
       ),
       body: Stack(
+        fit: StackFit.passthrough,
         children: <Widget>[
           // chat messages here
           chatMessages(),
@@ -131,18 +132,21 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       stream: chats,
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
-            ? ListView.builder(
-                itemCount: snapshot.data.docs.length,
-                itemBuilder: (context, index) {
-                  print("the message is: " +
-                      snapshot.data.docs[index]['message']);
-                  return MessageTile(
-                      message: snapshot.data.docs[index]['message'],
-                      sender: snapshot.data.docs[index]['sender'],
-                      sentByMe: userName + "_" + userInfo['userId'] ==
-                          snapshot.data.docs[index]['sender']);
-                },
-              )
+            ? Container(
+                height: 760,
+                child: ListView.builder(
+                  reverse: true,
+                  itemCount: snapshot.data.docs.length,
+                  itemBuilder: (context, index) {
+                    print("the message is: " +
+                        snapshot.data.docs[index]['message']);
+                    return MessageTile(
+                        message: snapshot.data.docs[index]['message'],
+                        sender: snapshot.data.docs[index]['sender'],
+                        sentByMe: userName + "_" + userInfo['userId'] ==
+                            snapshot.data.docs[index]['sender']);
+                  },
+                ))
             : Container();
       },
     );
