@@ -1,21 +1,35 @@
+import 'dart:core';
+import 'dart:io';
+
 import 'package:campus_plus/controller/edit_profile_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
+import '../controller/image_file_picker.dart';
 import '../utils/app_colors.dart';
+import '../widgets/nav_bar.dart';
 
 class EditAccountScreen extends StatefulWidget {
-  final Map<String, dynamic> userInfo;
+  final Map<dynamic, dynamic> userInfo;
+  bool delete;
+  File? photo;
+  Image? displayImage;
 
-  EditAccountScreen({required this.userInfo});
+  EditAccountScreen(
+      {required this.userInfo,
+      required this.delete,
+      this.photo,
+      this.displayImage});
 
   @override
-  _EditAccountScreenState createState() => _EditAccountScreenState();
+  _EditAccountScreenState createState() => _EditAccountScreenState(
+      delete: delete, photo: photo, displayImage: displayImage);
 }
 
 class _EditAccountScreenState extends State<EditAccountScreen> {
@@ -33,6 +47,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   //CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
   late EditProfileController editProfileController;
+
+  Image? displayImage;
+  File? photo;
+
+  bool delete;
+
+  _EditAccountScreenState(
+      {required this.delete, this.photo, this.displayImage});
 
   late DataController dataController;
   late final userInfo;
@@ -54,6 +76,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     majorController.text = userInfo["major"];
     graduationYearController.text = userInfo["graduationYear"].toString();
     mobileNumberController.text = userInfo["mobilePhoneNumber"].toString();
+
+    if (displayImage == null) {
+      displayImage = Image.asset("assets/default_profile.jpg");
+    }
+
+    // if (auth.currentUser!.photoURL != null) {
+    //   displayImage = Image.network(auth.currentUser!.photoURL!);
+    // } else {
+    //   displayImage = Image.asset("assets/default_profile.jpg");
+    // }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -70,7 +102,18 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 fontSize: 20,
               ),
             ),
-            onPressed: () => {Navigator.pop(context)},
+            onPressed: () => {
+              Navigator.push(
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.bottomToTopJoined,
+                      child: NavBarView(index: 4),
+                      childCurrent: EditAccountScreen(
+                        userInfo: userInfo,
+                        delete: false,
+                        displayImage: photo.isNull ? null : Image.file(photo!),
+                      )))
+            },
           ),
           title: Text(
             "Edit Profile",
@@ -88,8 +131,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   fontSize: 20,
                 ),
               ),
-              onPressed: () => {
-                editProfileController.updateProfile(
+              onPressed: () async {
+                await editProfileController.updateProfile(
                   firstName: firstNameController.text.trim(),
                   lastName: lastNameController.text.trim(),
                   major: majorController.text.trim(),
@@ -98,7 +141,9 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   mobileNumber: int.parse(mobileNumberController.text.trim()),
                   context: context,
                   userInfo: userInfo,
-                )
+                  photo: photo,
+                  delete: false,
+                );
               },
             )
           ],
@@ -121,48 +166,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 Center(
                   child: Stack(
                     children: [
-                      Container(
-                        width: 130,
-                        height: 130,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                width: 4,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor),
-                            boxShadow: [
-                              BoxShadow(
-                                  spreadRadius: 2,
-                                  blurRadius: 10,
-                                  color: Colors.black.withOpacity(0.1),
-                                  offset: Offset(0, 10))
-                            ],
-                            shape: BoxShape.circle,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                  "https://images.pexels.com/photos/3307758/pexels-photo-3307758.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=250",
-                                ))),
-                      ),
-                      Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 4,
-                                color:
-                                    Theme.of(context).scaffoldBackgroundColor,
-                              ),
-                              color: Colors.green,
-                            ),
-                            child: Icon(
-                              Icons.edit,
-                              color: Colors.white,
-                            ),
-                          )),
+                      ImageUploads(displayImage: displayImage),
                     ],
                   ),
                 ),

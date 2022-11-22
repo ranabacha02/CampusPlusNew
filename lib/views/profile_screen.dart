@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/controller/image_file_picker.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
 import 'package:campus_plus/views/tutoring_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +16,10 @@ import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
 
 import 'edit_account_screen.dart';
+
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -30,6 +37,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late DataController dataController;
   late final userInfo;
 
+  Image? displayImage;
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +50,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     print(userInfo.toString());
+    print(auth.currentUser!.photoURL);
+    if (auth.currentUser!.photoURL != null) {
+      displayImage = Image.network(auth.currentUser!.photoURL!);
+    } else {
+      AssetImage("assets/default_profile.jpg");
+    }
+
+    print("display image in profile screen: " + displayImage.toString());
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,
@@ -82,13 +99,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(width: Get.width * 0.6),
                         IconButton(
-                            onPressed: () => {
+                            onPressed: () =>
+                            {
                                   Navigator.push(
                                       context,
                                       PageTransition(
                                         type: PageTransitionType.bottomToTop,
                                         child: EditAccountScreen(
                                           userInfo: userInfo,
+                                          delete: false,
+                                          // photo: auth.currentUser!.photoURL != null ?
+                                          //  _fileFromImageUrl(auth.currentUser!.photoURL ):
+                                          // null,
+                                          displayImage: displayImage,
                                         ),
                                       ))
                                 },
@@ -107,18 +130,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           CircleAvatar(
                             // to be changed
-                            radius: 50,
+                            backgroundImage: auth.currentUser!.photoURL != null
+                                ? NetworkImage(auth.currentUser!.photoURL!)
+                                : AssetImage("assets/default_profile.jpg")
+                                    as ImageProvider,
+                            radius: 60,
                             backgroundColor: AppColors.circle,
                             foregroundColor: AppColors.white,
-                            child: Text(
-                              userInfo?["firstName"][0] +
-                                  userInfo?["lastName"][0],
-                              style: TextStyle(
-                                color: AppColors.black,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 40,
-                              ),
-                            ),
                           ),
                           SizedBox(
                             height: Get.height * 0.01,
@@ -252,5 +270,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             )));
+  }
+
+  Future<File> _fileFromImageUrl(var url) async {
+    final response = await http.get(Uri.parse(url));
+
+    final documentDirectory = await getApplicationDocumentsDirectory();
+
+    final file = File(join(documentDirectory.path, auth.currentUser!.uid));
+
+    file.writeAsBytesSync(response.bodyBytes);
+
+    return file;
   }
 }
