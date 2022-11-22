@@ -19,6 +19,7 @@ class TutoringSectionScreen extends StatefulWidget{
 
 class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
   late final userInfo;
+  String name="";
   final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
@@ -48,13 +49,17 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
           iconTheme: const IconThemeData(
             color: Colors.black, //change your color here
           ),
-          title: Text(
-            "Available Tutors",
-            style: TextStyle(
-              fontSize: 20,
-              color: AppColors.aubRed,
+            title: Card(
+              child: TextField(
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search), hintText: 'Search...'),
+                onChanged: (val) {
+                  setState(() {
+                    name = val;
+                  });
+                },
+              ),
             ),
-          ),
         ),
         body: Container(
             color: AppColors.white,
@@ -75,7 +80,42 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index){
-                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name']);
+
+                    var data2 = snapshot.data!.docs[index].data()
+                    as Map<String, dynamic>;
+                    if (name.isEmpty){
+                      return MainCourse(event: snapshot.data!.docs[index]['event'],
+                          name: snapshot.data!.docs[index]['name']);
+                    }
+                    if (data2['name']
+                        .toString()
+                        .toLowerCase()
+                        .startsWith(name.toLowerCase())) {
+                      return ListTile(
+                        title: Text(
+                          data2['name'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          data2['event'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+
+                      );
+                    }
+                    else {
+                      return Container();
+                    }
                   },
                 );
               },
