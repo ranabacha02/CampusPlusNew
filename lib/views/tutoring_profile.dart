@@ -18,7 +18,7 @@ class TutoringProfileScreen extends StatefulWidget{
 }
 
 class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
-  final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
+
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
 
@@ -28,8 +28,10 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
 
   late DataController dataController;
   late final userInfo;
-
+  late final List<dynamic> coursesList = userInfo?["tutoringClasses"];
   late String course;
+
+
 
   @override
   void initState() {
@@ -43,37 +45,27 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            backgroundColor: AppColors.white,
-            iconTheme: const IconThemeData(
-              color: Colors.black, //change your color here
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: ()=> Navigator.pop(context),
+          ),
+          backgroundColor: AppColors.white,
+          automaticallyImplyLeading: false,
+          iconTheme: const IconThemeData(
+            color: Colors.black, //change your color here
+          ),
+          title: Text(
+            "Courses I am tutoring",
+            style: TextStyle(
+              fontSize: 20,
+              color: AppColors.aubRed,
             ),
-            title: Text(
-              "Enter Name of the course",
-              style: TextStyle(
-                fontSize: 20,
-                color: AppColors.aubRed,
-              ),
-            ),
-
-            actions: <Widget>[
-              IconButton(
-                  onPressed: () => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context){
-                          return MainCourseForm();
-                        })
-                    )
-                  },
-                  icon: Image.asset('assets/postIcon.png')),
-
-            ]),
+          ),
+        ),
         body: Container(
             color: AppColors.white,
-
             child: StreamBuilder<QuerySnapshot>(
-
-              stream: courses,
+              stream: FirebaseFirestore.instance.collection('Courses').where("createdBy", isEqualTo: auth.currentUser!.uid).snapshots(),
               builder: (
                   BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot,

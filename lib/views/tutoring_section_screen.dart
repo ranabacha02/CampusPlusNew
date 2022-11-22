@@ -18,6 +18,7 @@ class TutoringSectionScreen extends StatefulWidget{
 }
 
 class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
+  late final userInfo;
   final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
@@ -27,7 +28,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
-  late final userInfo;
+
 
   late String course;
 
