@@ -74,7 +74,13 @@ class MainCard extends StatelessWidget {
                                   radius: 20,
                                   backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                                   foregroundColor: Colors.white,
-                                  child: Text(usersJoined[0]["firstName"][0]),
+                                  child: Text(
+                                      usersJoined[0]["firstName"][0],
+                                    style: TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.white,
+                                  ),
+                                  ),
                                 ),
                               ),
                               SizedBox(
