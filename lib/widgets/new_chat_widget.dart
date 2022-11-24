@@ -20,6 +20,10 @@ class NewChatScreen extends StatefulWidget {
 class _NewChatScreenState extends State<NewChatScreen> {
   final Stream<QuerySnapshot> users =
       FirebaseFirestore.instance.collection('Users').snapshots();
+  final Stream<QuerySnapshot> groups = FirebaseFirestore.instance
+      .collection('chats')
+      .where('isGroup', isEqualTo: true)
+      .snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -56,19 +60,53 @@ class _NewChatScreenState extends State<NewChatScreen> {
             )),
         body: Material(
           type: MaterialType.transparency,
-          child: Container(
-              color: AppColors.white,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: users,
-                builder: (
-                  BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot,
-                ) {
-                  if (snapshot.hasError) {
-                    return Text('Something went wrong');
-                  }
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Text('Loading');
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    popUpDialog(context);
+                  },
+                  child: Container(
+                    height: 60,
+                    color: AppColors.greychat,
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: Get.width * 0.1,
+                        ),
+                        Icon(
+                          Icons.add_box_outlined,
+                          color: AppColors.blue,
+                        ),
+                        SizedBox(
+                          width: Get.width * 0.07,
+                        ),
+                        Text(
+                          "Create a group chat",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: AppColors.blue,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Divider(),
+                Flexible(
+                    child: StreamBuilder<QuerySnapshot>(
+                  stream: users,
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot,
+                  ) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Text('Loading');
                   }
                   final data = snapshot.requireData;
                   return ListView.builder(
@@ -81,16 +119,96 @@ class _NewChatScreenState extends State<NewChatScreen> {
                                 data.docs[index]['lastName'],
                             data.docs[index]['major'],
                             data.docs[index]['graduationYear'],
-                            data.docs[index]['userId']);
-                      } else {
-                        return SizedBox(
-                          height: 0,
+                              data.docs[index]['userId']);
+                        } else {
+                          return SizedBox(
+                            height: 0,
+                          );
+                        }
+                      },
+                    );
+                  },
+                )),
+                SizedBox(
+                  width: 0,
+                ),
+                Text(
+                  "Groups",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Flexible(
+                    child: StreamBuilder<QuerySnapshot>(
+                  stream: groups,
+                  builder: (
+                    BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot,
+                  ) {
+                    if (snapshot.hasError) {
+                      return Text('Something went wrong');
+                    }
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Text('Loading');
+                    }
+                    final data = snapshot.requireData;
+                    return ListView.builder(
+                      itemCount: data.size,
+                      itemBuilder: (context, index) {
+                        return groupProfile(
+                          data.docs[index]['groupName'],
+                          data.docs[index]['groupIcon'],
+                          data.docs[index]['chatId'],
+                          userInfo['firstName'] + " " + userInfo['lastName'],
                         );
-                      }
-                    },
-                  );
-                },
-              )),
+                      },
+                    );
+                  },
+                )),
+              ]),
+        ));
+  }
+
+  groupProfile(
+      String groupName, String groupIcon, String groupId, String userName) {
+    return Container(
+        height: 105,
+        child: Column(
+          children: [
+            ListTile(
+                leading: CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage("assets/default_profile.jpg"),
+                  backgroundColor: AppColors.circle,
+                  foregroundColor: AppColors.white,
+                ),
+                title: Text(
+                  groupName,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                subtitle: Row(
+                  children: [
+                    SizedBox(width: 5),
+                    new Spacer(),
+                    elevatedButton(
+                        text: "Join",
+                        onpress: () {
+                          //create a new chat between the users and redirect them to the chat page
+                          chatController.joinGroup(
+                              groupId, userName, groupName);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NavBarView(
+                                        index: 3,
+                                      )));
+                        })
+                  ],
+                )),
+            Divider(),
+          ],
         ));
   }
 
@@ -136,5 +254,83 @@ class _NewChatScreenState extends State<NewChatScreen> {
             Divider(),
           ],
         ));
+  }
+
+  popUpDialog(BuildContext context) {
+    bool _isLoading = false;
+    String groupName = "";
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          return StatefulBuilder(builder: ((context, setState) {
+            return AlertDialog(
+              title: const Text(
+                "Create a group",
+                textAlign: TextAlign.left,
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // _isLoading == true
+                  //     ? Center(
+                  //   child: CircularProgressIndicator(
+                  //       color: Theme.of(context).primaryColor),
+                  // )
+                  //     :
+                  TextField(
+                    onChanged: (val) {
+                      setState(() {
+                        groupName = val;
+                      });
+                    },
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor),
+                            borderRadius: BorderRadius.circular(20)),
+                        errorBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.circular(20)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).primaryColor),
+                            borderRadius: BorderRadius.circular(20))),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor),
+                  child: const Text("CANCEL"),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (groupName != "") {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      chatController.createGroup(
+                          userInfo["firstName"] + " " + userInfo["lastName"],
+                          auth.currentUser!.uid,
+                          groupName);
+
+                      Navigator.of(context).pop();
+                      print("group created successfully");
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor),
+                  child: const Text("CREATE"),
+                )
+              ],
+            );
+          }));
+        });
   }
 }

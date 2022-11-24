@@ -118,4 +118,18 @@ class ChatController {
       "recentMessageTime": chatMessageData['time'].toString(),
     });
   }
+
+  joinGroup(String groupId, String userName, String groupName) async {
+    CollectionReference chatCollection =
+        FirebaseFirestore.instance.collection('chats');
+    chatCollection.doc(groupId).update({
+      "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
+    });
+
+    CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('Users');
+    userCollection.doc(auth.currentUser!.uid).update({
+      "chatsId": FieldValue.arrayUnion(["${groupId}_$groupName"])
+    });
+  }
 }

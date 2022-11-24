@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:page_transition/page_transition.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
@@ -55,9 +56,16 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
-        ),
+          onPressed: () => Navigator.push(
+                context,
+                //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
+                PageTransition(
+                    type: PageTransitionType.rightToLeftJoined,
+                    child: NavBarView(index: 3),
+                    childCurrent: ChatPageScreen(
+                      chatId: widget.chatId,
+                      chatName: widget.chatName,
+                    )))),
         title: Row(
           children: [
             CircleAvatar(
@@ -133,7 +141,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? Container(
-                height: 760,
+            height: 770,
                 child: ListView.builder(
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
