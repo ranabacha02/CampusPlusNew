@@ -72,6 +72,9 @@ class _MainCardFormState extends State<MainCardForm> {
                   prefixIcon: Icon(Icons.emoji_people_rounded),
                   border: OutlineInputBorder()
               ),
+              minLines:2,
+              maxLines: 4,
+              maxLength: 200,
             ),
             SizedBox(
               height: 20,
