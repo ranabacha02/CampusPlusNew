@@ -104,7 +104,7 @@ class CardDetails extends StatelessWidget {
                             "Description",
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               color: AppColors.black,
                               fontWeight: FontWeight.w600,
                             ),
@@ -118,7 +118,6 @@ class CardDetails extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 16,
                                   color: AppColors.black,
-                                  fontStyle: FontStyle.italic
                               )
                           ),
                           SizedBox(
@@ -128,7 +127,7 @@ class CardDetails extends StatelessWidget {
                             "Date",
                             textAlign: TextAlign.left,
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 16,
                               color: AppColors.black,
                               fontWeight: FontWeight.w600,
                             ),
@@ -142,7 +141,6 @@ class CardDetails extends StatelessWidget {
                               style: TextStyle(
                                   fontSize: 16,
                                   color: AppColors.black,
-                                  fontStyle: FontStyle.italic
                               )
                           ),
                           SizedBox(
@@ -151,7 +149,7 @@ class CardDetails extends StatelessWidget {
                           Text(
                               "Attendees",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               )
                           ),
@@ -180,11 +178,11 @@ class CardDetails extends StatelessWidget {
                             children: [
                               !joined && !personal ?TextButton(
                                 child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal:100),
+                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
                                     child: const Text(
                                       'Ok, Join!',
-                                      style: TextStyle(fontSize: 24,
-                                          fontWeight: FontWeight.w900,
+                                      style: TextStyle(fontSize: 20,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.white),
                                     ),
                                     decoration: BoxDecoration(
@@ -206,17 +204,17 @@ class CardDetails extends StatelessWidget {
                               ):
                               TextButton(
                                 child: Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal:100),
+                                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
                                     child: !personal ? const Text(
                                       'Leave',
-                                      style: TextStyle(fontSize: 24,
-                                          fontWeight: FontWeight.w900,
+                                      style: TextStyle(fontSize: 20,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.white),
                                     ):
                                     const Text(
                                       'Remove',
-                                      style: TextStyle(fontSize: 24,
-                                          fontWeight: FontWeight.w900,
+                                      style: TextStyle(fontSize: 20,
+                                          fontWeight: FontWeight.w600,
                                           color: Colors.white),
                                     ),
                                     decoration: BoxDecoration(

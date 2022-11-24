@@ -63,10 +63,11 @@ class MainCard extends StatelessWidget {
                         splashColor: Colors.white,
                         enableFeedback: true,
                         child: Container(
-                          width: 320,
+                          width: 340,
                           height: 100,
-                          padding: const EdgeInsets.symmetric(vertical: 5, horizontal:8),
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal:8),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children:[
                               Expanded(
                                 flex: 1,
@@ -88,15 +89,14 @@ class MainCard extends StatelessWidget {
                                 width: 7,
                               ),
                               Expanded(
-                                flex: 3,
+                                flex: 4,
                                 child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Spacer(),
                                   Text(
                                     usersJoined[0]["firstName"],
                                     style: TextStyle(
-                                      fontFamily: 'Georgia',
+                                      fontFamily: 'Roboto',
                                       fontSize: 14,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -104,19 +104,19 @@ class MainCard extends StatelessWidget {
                                   Expanded(
                                     child:Text(
                                       event,
-                                      overflow: TextOverflow.fade,
-                                      maxLines: 1,
-                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 3,
+                                      // softWrap: false,
                                       style: TextStyle(
                                         color: Color.fromRGBO(107, 114, 128, 1),
-                                        fontFamily: 'Georgia',
+                                        fontFamily: 'Roboto',
                                         fontSize: 14,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
 
                                   ),
-                                  Spacer(),
+                                  // Spacer(),
                                 ],
                               ),),
                               Expanded(
@@ -129,7 +129,12 @@ class MainCard extends StatelessWidget {
                                           padding: const EdgeInsets.symmetric(vertical: 5, horizontal:10),
                                           child: const Text(
                                             'Join',
-                                            style: TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                              fontFamily: 'Roboto',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                            ),
                                           ),
                                           decoration: BoxDecoration(
                                               color: Color.fromRGBO(29, 171, 135, 1),
@@ -153,11 +158,21 @@ class MainCard extends StatelessWidget {
                                           padding: const EdgeInsets.symmetric(vertical: 5, horizontal:10),
                                           child: !personal ? const Text(
                                             'Leave',
-                                            style: TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                            fontFamily: 'Roboto',
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.white,
+                                          ),
                                           ):
                                           const Text(
                                             'Remove',
-                                            style: TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                              fontFamily: 'Roboto',
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: Colors.white,
+                                          ),
                                           ),
                                           decoration: BoxDecoration(
                                               color: Colors.red,
