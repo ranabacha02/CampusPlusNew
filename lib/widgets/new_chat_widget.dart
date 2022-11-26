@@ -107,18 +107,19 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Text('Loading');
-                  }
-                  final data = snapshot.requireData;
-                  return ListView.builder(
-                    itemCount: data.size,
-                    itemBuilder: (context, index) {
-                      if (data.docs[index]['userId'] != auth.currentUser!.uid) {
-                        return userProfile(
-                            data.docs[index]['firstName'] +
-                                " " +
-                                data.docs[index]['lastName'],
-                            data.docs[index]['major'],
-                            data.docs[index]['graduationYear'],
+                    }
+                    final data = snapshot.requireData;
+                    return ListView.builder(
+                      itemCount: data.size,
+                      itemBuilder: (context, index) {
+                        if (data.docs[index]['userId'] !=
+                            auth.currentUser!.uid) {
+                          return userProfile(
+                              data.docs[index]['firstName'] +
+                                  " " +
+                                  data.docs[index]['lastName'],
+                              data.docs[index]['major'],
+                              data.docs[index]['graduationYear'],
                               data.docs[index]['userId']);
                         } else {
                           return SizedBox(

@@ -67,6 +67,8 @@ class AuthController extends GetxController {
         Get.snackbar("Email verification sent to: " + email,
             "Please verify your e-mail.");
         Get.to(() => LoginView());
+        dataController.addUser(
+            email, firstName, lastName, graduationYear, major, mobileNumber);
         //   Get.to(() => EmailVerificationScreen(email: email));
         //   verifyingEmail(
         //       email: email,

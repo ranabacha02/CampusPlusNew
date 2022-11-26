@@ -55,8 +55,8 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.push(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.push(
                 context,
                 //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
                 PageTransition(

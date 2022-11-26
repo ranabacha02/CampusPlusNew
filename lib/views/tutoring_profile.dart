@@ -45,25 +45,22 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: ()=> Navigator.pop(context),
-              ),
-              IconButton(
-                  onPressed: () => {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context){
-                          return MainCourseForm();
-                        })
-                    )
-                  },
-                  icon: Image.asset('assets/postIcon.png')),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          actions: <Widget>[
+            IconButton(
+                onPressed: () => {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) {
+                        return MainCourseForm();
+                      }))
+                    },
+                icon: Image.asset('assets/postIcon.png')),
             ]
          ,
           backgroundColor: AppColors.white,
-          automaticallyImplyLeading: false,
           iconTheme: const IconThemeData(
             color: Colors.black, //change your color here
           ),
