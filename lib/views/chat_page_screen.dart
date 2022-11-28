@@ -141,7 +141,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       builder: (context, AsyncSnapshot snapshot) {
         return snapshot.hasData
             ? Container(
-            height: 770,
+            height: Get.height - 170,
                 child: ListView.builder(
                   reverse: true,
                   itemCount: snapshot.data.docs.length,

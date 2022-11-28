@@ -1,7 +1,10 @@
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/model/chat_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+
+import '../model/message_model.dart';
 
 class ChatController {
   //CollectionReference userCollection = FirebaseFirestore.instance.collection('Users');
@@ -11,42 +14,10 @@ class ChatController {
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
-  newChat(bool isGroup, String? groupName, List<String> members) {
-    //create the chat in chat collection
-    var userInfo = dataController.getLocalData();
-    String userName = userInfo["firstName"] + " " + userInfo["lastName"];
-    if (isGroup) {
-      createGroup(userName, auth.currentUser!.uid, groupName!);
-    } else {
-      createChat(userName, auth.currentUser!.uid, members[0]);
-    }
-  }
-
   Future createGroup(String userName, String id, String groupName) async {
-    CollectionReference userCollection =
-        FirebaseFirestore.instance.collection('Users');
-    DocumentReference groupDocumentReference = await chatCollection.add({
-      "isGroup": true,
-      "groupName": groupName,
-      "groupIcon": "",
-      "admin": "${id}_$userName",
-      "members": [],
-      "chatId": "",
-      "recentMessage": "",
-      "recentMessageSender": "",
-    });
-    // update the members
-    await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
-      "chatId": groupDocumentReference.id,
-    });
-
-    DocumentReference userDocumentReference =
-        userCollection.doc(auth.currentUser!.uid);
-    return await userDocumentReference.update({
-      "chatsId":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$groupName"])
-    });
+    Chat group = new Chat(
+        chatName: groupName, isGroup: true, admin: id + "_" + userName);
+    group.createGroup();
   }
 
   Future createChat(String userName, String id, String recipientId) async {
@@ -60,35 +31,9 @@ class ChatController {
     print(recipientInfo);
     String recipientName =
         recipientInfo["firstName"] + " " + recipientInfo["lastName"];
-    DocumentReference groupDocumentReference = await chatCollection.add({
-      "isGroup": false,
-      "chatName": recipientName + "_" + userName,
-      "chatIcon": "",
-      //"admin": "${id}_$userName",
-      //"members": [],
-      "chatId": "",
-      "recentMessage": "",
-      "recentMessageSender": "",
-    });
-    // update the members
-    await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
-      "chatId": groupDocumentReference.id,
-    });
-
-    DocumentReference userDocumentReference =
-        userCollection.doc(auth.currentUser!.uid);
-    await userDocumentReference.update({
-      "chatsId":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$recipientName"])
-    });
-
-    DocumentReference recipientDocumentReference =
-        userCollection.doc(recipientId);
-    await recipientDocumentReference.update({
-      "chatsId":
-          FieldValue.arrayUnion(["${groupDocumentReference.id}_$userName"])
-    });
+    Chat chat =
+        new Chat(chatName: recipientName + "_" + userName, isGroup: false);
+    chat.createChat(userName, recipientName, recipientId);
   }
 
   getChatsId() async {
@@ -98,33 +43,19 @@ class ChatController {
   }
 
   getChats(String groupId) async {
-    CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
-    return chatCollection
-        .doc(groupId)
-        .collection("messages")
-        .orderBy("time", descending: true)
-        .snapshots();
+    Chat chat = new Chat(chatId: groupId);
+    return chat.getChats();
   }
 
   // send message
   sendMessage(String groupId, Map<String, dynamic> chatMessageData) async {
-    CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
-    chatCollection.doc(groupId).collection("messages").add(chatMessageData);
-    chatCollection.doc(groupId).update({
-      "recentMessage": chatMessageData['message'],
-      "recentMessageSender": chatMessageData['sender'],
-      "recentMessageTime": chatMessageData['time'].toString(),
-    });
+    Chat chat = new Chat(chatId: groupId);
+    chat.sendMessage(chatMessageData);
   }
 
   joinGroup(String groupId, String userName, String groupName) async {
-    CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
-    chatCollection.doc(groupId).update({
-      "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
-    });
+    Chat chat = new Chat(chatId: groupId);
+    chat.joinGroup(userName);
 
     CollectionReference userCollection =
         FirebaseFirestore.instance.collection('Users');

@@ -10,7 +10,7 @@ import '../controller/auth_controller.dart';
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
 import '../utils/app_colors.dart';
-import 'nav_bar.dart';
+import '../widgets/nav_bar.dart';
 
 class NewChatScreen extends StatefulWidget {
   @override
@@ -242,7 +242,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         text: "Chat",
                         onpress: () {
                           //create a new chat between the users and redirect them to the chat page
-                          chatController.newChat(false, null, [uid]);
+                          chatController.createChat(
+                              userInfo["firstName"] +
+                                  " " +
+                                  userInfo["lastName"],
+                              auth.currentUser!.uid,
+                              uid);
                           Navigator.push(
                               context,
                               MaterialPageRoute(

@@ -271,7 +271,7 @@ class _LoginViewState extends State<LoginView> {
                         return;
                       }
 
-                      authController.login(
+                      authController.signIn(
                           email: emailController.text.trim(),
                           password: passwordController.text.trim());
                     },

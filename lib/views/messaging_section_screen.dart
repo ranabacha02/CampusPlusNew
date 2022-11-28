@@ -1,7 +1,7 @@
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/chat_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
-import 'package:campus_plus/widgets/new_chat_widget.dart';
+import 'package:campus_plus/views/new_chat_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

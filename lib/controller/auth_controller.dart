@@ -14,7 +14,7 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
 
-  Future<void> login({String? email, String? password}) async {
+  Future<void> signIn({String? email, String? password}) async {
     isLoading(true);
     SharedPreferences pref = await SharedPreferences.getInstance();
 

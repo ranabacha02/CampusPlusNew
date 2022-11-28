@@ -11,7 +11,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
-import '../controller/image_file_picker.dart';
+import '../widgets/image_file_picker.dart';
 import '../utils/app_colors.dart';
 import '../widgets/nav_bar.dart';
 
