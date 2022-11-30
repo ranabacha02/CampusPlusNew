@@ -26,7 +26,7 @@ class _MainCardFormState extends State<MainCardForm> {
   String _selectedVal = "Everyone";
   DateTime chosenDateTime = DateTime.now();
   CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
-
+  CollectionReference users = FirebaseFirestore.instance.collection('Users');
   late DataController dataController;
   late final userInfo;
   @override
@@ -143,8 +143,25 @@ class _MainCardFormState extends State<MainCardForm> {
               'dateCreated': DateTime.now(),
               'eventStart': chosenDateTime,
             })
-            .then((value)=> print('Card added'))
+            .then((docRef)=>
+                  {
+                users.doc(userInfo["userId"]).collection("CreatedCards")
+                    .doc(docRef.id)
+                    .set({ 'event': _eventController.text,
+                          'createdBy': userInfo['userId'] ,
+                          'name': userInfo['firstName'],
+                          'users':[userInfo],
+                          'dateCreated': DateTime.now(),
+                          'eventStart': chosenDateTime,
+                    })
+                    .then((docRef)=> print("joined"))
+                    .catchError((error)=> print('Failed to add user: $error'))
+                  }
+            )
             .catchError((error)=> print('Failed to add user: $error'));
+
+        //TO DO: add createdCard to USER
+
         Navigator.pop(context);
       },
     );
