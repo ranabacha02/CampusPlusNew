@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../controller/data_controller.dart';
 import '../widgets/main_card.dart';
-import 'cardForm.dart';
+import 'card_form_screen.dart';
 
 
 class HomeScreen extends StatefulWidget {

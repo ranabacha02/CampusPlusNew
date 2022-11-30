@@ -1,4 +1,4 @@
-import 'package:campus_plus/views/cardDetails.dart';
+import 'package:campus_plus/views/card_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
