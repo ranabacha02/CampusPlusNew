@@ -113,6 +113,32 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
 
                       );
                     }
+                    if (data2['event']
+                        .toString()
+                        .toLowerCase()
+                        .startsWith(name.toLowerCase())) {
+                      return ListTile(
+                        title: Text(
+                          data2['name'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          data2['event'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+
+                      );
+                    }
                     else {
                       return Container();
                     }
