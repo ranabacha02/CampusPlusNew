@@ -132,7 +132,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 ),
               ),
               onPressed: () async {
-                await editProfileController.updateProfile(
+                await dataController.updateProfile(
                   firstName: firstNameController.text.trim(),
                   lastName: lastNameController.text.trim(),
                   major: majorController.text.trim(),
@@ -140,7 +140,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       int.parse(graduationYearController.text.trim()),
                   mobileNumber: int.parse(mobileNumberController.text.trim()),
                   context: context,
-                  userInfo: userInfo,
                   photo: photo,
                   delete: false,
                 );

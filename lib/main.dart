@@ -1,5 +1,6 @@
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
@@ -14,14 +15,21 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  SharedPreferences prefs =await SharedPreferences.getInstance();
-  var email=prefs.getString("email");
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // prefs.remove("email");
+  var email = prefs.getString("email");
   DataController dataController = Get.put(DataController());
-  if(email!=null){
+  FirebaseAuth auth = FirebaseAuth.instance;
+  if (email != null) {
+    prefs.printInfo();
+    print(email);
+    print(auth.currentUser);
     // print("email not null");
     await dataController.getUserInfo();
   }
-  runApp(CampusPlus(email: email,));
+  runApp(CampusPlus(
+    email: email,
+  ));
 }
 
 class CampusPlus extends StatefulWidget {
