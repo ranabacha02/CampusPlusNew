@@ -91,27 +91,15 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                         .toString()
                         .toLowerCase()
                         .startsWith(name.toLowerCase())) {
-                      return ListTile(
-                        title: Text(
-                          data2['name'],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(
-                          data2['event'],
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                              color: Colors.black54,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-
-                      );
+                      return MainCourse(event: snapshot.data!.docs[index]['event'],
+                          name: snapshot.data!.docs[index]['name']);
+                    }
+                    if (data2['event']
+                        .toString()
+                        .toLowerCase()
+                        .startsWith(name.toLowerCase())) {
+                      return MainCourse(event: snapshot.data!.docs[index]['event'],
+                          name: snapshot.data!.docs[index]['name']);
                     }
                     else {
                       return Container();
