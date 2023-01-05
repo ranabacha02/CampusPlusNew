@@ -64,7 +64,10 @@ class Chat {
     // update the members
     chatId = groupDocumentReference.id;
     await groupDocumentReference.update({
-      "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
+      "members": FieldValue.arrayUnion([
+        "${auth.currentUser!.uid}_$userName",
+        "${recipientId}_${recipientName}"
+      ]),
       "chatId": chatId,
     });
 

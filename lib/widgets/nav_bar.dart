@@ -62,7 +62,7 @@ class _NavBarViewState extends State<NavBarView> {
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: Container(
-          height: 100,
+          height: 80,
           child: BottomNavigationBar(
             onTap: onItemTapped,
             selectedItemColor: Colors.black,
@@ -76,8 +76,8 @@ class _NavBarViewState extends State<NavBarView> {
                       currentIndex == 0
                           ? 'assets/RentIconPressed.png'
                           : 'assets/RentIconNotPressed.png',
-                      width: 35,
-                      height: 35,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                   label: ''),
@@ -88,8 +88,8 @@ class _NavBarViewState extends State<NavBarView> {
                       currentIndex == 1
                           ? 'assets/TutorIconPressed.png'
                           : 'assets/TutorIconNotPressed.png',
-                      width: 45,
-                      height: 45,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                   label: ''),
@@ -100,8 +100,8 @@ class _NavBarViewState extends State<NavBarView> {
                         currentIndex == 2
                             ? 'assets/HomeIconPressed.png'
                             : 'assets/HomeIconNotPressed.png',
-                        width: 35,
-                        height: 35),
+                        width: 20,
+                        height: 20),
                   ),
                   label: ''),
               BottomNavigationBarItem(
@@ -111,8 +111,8 @@ class _NavBarViewState extends State<NavBarView> {
                         currentIndex == 3
                             ? 'assets/ChatIconPressed.png'
                             : 'assets/ChatIconNotPressed.png',
-                        width: 35,
-                        height: 35),
+                        width: 20,
+                        height: 20),
                   ),
                   label: ''),
               BottomNavigationBarItem(
@@ -122,8 +122,8 @@ class _NavBarViewState extends State<NavBarView> {
                       currentIndex == 4
                           ? 'assets/ProfileIconPressed.png'
                           : 'assets/ProfileIconNotPressed.png',
-                      width: 35,
-                      height: 35,
+                      width: 20,
+                      height: 20,
                     ),
                   ),
                   label: ''),

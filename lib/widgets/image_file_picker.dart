@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:page_transition/page_transition.dart';
 
 import '../utils/app_colors.dart';
 
@@ -126,16 +127,21 @@ class _ImageUploadsState extends State<ImageUploads> {
                         File? photo = await imgFromGallery();
                         print("photo from image gallery: " + photo.toString());
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => EditAccountScreen(
-                                      userInfo: dataController.getLocalData(),
-                                      delete: false,
-                                      photo: photo,
-                                      displayImage: photo.isNull
-                                          ? null
-                                          : Image.file(photo!),
-                                    )));
+                          context,
+                          PageTransition(
+                            type: PageTransitionType.topToBottomPop,
+                            child: EditAccountScreen(
+                              userInfo: dataController.getLocalData(),
+                              delete: false,
+                              photo: photo,
+                              displayImage:
+                                  photo.isNull ? null : Image.file(photo!),
+                            ),
+                            childCurrent: EditAccountScreen(
+                                userInfo: dataController.getLocalData(),
+                                delete: false),
+                          ),
+                        );
                       }),
                   new ListTile(
                     leading: new Icon(Icons.photo_camera),

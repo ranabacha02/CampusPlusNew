@@ -89,19 +89,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            Text(
-                              "Profile",
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 25,
-                                color: AppColors.black,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: Get.width * 0.6),
-                            IconButton(
-                                onPressed: () =>
-                                {
+                        Text(
+                          "Profile",
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 25,
+                            color: AppColors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Spacer(),
+                        IconButton(
+                            onPressed: () => {
                                   Navigator.push(
                                       context,
                                       PageTransition(
@@ -156,23 +155,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     userInfo?["major"] +
                                     " | " +
                                     userInfo["graduationYear"].toString() ??
-                                    "",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.black,
-                                  fontWeight: FontWeight.w300,
-                                ),
-                              ),
-                              SizedBox(
-                                height: Get.height * 0.01,
-                              ),
-                              Text("Description here...",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.grey,
-                                      fontStyle: FontStyle.italic))
-                            ],
+                                "",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: AppColors.black,
+                              fontWeight: FontWeight.w300,
+                            ),
+                          ),
+                          SizedBox(
+                            height: Get.height * 0.01,
+                          ),
+                          Text(
+                              userInfo?["description"] == ""
+                                  ? "Description here..."
+                                  : userInfo?["description"],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.grey,
+                                  fontStyle: FontStyle.italic))
+                        ],
                           ),
                         ),
                         SizedBox(
@@ -193,8 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) =>
                                           AccountSettingsScreen()))
                             },
-                            width: 0.492,
-                          ),
+                            //width: 0.492,
+                      ),
                         ),
                         Container(
                           height: 40,
@@ -211,8 +213,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) =>
                                           AccountSettingsScreen()))
                             },
-                            width: 0.512,
-                          ),
+                            //width: 0.512,
+                      ),
                         ),
                         Container(
                           height: 40,
@@ -229,8 +231,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       builder: (context) =>
                                           TutoringProfileScreen()))
                             },
-                            width: 0.482,
-                          ),
+                            // width: 0.482,
+                      ),
                         ),
                         Container(
                           height: 40,
@@ -239,18 +241,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           width: Get.width,
                           child: buttonWithRightIcon(
-                            text: "Rental Profile",
-                            onpress: () => {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          AccountSettingsScreen()))
-                            },
-                            width: 0.513,
-                          ),
+                        text: "Rental Profile",
+                        onpress: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      AccountSettingsScreen()))
+                        }, //0.513
+                      ),
                         ),
-                        Obx(() => authController.isLoading.value
+                    Obx(() => authController.isLoading.value
                             ? Center(
                           child: CircularProgressIndicator(),
                         )

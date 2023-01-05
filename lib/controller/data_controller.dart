@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,6 +26,10 @@ class DataController extends GetxController {
     var data =
         await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
     var data2 = data.docs.first.data() as Map<String, dynamic>;
+
+    users.doc(auth.currentUser!.uid).update({
+      'profilePictureURL': auth!.currentUser!.photoURL,
+    });
 
     storedData = data2;
 
@@ -52,6 +57,7 @@ class DataController extends GetxController {
       String? major,
       int? graduationYear,
       int? mobileNumber,
+      String? description,
       required BuildContext context,
       File? photo,
       required bool delete}) async {
@@ -63,13 +69,16 @@ class DataController extends GetxController {
         lastName: lastName,
         major: major,
         graduationYear: graduationYear,
-        mobileNumber: mobileNumber);
+        mobileNumber: mobileNumber,
+        description: description);
 
     updateLocalData(
         firstName: firstName,
         lastName: lastName,
         major: major,
-        mobileNumber: mobileNumber);
+        graduationYear: graduationYear,
+        mobileNumber: mobileNumber,
+        description: description);
 
     if (delete) {
       await deleteProfilePicture();
@@ -82,12 +91,11 @@ class DataController extends GetxController {
           .whenComplete(() => print("image uploaded"))
           .catchError(() => print("error uploading image"));
     }
-
     //dataController.getUserInfo();
     Navigator.pushReplacement(
         context,
         PageTransition(
-          type: PageTransitionType.bottomToTopJoined,
+          type: PageTransitionType.topToBottomPop,
           child: NavBarView(index: 4),
           childCurrent: EditAccountScreen(
             userInfo: userInfo,
@@ -98,6 +106,9 @@ class DataController extends GetxController {
   }
 
   Map getLocalData() {
+    if (storedData["description"] == null) {
+      storedData["description"] = "";
+    }
     return storedData;
   }
 
@@ -107,12 +118,14 @@ class DataController extends GetxController {
     String? major,
     int? graduationYear,
     int? mobileNumber,
+    String? description,
   }) {
     storedData["firstName"] = firstName;
     storedData["lastName"] = lastName;
     storedData["major"] = major;
     storedData["graduationYear"] = graduationYear;
     storedData["mobileNumber"] = mobileNumber;
+    storedData["description"] = description;
   }
 
   clearLocalData() {

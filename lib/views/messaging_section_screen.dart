@@ -68,8 +68,14 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NewChatScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => NewChatScreen())).then((value) {
+                    setState(() {
+                      gettingChats();
+                    });
+                  });
                 },
                 icon: Icon(
                   Icons.add,
@@ -100,7 +106,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
                   return ChatTile(
                     groupId: getId(snapshot.data['chatsId'][reverseIndex]),
                     groupName: getName(snapshot.data['chatsId'][reverseIndex]),
-                    // lastMessage: await getLastMessage(snapshot.data['chatsId'][reverseIndex]),
+                    // lastMessage:  getLastMessage(snapshot.data['chatsId'][reverseIndex]),
                     // lastSender: getLastMessage(snapshot.data['chatsId'][reverseIndex]),
                   );
                 },

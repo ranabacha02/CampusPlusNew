@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class MessageTile extends StatefulWidget {
   final String message;
   final String sender;
-  final bool sentByMe;
+  final bool privateChat;
+  final String time;
 
-  const MessageTile(
-      {Key? key,
-      required this.message,
-      required this.sender,
-      required this.sentByMe})
-      : super(key: key);
+  const MessageTile({
+    Key? key,
+    required this.message,
+    required this.sender,
+    required this.privateChat,
+    required this.time,
+  }) : super(key: key);
 
   @override
   State<MessageTile> createState() => _MessageTileState();
@@ -21,54 +25,42 @@ class _MessageTileState extends State<MessageTile> {
   Widget build(BuildContext context) {
     String displayName = widget.sender.split("_")[0];
     return Container(
-      padding: EdgeInsets.only(
-          top: 4,
-          bottom: 4,
-          left: widget.sentByMe ? 0 : 24,
-          right: widget.sentByMe ? 24 : 0),
-      alignment: widget.sentByMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: widget.sentByMe
-            ? const EdgeInsets.only(left: 30)
-            : const EdgeInsets.only(right: 30),
-        padding:
-            const EdgeInsets.only(top: 17, bottom: 17, left: 20, right: 20),
-        decoration: BoxDecoration(
-            borderRadius: widget.sentByMe
-                ? const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
-                  )
-                : const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                    bottomRight: Radius.circular(20),
-                  ),
-            color: widget.sentByMe
-                ? Theme.of(context).primaryColor
-                : Colors.grey[700]),
+        padding: EdgeInsets.only(top: 4, bottom: 4, left: 24, right: 0),
+        alignment: Alignment.centerLeft,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              displayName.toUpperCase(),
-              textAlign: TextAlign.start,
-              style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: -0.5),
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Text(widget.message,
-                textAlign: TextAlign.start,
-                style: const TextStyle(fontSize: 16, color: Colors.white))
-          ],
-        ),
-      ),
-    );
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: EdgeInsets.only(top: 4, bottom: 4, left: 0, right: 24),
+                alignment: Alignment.centerRight,
+                child: Container(
+                  margin: const EdgeInsets.only(left: 30),
+                  padding: const EdgeInsets.only(
+                      top: 12, bottom: 12, left: 12, right: 12),
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20),
+                    ),
+                    color: Theme.of(context).primaryColor,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(widget.message,
+                          textAlign: TextAlign.start,
+                          style: const TextStyle(
+                              fontSize: 16, color: Colors.white)),
+                      Text(widget.time,
+                          textAlign: TextAlign.left,
+                          style: const TextStyle(
+                              fontSize: 12, color: Colors.white54)),
+                    ],
+                  ),
+                ),
+              ),
+            ]));
   }
 }

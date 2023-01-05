@@ -1,10 +1,16 @@
 import 'package:campus_plus/utils/app_colors.dart';
+import 'package:campus_plus/widgets/chat_date_tile.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
+import 'package:campus_plus/widgets/received_message_tile.dart';
+import 'package:campus_plus/widgets/user_profile_picture.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path/path.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
@@ -13,8 +19,15 @@ import '../widgets/message_tile.dart';
 class ChatPageScreen extends StatefulWidget {
   String chatId;
   String chatName;
+  bool privateChat;
+  String? imageURL;
 
-  ChatPageScreen({super.key, required this.chatId, required this.chatName});
+  ChatPageScreen(
+      {super.key,
+      required this.chatId,
+      required this.chatName,
+      required this.privateChat,
+      required this.imageURL});
 
   @override
   _ChatPageScreenState createState() => _ChatPageScreenState();
@@ -60,18 +73,23 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                 context,
                 //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
                 PageTransition(
-                    type: PageTransitionType.rightToLeftJoined,
+                    type: PageTransitionType.leftToRightPop,
                     child: NavBarView(index: 3),
                     childCurrent: ChatPageScreen(
+                      imageURL: widget.imageURL,
+                      privateChat: widget.privateChat,
                       chatId: widget.chatId,
                       chatName: widget.chatName,
                     )))),
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: AssetImage("assets/default_profile.jpg"),
-            ),
+            widget.imageURL != null
+                ? UserProfilePicture(
+                    imageURL: widget.imageURL,
+                  )
+                : CircleAvatar(
+                    backgroundImage: AssetImage("assets/default_profile.jpg"),
+                  ),
             SizedBox(
               width: 20,
             ),
@@ -87,7 +105,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
         fit: StackFit.passthrough,
         children: <Widget>[
           // chat messages here
-          chatMessages(),
+          chatMessages(widget.privateChat),
           Container(
             alignment: Alignment.bottomCenter,
             width: MediaQuery.of(context).size.width,
@@ -135,26 +153,94 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     );
   }
 
-  chatMessages() {
+  chatMessages(bool privateChat) {
     return StreamBuilder(
       stream: chats,
       builder: (context, AsyncSnapshot snapshot) {
+        String previousSender = "";
         return snapshot.hasData
             ? Container(
-            height: Get.height - 170,
+                height: Get.height - 170,
                 child: ListView.builder(
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
                     print("the message is: " +
                         snapshot.data.docs[index]['message']);
-                    return MessageTile(
+                    DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
+                        snapshot.data.docs[index]['time']);
+                    DateTime dateTime2 = DateTime.now();
+                    String time = "";
+                    if (dateTime.minute < 10) {
+                      time = dateTime.hour.toString() +
+                          ":0" +
+                          dateTime.minute.toString();
+                    } else {
+                      time = dateTime.hour.toString() +
+                          ":" +
+                          dateTime.minute.toString();
+                    }
+
+                    String currentDate = DateFormat.yMMMEd().format(dateTime);
+
+                    String currentSender = snapshot.data.docs[index]['sender'];
+                    String nextSender = "";
+                    try {
+                      nextSender = snapshot.data.docs[index + 1]['sender'];
+                      dateTime2 = new DateTime.fromMillisecondsSinceEpoch(
+                          snapshot.data.docs[index + 1]['time']);
+                    } catch (e) {
+                      nextSender = "";
+                    }
+                    String nextDate = DateFormat.yMMMEd().format(dateTime2);
+
+                    if (userName + "_" + userInfo['userId'] != currentSender) {
+                      bool temp = nextSender == currentSender;
+                      previousSender = currentSender;
+                      if (nextDate != currentDate) {
+                        return Column(
+                          children: [
+                            chatDateTile(currentDate),
+                            ReceivedMessageTile(
+                              privateChat: privateChat,
+                              message: snapshot.data.docs[index]['message'],
+                              sender: snapshot.data.docs[index]['sender'],
+                              time: time,
+                              sameSender: temp,
+                            )
+                          ],
+                        );
+                      }
+                      return ReceivedMessageTile(
+                        privateChat: privateChat,
                         message: snapshot.data.docs[index]['message'],
                         sender: snapshot.data.docs[index]['sender'],
-                        sentByMe: userName + "_" + userInfo['userId'] ==
-                            snapshot.data.docs[index]['sender']);
+                        time: time,
+                        sameSender: temp,
+                      );
+                    }
+
+                    previousSender = currentSender;
+                    print("time:" + time);
+                    if (nextDate != currentDate) {
+                      return Column(
+                        children: [
+                          chatDateTile(currentDate),
+                          MessageTile(
+                              privateChat: privateChat,
+                              message: snapshot.data.docs[index]['message'],
+                              sender: snapshot.data.docs[index]['sender'],
+                              time: time)
+                        ],
+                      );
+                    }
+                    return MessageTile(
+                        privateChat: privateChat,
+                        message: snapshot.data.docs[index]['message'],
+                        sender: snapshot.data.docs[index]['sender'],
+                        time: time);
                   },
-                ))
+            ))
             : Container();
       },
     );

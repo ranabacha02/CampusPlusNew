@@ -41,6 +41,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   TextEditingController majorController = TextEditingController();
   TextEditingController graduationYearController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
   late AuthController authController;
 
@@ -76,6 +77,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     majorController.text = userInfo["major"];
     graduationYearController.text = userInfo["graduationYear"].toString();
     mobileNumberController.text = userInfo["mobilePhoneNumber"].toString();
+    descriptionController.text = userInfo["description"].toString();
 
     if (displayImage == null) {
       displayImage = Image.asset("assets/default_profile.jpg");
@@ -99,14 +101,14 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               "Cancel",
               style: TextStyle(
                 color: AppColors.black,
-                fontSize: 20,
+                fontSize: 15,
               ),
             ),
             onPressed: () => {
               Navigator.push(
                   context,
                   PageTransition(
-                      type: PageTransitionType.bottomToTopJoined,
+                      type: PageTransitionType.topToBottomPop,
                       child: NavBarView(index: 4),
                       childCurrent: EditAccountScreen(
                         userInfo: userInfo,
@@ -118,7 +120,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
           title: Text(
             "Edit Profile",
             style: TextStyle(
-              fontSize: 25,
+              fontSize: 20,
               color: AppColors.aubRed,
             ),
           ),
@@ -128,7 +130,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 "Done",
                 style: TextStyle(
                   color: AppColors.blue,
-                  fontSize: 20,
+                  fontSize: 15,
                 ),
               ),
               onPressed: () async {
@@ -142,6 +144,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   context: context,
                   photo: photo,
                   delete: false,
+                  description: descriptionController.text.trim(),
                 );
               },
             )
@@ -173,11 +176,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   height: 35,
                 ),
                 buildTextField("First Name", "", false, firstNameController,
-                    (String input) {}),
+                    (String input) {}, false),
                 buildTextField("Last Name", "", false, lastNameController,
-                    (String input) {}),
-                buildTextField(
-                    "Major", "", false, majorController, (String input) {}),
+                    (String input) {}, false),
+                buildTextField("Major", "", false, majorController,
+                    (String input) {}, false),
+                // To do: check the input and make sure it's one of the options
                 buildTextField(
                     "Graduation Year", "", false, graduationYearController,
                     (String input) {
@@ -199,7 +203,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       return '';
                     }
                   }
-                }),
+                }, false),
                 buildTextField(
                     "Mobile Number", "", false, mobileNumberController,
                     (String input) {
@@ -208,7 +212,15 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                         colorText: Colors.white, backgroundColor: Colors.blue);
                     return '';
                   }
-                }),
+                }, false),
+                buildTextField(
+                    "Description",
+                    "",
+                    false,
+                    descriptionController,
+                    (String input) {},
+                    maxLength: 150,
+                    true),
                 SizedBox(
                   height: 35,
                 ),
@@ -223,12 +235,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       String placeholder,
       bool isPasswordTextField,
       TextEditingController controller,
-      Function? validator) {
+      Function? validator,
+      bool expandable,
+      {int? maxLength}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 35.0),
       child: TextFormField(
         validator: (input) => validator!(input),
         controller: controller,
+        maxLength: maxLength,
+        maxLines: expandable ? null : 1,
         obscureText: isPasswordTextField ? showPassword : false,
         decoration: InputDecoration(
             suffixIcon: isPasswordTextField

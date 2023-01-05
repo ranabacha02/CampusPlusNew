@@ -16,6 +16,7 @@ class MyUser {
   List<String> rentals;
   List<String> chats;
   List<String> tutoringClasses;
+  String description;
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -30,6 +31,7 @@ class MyUser {
     List<String>? chats,
     List<String>? tutoringClasses,
     DateTime? lastLogged,
+    String? description,
   })  : firstName = firstName ?? "",
         lastName = lastName ?? "",
         major = major ?? "",
@@ -39,11 +41,12 @@ class MyUser {
         rentals = rentals ?? [],
         chats = chats ?? [],
         tutoringClasses = tutoringClasses ?? [],
-        lastLogged = lastLogged ?? DateTime.now();
+        lastLogged = lastLogged ?? DateTime.now(),
+        description = description ?? "";
 
   MyUser.fromJson(Map<String, Object?> json)
       : this(
-          firstName: json['firstName'] as String,
+    firstName: json['firstName'] as String,
           lastName: json['lastName'] as String,
           email: json['email'] as String,
           major: json['major'] as String,
@@ -52,6 +55,7 @@ class MyUser {
           rentals: (json['rentals'] as List).cast<String>(),
           chats: (json['chats'] as List).cast<String>(),
           tutoringClasses: (json['tutoringClasses'] as List).cast<String>(),
+          description: json['description'] as String,
           lastLogged: DateTime.now(),
         );
 
@@ -66,7 +70,8 @@ class MyUser {
       'rentals': rentals,
       'chats': chats,
       'tutoringClasses': tutoringClasses,
-      'lastLogged': lastLogged
+      'lastLogged': lastLogged,
+      'description': description
     };
   }
 
@@ -95,6 +100,7 @@ class MyUser {
     int? graduationYear,
     int? mobileNumber,
     File? photo,
+    String? description,
   }) {
     users.doc(auth.currentUser!.uid).update({
       'firstName': firstName,
@@ -102,6 +108,7 @@ class MyUser {
       'major': major,
       'mobilePhoneNumber': mobileNumber,
       'graduationYear': graduationYear,
+      'description': description,
     }).then((value) async {
       print("user updated");
     });
@@ -115,6 +122,7 @@ class MyUser {
     var downloadURL = await uploadTask.ref.getDownloadURL();
     print("image updated!");
     auth.currentUser!.updatePhotoURL(downloadURL);
+    users.doc(auth.currentUser!.uid).update({'profilePictureURL': downloadURL});
     return downloadURL;
   }
 
@@ -124,5 +132,6 @@ class MyUser {
         storage.ref().child("users/profiles/${auth.currentUser!.uid}");
     await storageRef.delete();
     auth.currentUser!.updatePhotoURL(null);
+    users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
   }
 }
