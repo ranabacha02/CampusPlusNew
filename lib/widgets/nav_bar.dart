@@ -34,7 +34,7 @@ class _NavBarViewState extends State<NavBarView> {
   }
 
   List<Widget> widgetOption = [
-    //RentalSectionScreen(),
+    RentalSectionScreen(),
     TutoringSectionScreen(),
     HomeScreen(),
     MessagingSectionScreen(),
