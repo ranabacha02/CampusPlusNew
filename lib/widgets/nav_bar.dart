@@ -10,6 +10,7 @@ import 'package:campus_plus/views/rental_section_screen.dart';
 import 'package:campus_plus/views/messaging_section_screen.dart';
 import 'package:campus_plus/views/profile_screen.dart';
 
+
 import '../controller/data_controller.dart';
 
 class NavBarView extends StatefulWidget {
@@ -33,7 +34,7 @@ class _NavBarViewState extends State<NavBarView> {
   }
 
   List<Widget> widgetOption = [
-    RentalSectionScreen(),
+    //RentalSectionScreen(),
     TutoringSectionScreen(),
     HomeScreen(),
     MessagingSectionScreen(),
