@@ -90,14 +90,14 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                     if (data2['name']
                         .toString()
                         .toLowerCase()
-                        .startsWith(name.toLowerCase())) {
+                        .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name']);
                     }
                     if (data2['event']
                         .toString()
                         .toLowerCase()
-                        .startsWith(name.toLowerCase())) {
+                        .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name']);
                     }
