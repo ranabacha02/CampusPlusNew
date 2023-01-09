@@ -91,7 +91,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index){
-                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name']);
+                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name'], department: data.docs[index]['department']);
                   },
                 );
               },

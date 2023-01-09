@@ -85,21 +85,32 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                     as Map<String, dynamic>;
                     if (name.isEmpty){
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name']);
+                          name: snapshot.data!.docs[index]['name'],
+                          department: snapshot.data!.docs[index]['department']);
                     }
                     if (data2['name']
                         .toString()
                         .toLowerCase()
                         .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name']);
+                          name: snapshot.data!.docs[index]['name'],
+                          department: snapshot.data!.docs[index]['department']);
                     }
                     if (data2['event']
                         .toString()
                         .toLowerCase()
                         .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name']);
+                          name: snapshot.data!.docs[index]['name'],
+                          department: snapshot.data!.docs[index]['department']);
+                    }
+                    if (data2['department']
+                        .toString()
+                        .toLowerCase()
+                        .contains(name.toLowerCase())) {
+                      return MainCourse(event: snapshot.data!.docs[index]['event'],
+                          name: snapshot.data!.docs[index]['name'],
+                          department: snapshot.data!.docs[index]['department']);
                     }
                     else {
                       return Container();

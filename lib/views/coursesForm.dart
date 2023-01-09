@@ -17,6 +17,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
 
 
   final _courseController = TextEditingController();
+  final _departmentController = TextEditingController();
 
   CollectionReference courses = FirebaseFirestore.instance.collection('Courses');
 
@@ -32,6 +33,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
   @override
   void dispose(){
     _courseController.dispose();
+    _departmentController.dispose();
     super.dispose();
   }
 
@@ -57,6 +59,15 @@ class _MainCourseFormState extends State<MainCourseForm> {
                   border: OutlineInputBorder()
               ),
             ),
+            SizedBox(height: 20),
+            TextFormField(
+              controller: _departmentController,
+              decoration: InputDecoration(
+                  labelText: 'Department',
+                  prefixIcon: Icon(Icons.emoji_people_rounded),
+                  border: OutlineInputBorder()
+              ),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -76,7 +87,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
       child: Text("Add Course"),
       onPressed: (){
         courses
-            .add({'createdBy': userInfo['userId'] , 'name': userInfo['firstName'], 'event': _courseController.text})
+            .add({'createdBy': userInfo['userId'] , 'name': userInfo['firstName'], 'event': _courseController.text, 'department':_departmentController.text})
             .then((value)=> print('Course added'))
             .catchError((error)=> print('Failed to add user: $error'));
         Navigator.pop(context);
