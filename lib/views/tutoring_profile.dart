@@ -33,6 +33,8 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
 
 
 
+
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +45,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -91,7 +94,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index){
-                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name'], department: data.docs[index]['department']);
+                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name'], department: data.docs[index]['department'], price: data.docs[index]['price']);
                   },
                 );
               },

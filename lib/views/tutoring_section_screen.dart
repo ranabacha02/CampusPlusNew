@@ -31,6 +31,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
   late DataController dataController;
 
 
+
   late String course;
 
   @override
@@ -86,7 +87,9 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                     if (name.isEmpty){
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department']);
+                          department: snapshot.data!.docs[index]['department'],
+                          price: snapshot.data!.docs[index]['price'],
+                         );
                     }
                     if (data2['name']
                         .toString()
@@ -94,7 +97,9 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                         .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department']);
+                          department: snapshot.data!.docs[index]['department'],
+                          price: snapshot.data!.docs[index]['price'],
+                          );
                     }
                     if (data2['event']
                         .toString()
@@ -102,7 +107,9 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                         .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department']);
+                          department: snapshot.data!.docs[index]['department'],
+                          price: snapshot.data!.docs[index]['price'],
+                          );
                     }
                     if (data2['department']
                         .toString()
@@ -110,7 +117,9 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                         .contains(name.toLowerCase())) {
                       return MainCourse(event: snapshot.data!.docs[index]['event'],
                           name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department']);
+                          department: snapshot.data!.docs[index]['department'],
+                          price: snapshot.data!.docs[index]['price'],
+                         );
                     }
                     else {
                       return Container();
