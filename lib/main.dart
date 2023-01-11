@@ -1,3 +1,4 @@
+import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -30,6 +31,7 @@ void main() async {
   runApp(CampusPlus(
     email: email,
   ));
+
 }
 
 class CampusPlus extends StatefulWidget {
@@ -59,4 +61,12 @@ class _CampusPlusState extends State<CampusPlus>{
   }
 
 }
+
+
+
+
+
+
+
+
 
