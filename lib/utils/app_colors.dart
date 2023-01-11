@@ -15,4 +15,5 @@ class AppColors {
   static Color aubRed = Color(0xff900031);
   static Color red = Colors.red;
   static Color green = Color(0xff4bb17b);
+  static Color blueChat = Color(0xff4591a5);
 }

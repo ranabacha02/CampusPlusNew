@@ -3,6 +3,7 @@ import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -17,7 +18,7 @@ class ChatTile extends StatefulWidget {
     required this.groupName,
   }) : super(key: key);
 
-  late bool privateChat;
+  //late bool privateChat;
 
   @override
   State<ChatTile> createState() => _GroupTileState();
@@ -29,6 +30,8 @@ class _GroupTileState extends State<ChatTile> {
   String? imageURL;
   String? time;
   FirebaseAuth auth = FirebaseAuth.instance;
+  Stream? message;
+  Stream? user;
 
   @override
   void initState() {
@@ -40,6 +43,7 @@ class _GroupTileState extends State<ChatTile> {
     CollectionReference chatCollection =
         FirebaseFirestore.instance.collection('chats');
     var value = await chatCollection.doc(chatId).get();
+
     String recipientId = "";
     for (String member in value["members"]) {
       if (member.split("_")[0] != auth!.currentUser!.uid) {
@@ -53,66 +57,103 @@ class _GroupTileState extends State<ChatTile> {
     DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
         int.parse(value["recentMessageTime"]));
     setState(() {
-      lastMessage = value["recentMessage"];
-      lastSender = value["recentMessageSender"].split("_")[0];
-      if (dateTime.minute < 10) {
-        time = dateTime.hour.toString() + ":0" + dateTime.minute.toString();
-      } else {
-        time = dateTime.hour.toString() + ":" + dateTime.minute.toString();
-      }
-      widget.privateChat = !(value["isGroup"] as bool);
+      message = chatCollection.doc(chatId).snapshots();
+      bool temp = !(value["isGroup"] as bool);
       imageURL = data2["profilePictureURL"];
-      //print ("data2: " + data2.toString());
-      if (!widget.privateChat) imageURL = null;
+      if (!temp) imageURL = null;
+      // print(temp);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatPageScreen(
-                      imageURL: imageURL,
-                      privateChat: widget.privateChat,
-                      chatId: widget.groupId,
-                      chatName: widget.groupName,
-                    )));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-            border: Border(
-          bottom: BorderSide(
-            color: AppColors.circle,
-            width: 1,
-          ),
-        )),
-        // color: AppColors.greychat,
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-        child: ListTile(
-          leading: imageURL != null && imageURL != ""
-              ? UserProfilePicture(
-                  imageURL: imageURL,
-                )
-              : CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage("assets/default_profile.jpg"),
+    return StreamBuilder(
+        stream: message,
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.hasData) {
+            DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
+                int.parse(snapshot.data["recentMessageTime"]));
+            String time = "";
+            if (dateTime.minute < 10) {
+              time =
+                  dateTime.hour.toString() + ":0" + dateTime.minute.toString();
+            } else {
+              time =
+                  dateTime.hour.toString() + ":" + dateTime.minute.toString();
+            }
+
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ChatPageScreen(
+                              imageURL: imageURL,
+                              privateChat: snapshot.data["isGroup"],
+                              chatId: widget.groupId,
+                              chatName: widget.groupName,
+                            )));
+              },
+              onLongPress: () {
+                showModalBottomSheet(
+                    context: context,
+                    builder: (context) {
+                      return SafeArea(
+                          child: Container(
+                              child: new Wrap(children: <Widget>[
+                        new ListTile(
+                            leading: new Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                            ),
+                            title: new Text(
+                              'Delete \'' + widget.groupName + "\'",
+                              style: TextStyle(color: Colors.red),
+                            ),
+                            onTap: () async {})
+                      ])));
+                    });
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                  bottom: BorderSide(
+                    color: AppColors.circle,
+                    width: 1,
+                  ),
+                )),
+                // color: AppColors.greychat,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                child: ListTile(
+                  leading: UserProfilePicture(
+                    imageURL: imageURL,
+                    caption: widget.groupName,
+                    radius: 25,
+                    preview: false,
+                  ),
+                  title: Text(
+                    widget.groupName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle:
+                      snapshot.data["recentMessageSender"].split("_")[0] == null
+                          ? Text("")
+                          : Text(
+                              snapshot.data["recentMessageSender"]
+                                      .split("_")[0]! +
+                                  ": " +
+                                  snapshot.data["recentMessage"]!,
+                              maxLines: 2,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                  trailing: time == null ? Text("") : Text(time!),
                 ),
-          title: Text(
-            widget.groupName,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          subtitle: lastMessage.isNull
-              ? Text("")
-              : Text(
-                  lastSender! + ": " + lastMessage!,
-                  style: const TextStyle(fontSize: 13),
-                ),
-          trailing: time == null ? Text("") : Text(time!),
-        ),
-      ),
-    );
+              ),
+            );
+          } else {
+            return SizedBox(width: 0);
+          }
+        });
   }
 }

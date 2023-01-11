@@ -1,5 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:flutter/material.dart';
+
+import '../views/image_preview_screen.dart';
 
 class ReceivedMessageTile extends StatefulWidget {
   final String message;
@@ -7,15 +10,20 @@ class ReceivedMessageTile extends StatefulWidget {
   final bool privateChat;
   final bool sameSender;
   final String time;
+  final String type;
+  String? imageUrl;
 
-  const ReceivedMessageTile({
+  ReceivedMessageTile({
     Key? key,
     required this.message,
     required this.sender,
     required this.privateChat,
     required this.sameSender,
     required this.time,
-  }) : super(key: key);
+    required this.type,
+    String? imageUrl,
+  })  : this.imageUrl = imageUrl,
+        super(key: key);
 
   @override
   State<ReceivedMessageTile> createState() => _ReceivedMessageTileState();
@@ -34,19 +42,19 @@ class _ReceivedMessageTileState extends State<ReceivedMessageTile> {
         children: [
           !widget.privateChat && !widget.sameSender
               ? Text(
-                  displayName.toUpperCase(),
-                  textAlign: TextAlign.start,
-                  style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                      letterSpacing: -0.5),
-                )
+            displayName.toUpperCase(),
+            textAlign: TextAlign.start,
+            style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+                letterSpacing: -0.5),
+          )
               : SizedBox(
-                  height: 0,
-                ),
+            height: 0,
+          ),
           Container(
-            margin: const EdgeInsets.only(right: 00),
+            margin: const EdgeInsets.only(right: 30),
             padding:
                 const EdgeInsets.only(top: 12, bottom: 12, left: 12, right: 12),
             decoration: BoxDecoration(
@@ -60,6 +68,23 @@ class _ReceivedMessageTileState extends State<ReceivedMessageTile> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                widget.type == "image"
+                    ? GestureDetector(
+                        child: Image(
+                            image: CachedNetworkImageProvider(widget.imageUrl)),
+                        onTap: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ImagePreviewScreen(
+                                imageUrl: widget.imageUrl!,
+                                caption: widget.message,
+                                position: "bottom");
+                          }));
+                        },
+                      )
+                    : SizedBox(
+                        height: 0,
+                      ),
                 Text(widget.message,
                     textAlign: TextAlign.start,
                     style: const TextStyle(fontSize: 16, color: Colors.white)),

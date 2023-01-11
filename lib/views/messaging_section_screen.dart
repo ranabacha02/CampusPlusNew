@@ -92,6 +92,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
 
   groupList() {
     return StreamBuilder(
+      initialData: chats,
       stream: chats,
       builder: (context, AsyncSnapshot snapshot) {
         // make some checks

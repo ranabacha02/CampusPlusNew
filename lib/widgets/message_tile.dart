@@ -1,4 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:campus_plus/utils/app_colors.dart';
+import 'package:campus_plus/views/image_preview_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -7,14 +11,19 @@ class MessageTile extends StatefulWidget {
   final String sender;
   final bool privateChat;
   final String time;
+  final String type;
+  String? imageUrl;
 
-  const MessageTile({
+  MessageTile({
     Key? key,
     required this.message,
     required this.sender,
     required this.privateChat,
     required this.time,
-  }) : super(key: key);
+    required this.type,
+    String? imageUrl,
+  })  : this.imageUrl = imageUrl,
+        super(key: key);
 
   @override
   State<MessageTile> createState() => _MessageTileState();
@@ -44,11 +53,29 @@ class _MessageTileState extends State<MessageTile> {
                       topRight: Radius.circular(20),
                       bottomLeft: Radius.circular(20),
                     ),
-                    color: Theme.of(context).primaryColor,
+                    color: AppColors.blueChat,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
+                      widget.type == "image"
+                          ? GestureDetector(
+                              child: Image(
+                                  image: CachedNetworkImageProvider(
+                                      widget.imageUrl)),
+                              onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                  return ImagePreviewScreen(
+                                      imageUrl: widget.imageUrl!,
+                                      caption: widget.message,
+                                      position: "bottom");
+                                }));
+                              },
+                            )
+                          : SizedBox(
+                              height: 0,
+                            ),
                       Text(widget.message,
                           textAlign: TextAlign.start,
                           style: const TextStyle(

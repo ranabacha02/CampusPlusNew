@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/chat_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +12,7 @@ class ChatController {
   //CollectionReference userCollection = FirebaseFirestore.instance.collection('Users');
 
   final CollectionReference chatCollection =
-      FirebaseFirestore.instance.collection("chats");
+  FirebaseFirestore.instance.collection("chats");
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
@@ -22,23 +24,23 @@ class ChatController {
 
   Future createChat(String userName, String id, String recipientId) async {
     CollectionReference userCollection =
-        FirebaseFirestore.instance.collection('Users');
+    FirebaseFirestore.instance.collection('Users');
 
     var data =
-        await userCollection.where("userId", isEqualTo: recipientId).get();
+    await userCollection.where("userId", isEqualTo: recipientId).get();
     var recipientInfo = data.docs.first.data() as Map<String, dynamic>;
 
     print(recipientInfo);
     String recipientName =
         recipientInfo["firstName"] + " " + recipientInfo["lastName"];
     Chat chat =
-        new Chat(chatName: recipientName + "_" + userName, isGroup: false);
+    new Chat(chatName: recipientName + "_" + userName, isGroup: false);
     chat.createChat(userName, recipientName, recipientId);
   }
 
   getChatsId() async {
     CollectionReference userCollection =
-        FirebaseFirestore.instance.collection('Users');
+    FirebaseFirestore.instance.collection('Users');
     return userCollection.doc(auth.currentUser!.uid).snapshots();
   }
 
@@ -62,5 +64,10 @@ class ChatController {
     userCollection.doc(auth.currentUser!.uid).update({
       "chatsId": FieldValue.arrayUnion(["${groupId}_$groupName"])
     });
+  }
+
+  sendImage(String groupId, Map<String, dynamic> chatMessageData) {
+    Chat chat = new Chat(chatId: groupId);
+    chat.sendImage(chatMessageData);
   }
 }

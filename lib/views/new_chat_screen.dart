@@ -40,6 +40,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
+    print(userInfo["chatsId"]);
   }
 
   @override
@@ -109,11 +110,23 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       return const Text('Loading');
                     }
                     final data = snapshot.requireData;
+
                     return ListView.builder(
                       itemCount: data.size,
                       itemBuilder: (context, index) {
+                        print(data.docs[index]['userId'] +
+                            "_" +
+                            data.docs[index]['firstName'] +
+                            " " +
+                            data.docs[index]['lastName']);
                         if (data.docs[index]['userId'] !=
-                            auth.currentUser!.uid) {
+                                auth.currentUser!.uid &&
+                            !userInfo["chatsId"].contains(data.docs[index]
+                                    ['userId'] +
+                                "_" +
+                                data.docs[index]['firstName'] +
+                                " " +
+                                data.docs[index]['lastName'])) {
                           return userProfile(
                               data.docs[index]['firstName'] +
                                   " " +
