@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'message_model.dart';
 
@@ -129,7 +130,7 @@ class Chat {
 
   sendMessage(Map<String, dynamic> chatMessageData) async {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("messages").add(chatMessageData);
     chatCollection.doc(chatId).update({
       "recentMessage": chatMessageData['message'],
@@ -137,6 +138,7 @@ class Chat {
       "recentMessageTime": chatMessageData['time'].toString(),
       "recentMessageType": 'text',
     });
+    markUnread();
   }
 
   joinGroup(String userName) async {
@@ -173,7 +175,69 @@ class Chat {
       "imageUrl": downloadURL,
     });
     print("image uploaded");
+    markUnread();
   }
 
   deleteChat() {}
+
+  getReadStatus(String userId) {
+    CollectionReference chatCollection =
+        FirebaseFirestore.instance.collection('chats');
+    return chatCollection
+        .doc(chatId)
+        .collection("readStatus")
+        .doc(userId)
+        .get();
+  }
+
+  markRead(String memberId) {
+    CollectionReference chatCollection =
+        FirebaseFirestore.instance.collection('chats');
+    chatCollection.doc(chatId).collection("readStatus").doc(memberId).update({
+      "unread": false,
+      "unreadNumber": 0,
+    });
+  }
+
+  markUnread() async {
+    CollectionReference chatCollection =
+        FirebaseFirestore.instance.collection('chats');
+    var chat = await chatCollection.doc(chatId).get();
+    for (String member in chat["members"]) {
+      print(member);
+      String memberId = member.split("_")[0];
+      if (memberId != auth!.currentUser!.uid) {
+        try {
+          var temp = await chatCollection
+              .doc(chatId)
+              .collection("readStatus")
+              .doc(memberId)
+              .get();
+          int num = temp["unreadNumber"];
+          print("num is:" + num.toString());
+          chatCollection
+              .doc(chatId)
+              .collection("readStatus")
+              .doc(memberId)
+              .set({
+            "userId": memberId,
+            "unread": true,
+            "unreadNumber": num + 1,
+          });
+        } catch (e) {
+          chatCollection
+              .doc(chatId)
+              .collection("readStatus")
+              .doc(memberId)
+              .set({
+            "userId": memberId,
+            "unread": true,
+            "unreadNumber": 1,
+          });
+        }
+
+        print("updated status");
+      }
+    }
+  }
 }

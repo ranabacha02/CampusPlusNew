@@ -40,7 +40,7 @@ class _ReceivedMessageTileState extends State<ReceivedMessageTile> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          !widget.privateChat && !widget.sameSender
+          widget.privateChat && !widget.sameSender
               ? Text(
             displayName.toUpperCase(),
             textAlign: TextAlign.start,

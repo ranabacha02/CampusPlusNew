@@ -55,32 +55,33 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         child: Scaffold(
-            appBar: AppBar(
-              backgroundColor: AppColors.white,
-              leading: IconButton(
-                icon: Icon(
-                  Icons.close,
-                  color: AppColors.black,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+          appBar: AppBar(
+            backgroundColor: AppColors.white,
+            leading: IconButton(
+              icon: Icon(
+                Icons.close,
+                color: AppColors.black,
               ),
-              title: Text(
-                "To " + widget.chatName,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: AppColors.black,
-                ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            title: Text(
+              "To " + widget.chatName,
+              style: TextStyle(
+                fontSize: 24,
+                color: AppColors.black,
               ),
             ),
-            body: Container(
-                child: SingleChildScrollView(
+          ),
+          body: Stack(children: [
+            Center(
+              child: Image.file(widget.image),
+            ),
+            Container(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Image.file(widget.image),
+                  Spacer(),
                   Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 18),
@@ -140,7 +141,9 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                   ),
                 ],
               ),
-            ))));
+            ),
+          ]),
+        ));
   }
 
   sendImage() {

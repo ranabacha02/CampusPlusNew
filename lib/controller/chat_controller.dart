@@ -70,4 +70,14 @@ class ChatController {
     Chat chat = new Chat(chatId: groupId);
     chat.sendImage(chatMessageData);
   }
+
+  getReadStatus(String groupId) {
+    Chat chat = new Chat(chatId: groupId);
+    return chat.getReadStatus(auth.currentUser!.uid);
+  }
+
+  markRead(String groupId) {
+    Chat chat = new Chat(chatId: groupId);
+    return chat.markRead(auth.currentUser!.uid);
+  }
 }

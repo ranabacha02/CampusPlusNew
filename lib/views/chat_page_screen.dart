@@ -74,18 +74,22 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
             appBar: AppBar(
               leading: IconButton(
                   icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.push(
-                      context,
-                      //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
-                      PageTransition(
-                          type: PageTransitionType.leftToRightPop,
-                          child: NavBarView(index: 3),
-                          childCurrent: ChatPageScreen(
-                            imageURL: widget.imageURL,
-                            privateChat: widget.privateChat,
-                            chatId: widget.chatId,
-                            chatName: widget.chatName,
-                          )))),
+                  onPressed: () {
+                    chatController.markRead(widget.chatId);
+                    Navigator.push(
+                        context,
+                        //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
+
+                        PageTransition(
+                            type: PageTransitionType.leftToRightPop,
+                            child: NavBarView(index: 3),
+                            childCurrent: ChatPageScreen(
+                              imageURL: widget.imageURL,
+                              privateChat: widget.privateChat,
+                              chatId: widget.chatId,
+                              chatName: widget.chatName,
+                            )));
+                  }),
               title: Row(
                 children: [
                   widget.imageURL != null
@@ -200,8 +204,8 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
                   itemBuilder: (context, index) {
-                    print("the message is: " +
-                        snapshot.data.docs[index]['message']);
+                    // print("the message is: " +
+                    //     snapshot.data.docs[index]['message']);
                     DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
                         snapshot.data.docs[index]['time']);
                     DateTime dateTime2 = DateTime.now();
@@ -321,7 +325,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                     }
 
                     previousSender = currentSender;
-                    print("time:" + time);
+                    //print("time:" + time);
                     if (nextDate != currentDate) {
                       //print("snapshot: " + snapshot.data.docs[index].toString());
                       try {
