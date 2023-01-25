@@ -23,30 +23,27 @@ class DataController extends GetxController {
   final storage = FirebaseStorage.instance;
 
   Future getUserInfo() async {
-    var data =
-        await users.where("userId", isEqualTo: auth.currentUser!.uid).get();
-    var data2 = data.docs.first.data() as Map<String, dynamic>;
-
+    DocumentSnapshot snapshot = await await users.doc(auth.currentUser!.uid).get();
+    MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);
     users.doc(auth.currentUser!.uid).update({
       'profilePictureURL': auth!.currentUser!.photoURL,
     });
 
-    storedData = data2;
-
+    storedData = user;
     return storedData;
   }
 
-  late Map<String, dynamic> storedData = {};
+  late MyUser storedData;
 
   addUser(String? email, String? firstName, String? lastName,
-      int? graduationYear, String? major, int? mobileNumber) {
+      int? graduationYear, String? major, int? mobilePhoneNumber) {
     MyUser user = new MyUser(
       firstName: firstName,
       lastName: lastName,
       email: email,
       graduationYear: graduationYear,
       major: major,
-      mobileNumber: mobileNumber,
+      mobilePhoneNumber: mobilePhoneNumber,
     );
     user.addUser();
   }
@@ -56,20 +53,20 @@ class DataController extends GetxController {
       String? lastName,
       String? major,
       int? graduationYear,
-      int? mobileNumber,
+      int? mobilePhoneNumber,
       String? description,
       required BuildContext context,
       File? photo,
       required bool delete}) async {
-    Map<dynamic, dynamic> userInfo = new HashMap();
-    userInfo = getLocalData();
+
+    MyUser userInfo = getLocalData();
     MyUser user = new MyUser();
     user.updateUser(
         firstName: firstName,
         lastName: lastName,
         major: major,
         graduationYear: graduationYear,
-        mobileNumber: mobileNumber,
+        mobilePhoneNumber: mobilePhoneNumber,
         description: description);
 
     updateLocalData(
@@ -77,7 +74,7 @@ class DataController extends GetxController {
         lastName: lastName,
         major: major,
         graduationYear: graduationYear,
-        mobileNumber: mobileNumber,
+        mobilePhoneNumber: mobilePhoneNumber,
         description: description);
 
     if (delete) {
@@ -105,9 +102,9 @@ class DataController extends GetxController {
         ));
   }
 
-  Map getLocalData() {
-    if (storedData["description"] == null) {
-      storedData["description"] = "";
+  MyUser getLocalData() {
+    if (storedData.description == null) {
+      storedData.description = "";
     }
     return storedData;
   }
@@ -117,19 +114,19 @@ class DataController extends GetxController {
     String? lastName,
     String? major,
     int? graduationYear,
-    int? mobileNumber,
+    int? mobilePhoneNumber,
     String? description,
   }) {
-    storedData["firstName"] = firstName;
-    storedData["lastName"] = lastName;
-    storedData["major"] = major;
-    storedData["graduationYear"] = graduationYear;
-    storedData["mobileNumber"] = mobileNumber;
-    storedData["description"] = description;
+    storedData.firstName = firstName?? storedData.firstName;
+    storedData.lastName = lastName ?? storedData.lastName;
+    storedData.major = major ?? storedData.major;
+    storedData.graduationYear = graduationYear ?? storedData.graduationYear;
+    storedData.mobilePhoneNumber = mobilePhoneNumber ?? storedData.mobilePhoneNumber;
+    storedData.description = description ?? storedData.description;
   }
 
   clearLocalData() {
-    storedData.clear();
+    storedData= MyUser();
   }
 
   Future<String> uploadProfilePic(File image) async {
