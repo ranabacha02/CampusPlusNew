@@ -14,6 +14,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../model/clean_user_model.dart';
 import '../views/edit_account_screen.dart';
 import '../widgets/nav_bar.dart';
 
@@ -46,6 +47,11 @@ class DataController extends GetxController {
       mobilePhoneNumber: mobilePhoneNumber,
     );
     user.addUser();
+  }
+
+  CleanUser cleanUserInfo(MyUser user){
+    CleanUser cleanUser = CleanUser.fromMyUser(user);
+    return cleanUser;
   }
 
   updateProfile(
