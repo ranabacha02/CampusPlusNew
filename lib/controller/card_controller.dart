@@ -1,3 +1,5 @@
+import 'package:campus_plus/model/clean_user_model.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/card_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,37 +12,40 @@ class CardController{
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
-    Future createCard(String event, DateTime dateCreated, DateTime eventStart) async {
-      Card card= Card(
-        createdBy: auth.currentUser!.uid,
-        hostName: dataController.getLocalData()['firstName'],
-        event: event,
-        dateCreated: dateCreated,
-        eventStart: eventStart,
-        users: [{"userId":auth.currentUser!.uid, "hostName":dataController.getLocalData()['firstName']}],
-      );
-      card.createCard();
-    }
+  Future createCard(String event, DateTime dateCreated, DateTime eventStart) async {
+    CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
+    MyCard card= MyCard(
+      createdBy: auth.currentUser!.uid,
+      event: event,
+      dateCreated: dateCreated,
+      eventStart: eventStart,
+      users: [user],
+    );
+    card.createCard();
+  }
 
-    Future joinCard(String cardId, Map<String, String> userInfo) async {
-        Card.joinCard(cardId, userInfo);
-    }
+  Future joinCard(String cardId, CleanUser user) async {
+    MyCard.joinCard(cardId, user);
+  }
 
-    Future leaveCard(String cardId, Map<String, String> userInfo) async {
-      Card.leaveCard(cardId, userInfo);
-    }
+  Future leaveCard(String cardId, CleanUser user) async {
+    MyCard.leaveCard(cardId, user);
+  }
 
-    Future removeCard(String cardId, Map<String, String> userInfo) async {
-      Card.removeCard(cardId, userInfo);
-    }
+  Future removeCard(String cardId) async {
+    MyCard.removeCard(cardId);
+  }
 
-    Future getMyCards() async{
-      Card.getMyCards(auth.currentUser!.uid);
+  Future getCards() async {
+    return MyCard.getCards();
+  }
+
+  Future getMyCards() async{
+    return MyCard.getMyCards(auth.currentUser!.uid);
   }
 
 
-
-  }
+}
 
 
 
