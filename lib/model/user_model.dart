@@ -12,11 +12,13 @@ class MyUser {
   final String email;
   final int graduationYear;
   DateTime lastLogged;
-  final int mobileNumber;
+  final int mobilePhoneNumber;
   List<String> rentals;
-  List<String> chats;
+  List<String> chatsId;
   List<String> tutoringClasses;
   String description;
+  String profilePictureURL;
+  String userId;
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -26,49 +28,55 @@ class MyUser {
     String? major,
     int? graduationYear,
     String? email,
-    int? mobileNumber,
+    int? mobilePhoneNumber,
     List<String>? rentals,
-    List<String>? chats,
+    List<String>? chatsId,
     List<String>? tutoringClasses,
     DateTime? lastLogged,
     String? description,
+    profilePictureURL,
+    userId,
   })  : firstName = firstName ?? "",
         lastName = lastName ?? "",
         major = major ?? "",
         graduationYear = graduationYear ?? 9999,
         email = email ?? "",
-        mobileNumber = mobileNumber ?? 9999999,
+        mobilePhoneNumber = mobilePhoneNumber ?? 9999999,
         rentals = rentals ?? [],
-        chats = chats ?? [],
+        chatsId = chatsId ?? [],
         tutoringClasses = tutoringClasses ?? [],
         lastLogged = lastLogged ?? DateTime.now(),
-        description = description ?? "";
+        description = description ?? "",
+        profilePictureURL = profilePictureURL ?? "",
+        userId = userId ?? "";
 
-  MyUser.fromJson(Map<String, Object?> json)
+  MyUser.fromFirestore(Map<String, Object?> snapshot)
       : this(
-    firstName: json['firstName'] as String,
-          lastName: json['lastName'] as String,
-          email: json['email'] as String,
-          major: json['major'] as String,
-          graduationYear: json['graduationYear'] as int,
-          mobileNumber: json['mobilePhoneNumber'] as int,
-          rentals: (json['rentals'] as List).cast<String>(),
-          chats: (json['chats'] as List).cast<String>(),
-          tutoringClasses: (json['tutoringClasses'] as List).cast<String>(),
-          description: json['description'] as String,
+    firstName: snapshot['firstName'] as String,
+          lastName: snapshot['lastName'] as String,
+          email: snapshot['email'] as String,
+          major: snapshot['major'] as String,
+          graduationYear: snapshot['graduationYear'] as int,
+          mobilePhoneNumber: snapshot['mobilePhoneNumber'] as int,
+          rentals: (snapshot['rentals'] as List).cast<String>(),
+          chatsId: (snapshot['chatsId'] as List).cast<String>(),
+          tutoringClasses: (snapshot['tutoringClasses'] as List).cast<String>(),
+          description: snapshot['description'] as String,
           lastLogged: DateTime.now(),
+          profilePictureURL: snapshot['profilePictureURL'],
+          userId: snapshot['userId']
         );
 
-  Map<String, Object?> toJson() {
+  Map<String, Object?> toFirestore() {
     return {
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
       'major': major,
       'graduationYear': graduationYear,
-      'mobilePhoneNumber': mobileNumber,
+      'mobilePhoneNumber': mobilePhoneNumber,
       'rentals': rentals,
-      'chats': chats,
+      'chatsId': chatsId,
       'tutoringClasses': tutoringClasses,
       'lastLogged': lastLogged,
       'description': description
@@ -83,7 +91,7 @@ class MyUser {
           'firstName': firstName,
           'lastName': lastName,
           'major': major,
-          'mobilePhoneNumber': mobileNumber,
+          'mobilePhoneNumber': mobilePhoneNumber,
           'graduationYear': graduationYear,
           'userId': auth.currentUser!.uid,
           'chatsId': [],
@@ -98,7 +106,7 @@ class MyUser {
     String? lastName,
     String? major,
     int? graduationYear,
-    int? mobileNumber,
+    int? mobilePhoneNumber,
     File? photo,
     String? description,
   }) {
@@ -106,7 +114,7 @@ class MyUser {
       'firstName': firstName,
       'lastName': lastName,
       'major': major,
-      'mobilePhoneNumber': mobileNumber,
+      'mobilePhoneNumber': mobilePhoneNumber,
       'graduationYear': graduationYear,
       'description': description,
     }).then((value) async {
