@@ -9,6 +9,7 @@ import 'package:get/get_core/src/get_main.dart';
 import '../controller/auth_controller.dart';
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/nav_bar.dart';
 
@@ -31,7 +32,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   late ChatController chatController;
   late AuthController authController;
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
 
   @override
   void initState() {
@@ -40,7 +41,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    print(userInfo["chatsId"]);
+    print(userInfo.chatsId);
   }
 
   @override
@@ -121,7 +122,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                             data.docs[index]['lastName']);
                         if (data.docs[index]['userId'] !=
                                 auth.currentUser!.uid &&
-                            !userInfo["chatsId"].contains(data.docs[index]
+                            !userInfo.chatsId.contains(data.docs[index]
                                     ['userId'] +
                                 "_" +
                                 data.docs[index]['firstName'] +
@@ -174,7 +175,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                           data.docs[index]['groupName'],
                           data.docs[index]['groupIcon'],
                           data.docs[index]['chatId'],
-                          userInfo['firstName'] + " " + userInfo['lastName'],
+                          userInfo.firstName + " " + userInfo.lastName,
                         );
                       },
                     );
@@ -256,9 +257,9 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         onpress: () {
                           //create a new chat between the users and redirect them to the chat page
                           chatController.createChat(
-                              userInfo["firstName"] +
+                              userInfo.firstName +
                                   " " +
-                                  userInfo["lastName"],
+                                  userInfo.lastName,
                               auth.currentUser!.uid,
                               uid);
                           Navigator.push(
@@ -335,7 +336,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         _isLoading = true;
                       });
                       chatController.createGroup(
-                          userInfo["firstName"] + " " + userInfo["lastName"],
+                          userInfo.firstName + " " + userInfo.lastName,
                           auth.currentUser!.uid,
                           groupName);
 

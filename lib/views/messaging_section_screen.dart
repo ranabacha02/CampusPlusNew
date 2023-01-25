@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/chat_tile.dart';
 
@@ -23,7 +24,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
   late ChatController chatController;
   late AuthController authController;
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
   Stream? chats;
 
   @override
