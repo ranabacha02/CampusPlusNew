@@ -9,6 +9,7 @@ import 'package:page_transition/page_transition.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import 'chat_page_screen.dart';
 
@@ -35,7 +36,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
 
   late ChatController chatController;
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
   late final userName;
   Stream? chats;
 
@@ -45,7 +46,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    userName = userInfo['firstName'] + " " + userInfo['lastName'];
+    userName = userInfo.firstName + " " + userInfo.lastName;
   }
 
   @override
@@ -151,7 +152,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
     Map<String, dynamic> chatMessageMap = {
       "image": widget.image,
       "message": messageController.text,
-      "sender": userName + "_" + userInfo['userId'],
+      "sender": userName + "_" + userInfo.userId,
       "time": DateTime.now().millisecondsSinceEpoch,
     };
 

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:campus_plus/widgets/image_file_picker.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
 import 'package:campus_plus/views/tutoring_profile.dart';
@@ -39,7 +40,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
 
   Image? displayImage;
 
@@ -110,9 +111,9 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                             height: Get.height * 0.01,
                           ),
                           Text(
-                              userInfo?["description"] == ""
+                              userInfo.description == ""
                                   ? "Description here..."
-                                  : userInfo?["description"],
+                                  : userInfo.description,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 16,
