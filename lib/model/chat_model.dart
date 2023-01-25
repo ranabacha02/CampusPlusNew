@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 
+import '../controller/data_controller.dart';
 import 'message_model.dart';
 
 class Chat {
@@ -50,11 +52,12 @@ class Chat {
     recentMessageTime: json['recentMessageTime'] as DateTime?,
   );
 
-  Future createChat(String userName, String recipientName, String recipientId) async {
+  Future<Chat> createChat(String email, String recipientName,
+      String recipientId, String recipientEmail) async {
     final CollectionReference userCollection =
-    FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
     final CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection("chats");
+        FirebaseFirestore.instance.collection("chats");
 
     DocumentReference groupDocumentReference = await chatCollection.add({
       "isGroup": isGroup,
@@ -63,30 +66,52 @@ class Chat {
       "chatId": "",
       "recentMessage": recentMessage,
       "recentMessageSender": recentSender,
+      "recentMessageTime": recentMessageTime,
     });
     // update the members
     chatId = groupDocumentReference.id;
     await groupDocumentReference.update({
       "members": FieldValue.arrayUnion([
-        "${auth.currentUser!.uid}_$userName",
+        "${auth.currentUser!.uid}_$email",
         "${recipientId}_${recipientName}"
       ]),
       "chatId": chatId,
     });
 
+    //creating the read status of the recipient
+    await groupDocumentReference.collection("readStatus").doc(recipientId).set({
+      "userId": recipientId,
+      "unread": false,
+      "unreadNumber": 0,
+    });
+
+    //creating the read status of the user (the one who created the chat)
+    await groupDocumentReference
+        .collection("readStatus")
+        .doc(auth.currentUser!.uid)
+        .set({
+      "userId": auth.currentUser!.uid,
+      "unread": false,
+      "unreadNumber": 0,
+    });
+
     DocumentReference userDocumentReference =
-    userCollection.doc(auth.currentUser!.uid);
+        userCollection.doc(auth.currentUser!.uid);
     await userDocumentReference.update({
-      "chatsId":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$recipientName"])
+      "chatsId": FieldValue.arrayUnion(
+          ["${groupDocumentReference.id}_$recipientEmail"])
     });
 
     DocumentReference recipientDocumentReference =
-    userCollection.doc(recipientId);
+        userCollection.doc(recipientId);
     await recipientDocumentReference.update({
-      "chatsId":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$userName"])
+      "chatsId": FieldValue.arrayUnion(["${groupDocumentReference.id}_$email"])
     });
+
+    DataController dataController = Get.put(DataController());
+    dataController.getUserInfo();
+
+    return this;
   }
 
   Future createGroup() async {
@@ -103,6 +128,8 @@ class Chat {
       "chatId": "",
       "recentMessage": "",
       "recentMessageSender": "",
+      "recentMessageTime": "",
+      "recentMessageType": "",
     });
     // update the members
     await groupDocumentReference.update({
@@ -110,11 +137,21 @@ class Chat {
       "chatId": groupDocumentReference.id,
     });
 
+    //creating the read status of the user (the one who created the chat)
+    await groupDocumentReference
+        .collection("readStatus")
+        .doc(auth.currentUser!.uid)
+        .set({
+      "userId": auth.currentUser!.uid,
+      "unread": false,
+      "unreadNumber": 0,
+    });
+
     DocumentReference userDocumentReference =
-    userCollection.doc(auth.currentUser!.uid);
+        userCollection.doc(auth.currentUser!.uid);
     return await userDocumentReference.update({
       "chatsId":
-      FieldValue.arrayUnion(["${groupDocumentReference.id}_$chatName"])
+          FieldValue.arrayUnion(["${groupDocumentReference.id}_$chatName"])
     });
   }
 
@@ -146,6 +183,16 @@ class Chat {
         FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).update({
       "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
+    });
+
+    chatCollection
+        .doc(chatId)
+        .collection("readStatus")
+        .doc(auth.currentUser!.uid)
+        .set({
+      "userId": auth.currentUser!.uid,
+      "unread": false,
+      "unreadNumber": 0
     });
   }
 

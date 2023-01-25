@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/image_file_picker.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
 import 'package:campus_plus/views/tutoring_profile.dart';
@@ -265,6 +266,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               text: 'Sign out',
                               onpress: () {
                                 authController.signOut();
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) => LoginView()));
                               },
                               icon: Icons.logout,
                             ))),

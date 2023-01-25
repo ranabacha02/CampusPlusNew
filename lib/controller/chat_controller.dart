@@ -22,12 +22,13 @@ class ChatController {
     group.createGroup();
   }
 
-  Future createChat(String userName, String id, String recipientId) async {
+  Future<Chat> createChat(
+      String userName, String id, String recipientId, String userEmail) async {
     CollectionReference userCollection =
-    FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
 
     var data =
-    await userCollection.where("userId", isEqualTo: recipientId).get();
+        await userCollection.where("userId", isEqualTo: recipientId).get();
     var recipientInfo = data.docs.first.data() as Map<String, dynamic>;
 
     print(recipientInfo);
@@ -35,7 +36,8 @@ class ChatController {
         recipientInfo["firstName"] + " " + recipientInfo["lastName"];
     Chat chat =
     new Chat(chatName: recipientName + "_" + userName, isGroup: false);
-    chat.createChat(userName, recipientName, recipientId);
+    return chat.createChat(
+        userEmail, recipientName, recipientId, recipientInfo["email"]);
   }
 
   getChatsId() async {

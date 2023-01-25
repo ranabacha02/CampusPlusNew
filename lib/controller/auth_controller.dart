@@ -134,7 +134,6 @@ class AuthController extends GetxController {
       pref.remove("email");
       DataController dataController = Get.put(DataController());
       dataController.clearLocalData();
-      Get.to(() => LoginView());
     }).catchError((e) {
       Get.snackbar('Error', "$e");
     });

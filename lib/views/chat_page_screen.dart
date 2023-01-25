@@ -93,7 +93,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                   }),
               title: Row(
                 children: [
-                  widget.imageURL != null
+                  widget.imageURL != null && widget.imageURL != ""
                       ? UserProfilePicture(
                           imageURL: widget.imageURL!,
                           caption: widget.chatName,

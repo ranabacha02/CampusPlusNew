@@ -8,17 +8,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controller/chat_controller.dart';
+import '../controller/data_controller.dart';
 
 class ChatTile extends StatefulWidget {
   //final String userName;
   final String groupId;
-  final String groupName;
+  final String expected;
 
-  ChatTile({
-    Key? key,
-    required this.groupId,
-    required this.groupName,
-  }) : super(key: key);
+  //final String groupName;
+
+  ChatTile({Key? key, required this.groupId, required this.expected
+      // required this.groupName,
+      })
+      : super(key: key);
 
   //late bool privateChat;
 
@@ -35,13 +37,16 @@ class _GroupTileState extends State<ChatTile> {
   Stream? message;
   Stream? user;
   Stream? readStatus;
+  String? groupName;
 
   late ChatController chatController;
+  late DataController dataController;
 
   @override
   void initState() {
     super.initState();
     chatController = Get.put(ChatController());
+    dataController = Get.put(DataController());
     initializing(widget.groupId);
   }
 
@@ -56,17 +61,23 @@ class _GroupTileState extends State<ChatTile> {
         break;
       }
     }
-    // try{
-    // var readStatusSnap = await chatController.getReadStatus(chatId);
-    // readStatus  = readStatusSnap["unread"];}catch(e){
-    //   print("field not found" + widget.groupName);
-    // }
-    // print("readStatus");
+    var user = dataController.getLocalData();
+    if (!value["isGroup"]) {
+      if (value["chatName"].split("_")[0] ==
+          user.firstName + " " + user.lastName) {
+        groupName = value["chatName"].split("_")[1];
+      } else {
+        groupName = value["chatName"].split("_")[0];
+      }
+    } else {
+      groupName = value["groupName"];
+    }
+
     CollectionReference users = FirebaseFirestore.instance.collection('Users');
     var data = await users.where("userId", isEqualTo: recipientId).get();
+    print(recipientId);
     var data2 = data.docs.first.data() as Map<String, dynamic>;
-    DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
-        int.parse(value["recentMessageTime"]));
+
     setState(() {
       message = chatCollection.doc(chatId).snapshots();
       readStatus = chatCollection
@@ -83,129 +94,151 @@ class _GroupTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: readStatus,
-        builder: (context, AsyncSnapshot snapshot1) {
-          return StreamBuilder(
-              stream: message,
-              builder: (context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
-                      int.parse(snapshot.data["recentMessageTime"]));
-                  String time = "";
-                  if (dateTime.minute < 10) {
-                    time = dateTime.hour.toString() +
-                        ":0" +
-                        dateTime.minute.toString();
-                  } else {
-                    time = dateTime.hour.toString() +
-                        ":" +
-                        dateTime.minute.toString();
-                  }
+    if (widget.expected == null ||
+        widget.expected == "" ||
+        groupName!.toLowerCase().contains(widget.expected.toLowerCase())) {
+      return StreamBuilder(
+          stream: readStatus,
+          builder: (context, AsyncSnapshot snapshot1) {
+            return StreamBuilder(
+                stream: message,
+                builder: (context, AsyncSnapshot snapshot) {
+                  if (snapshot.hasData) {
+                    try {
+                      DateTime dateTime =
+                          new DateTime.fromMillisecondsSinceEpoch(
+                              int.parse(snapshot.data["recentMessageTime"]));
+                      String time = "";
+                      if (dateTime.minute < 10) {
+                        time = dateTime.hour.toString() +
+                            ":0" +
+                            dateTime.minute.toString();
+                      } else {
+                        time = dateTime.hour.toString() +
+                            ":" +
+                            dateTime.minute.toString();
+                      }
+                    } catch (e) {
+                      time = "";
+                    }
 
-                  return GestureDetector(
-                    onTap: () {
-                      chatController.markRead(widget.groupId);
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatPageScreen(
-                                    imageURL: imageURL,
-                                    privateChat: snapshot.data["isGroup"],
-                                    chatId: widget.groupId,
-                                    chatName: widget.groupName,
-                                  )));
-                    },
-                    onLongPress: () {
-                      showModalBottomSheet(
-                          context: context,
-                          builder: (context) {
-                            return SafeArea(
-                                child: Container(
-                                    child: new Wrap(children: <Widget>[
-                              new ListTile(
-                                  leading: new Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                  ),
-                                  title: new Text(
-                                    'Delete \'' + widget.groupName + "\'",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                  onTap: () async {})
-                            ])));
-                          });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: AppColors.circle,
-                              width: 1,
+                    return GestureDetector(
+                      onTap: () {
+                        chatController.markRead(widget.groupId);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ChatPageScreen(
+                                      imageURL: imageURL,
+                                      privateChat: snapshot.data["isGroup"],
+                                      chatId: widget.groupId,
+                                      chatName: groupName!,
+                                    )));
+                      },
+                      onLongPress: () {
+                        showModalBottomSheet(
+                            context: context,
+                            builder: (context) {
+                              return SafeArea(
+                                  child: Container(
+                                      child: new Wrap(children: <Widget>[
+                                new ListTile(
+                                    leading: new Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    title: new Text(
+                                      'Delete \'' + groupName! + "\'",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                    onTap: () async {})
+                              ])));
+                            });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: AppColors.circle,
+                                width: 1,
+                              ),
                             ),
+                            color: snapshot1.hasData
+                                ? snapshot1.data["unread"]
+                                    ? AppColors.whitegrey
+                                    : AppColors.white
+                                : AppColors.white),
+                        // color: AppColors.greychat,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 5),
+                        child: ListTile(
+                          leading: UserProfilePicture(
+                            imageURL: imageURL,
+                            caption: groupName!,
+                            radius: 25,
+                            preview: false,
                           ),
-                          color: snapshot1.hasData
-                              ? snapshot1.data["unread"]
-                                  ? AppColors.whitegrey
-                                  : AppColors.white
-                              : AppColors.white),
-                      // color: AppColors.greychat,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 5),
-                      child: ListTile(
-                        leading: UserProfilePicture(
-                          imageURL: imageURL,
-                          caption: widget.groupName,
-                          radius: 25,
-                          preview: false,
-                        ),
-                        title: Text(
-                          widget.groupName,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: snapshot.data["recentMessageSender"]
-                                    .split("_")[0] ==
-                                null
-                            ? Text("")
-                            : Text(
-                                snapshot.data["recentMessageSender"]
-                                        .split("_")[0]! +
-                                    ": " +
-                                    snapshot.data["recentMessage"]!,
-                                maxLines: 2,
-                                style: const TextStyle(fontSize: 13),
-                              ),
-                        trailing: snapshot1.data["unreadNumber"] == 0
-                            ? time == null
-                                ? Text("")
-                                : Text(time!)
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(time!),
-                                  Container(
-                                      padding: EdgeInsets.only(top: 5),
-                                      child: CircleAvatar(
-                                        backgroundColor: AppColors.aubRed,
-                                        radius: 10,
-                                        child: Text(
-                                          snapshot1.data["unreadNumber"]
-                                              .toString(),
-                                          style: TextStyle(
-                                            color: AppColors.white,
+                          title: Text(
+                            groupName!,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            recentMessage(snapshot),
+                            maxLines: 2,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                          trailing: snapshot1.data["unreadNumber"] == 0
+                              ? time == null
+                                  ? Text("")
+                                  : Text(time!)
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    time == null ? Text("") : Text(time!),
+                                    Container(
+                                        padding: EdgeInsets.only(top: 5),
+                                        child: CircleAvatar(
+                                          backgroundColor: AppColors.aubRed,
+                                          radius: 10,
+                                          child: Text(
+                                            snapshot1.data["unreadNumber"]
+                                                .toString(),
+                                            style: TextStyle(
+                                              color: AppColors.white,
+                                            ),
                                           ),
-                                        ),
-                                      )),
-                                ],
-                              ),
+                                        )),
+                                  ],
+                                ),
+                        ),
                       ),
-                    ),
-                  );
-                } else {
-                  return SizedBox(width: 0);
-                }
-              });
-        });
+                    );
+                  } else {
+                    return SizedBox(width: 0);
+                  }
+                });
+          });
+    } else {
+      return Container();
+    }
+  }
+
+  String recentMessage(AsyncSnapshot snapshot) {
+    String result = "";
+
+    String recentMessageSender = snapshot.data["recentMessageSender"];
+    if (recentMessageSender != null && !recentMessageSender.isEmpty) {
+      if (snapshot.data["recentMessageType"] == "image") {
+        result = recentMessageSender.split("_")[0] +
+            ": 📷 " +
+            snapshot.data["recentMessage"];
+      } else {
+        result = recentMessageSender.split("_")[0] +
+            ": " +
+            snapshot.data["recentMessage"];
+      }
+    }
+    return result;
   }
 }

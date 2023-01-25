@@ -45,6 +45,7 @@ class DataController extends GetxController {
       graduationYear: graduationYear,
       major: major,
       mobilePhoneNumber: mobilePhoneNumber,
+      description: "",
     );
     user.addUser();
   }

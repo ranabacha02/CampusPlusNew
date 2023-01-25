@@ -26,6 +26,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
   late DataController dataController;
   late final MyUser userInfo;
   Stream? chats;
+  String name = "";
 
   @override
   void initState() {
@@ -87,11 +88,27 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
         ),
         body: Material(
           type: MaterialType.transparency,
-          child: groupList(),
+          child: Column(
+            children: [
+              Card(
+                child: TextField(
+                  decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search), hintText: 'Search...'),
+                  onChanged: (val) {
+                    setState(() {
+                      name = val;
+                    });
+                  },
+                ),
+                elevation: 0,
+              ),
+              groupList(name),
+            ],
+          ),
         ));
   }
 
-  groupList() {
+  groupList(String name) {
     return StreamBuilder(
       initialData: chats,
       stream: chats,
@@ -100,19 +117,20 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
         if (snapshot.hasData) {
           if (snapshot.data['chatsId'] != null) {
             if (snapshot.data['chatsId'].length != 0) {
-              return ListView.builder(
+              print(snapshot.data['chatsId']);
+
+              return Expanded(
+                  child: ListView.builder(
                 itemCount: snapshot.data['chatsId'].length,
                 itemBuilder: (context, index) {
                   int reverseIndex =
                       snapshot.data['chatsId'].length - index - 1;
                   return ChatTile(
                     groupId: getId(snapshot.data['chatsId'][reverseIndex]),
-                    groupName: getName(snapshot.data['chatsId'][reverseIndex]),
-                    // lastMessage:  getLastMessage(snapshot.data['chatsId'][reverseIndex]),
-                    // lastSender: getLastMessage(snapshot.data['chatsId'][reverseIndex]),
+                    expected: name,
                   );
                 },
-              );
+              ));
             } else {
               return noGroupWidget();
             }

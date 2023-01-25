@@ -63,7 +63,7 @@ class _NavBarViewState extends State<NavBarView> {
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: Container(
-          height: 80,
+          height: 90,
           child: BottomNavigationBar(
             onTap: onItemTapped,
             selectedItemColor: Colors.black,

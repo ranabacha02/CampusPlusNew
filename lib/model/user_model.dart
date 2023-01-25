@@ -93,6 +93,7 @@ class MyUser {
           'graduationYear': graduationYear,
           'userId': auth.currentUser!.uid,
           'chatsId': [],
+          'description': description,
         })
         .then((value) => print("user added"))
         .catchError(
@@ -139,5 +140,18 @@ class MyUser {
     await storageRef.delete();
     auth.currentUser!.updatePhotoURL(null);
     users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
+  }
+
+  deleteChat(String chatId) async {
+    var myUser = await users.doc(auth.currentUser!.uid).get();
+    List<String> updatedChatsId = [];
+    for (String s in myUser["chatsId"]) {
+      if (s.split("_")[0] != chatId) {
+        updatedChatsId.add(s);
+      }
+    }
+    users.doc(auth.currentUser!.uid).update({'chatsId': updatedChatsId});
+
+    //get the corresponding chat, remove member from the member list, if the updated member list is empty then delete the whole chat
   }
 }

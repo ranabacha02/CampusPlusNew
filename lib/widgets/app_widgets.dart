@@ -113,6 +113,8 @@ Widget elevatedButton({text, Function? onpress}) {
   return ElevatedButton(
     style: ButtonStyle(
       backgroundColor: MaterialStateProperty.all<Color>(AppColors.grey),
+      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0))),
     ),
     onPressed: () {
       onpress!();
@@ -120,7 +122,7 @@ Widget elevatedButton({text, Function? onpress}) {
     child: Text(
       text,
       style: TextStyle(
-        fontSize: 18,
+        fontSize: 12,
         fontWeight: FontWeight.w500,
       ),
     ),

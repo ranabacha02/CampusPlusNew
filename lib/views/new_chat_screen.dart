@@ -1,4 +1,6 @@
+import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/widgets/app_widgets.dart';
+import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +11,7 @@ import 'package:get/get_core/src/get_main.dart';
 import '../controller/auth_controller.dart';
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/chat_model.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/nav_bar.dart';
@@ -19,6 +22,8 @@ class NewChatScreen extends StatefulWidget {
 }
 
 class _NewChatScreenState extends State<NewChatScreen> {
+  List<String> usersWithChat = [];
+  String name = "";
   final Stream<QuerySnapshot> users =
       FirebaseFirestore.instance.collection('Users').snapshots();
   final Stream<QuerySnapshot> groups = FirebaseFirestore.instance
@@ -41,64 +46,71 @@ class _NewChatScreenState extends State<NewChatScreen> {
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    print(userInfo.chatsId);
+    usersWithChat = getUsersList(userInfo);
+    //print(userInfo["chatsId"]);
+  }
+
+  getUsersList(MyUser userInfo) {
+    List<String> res = [];
+    for (String s in userInfo.chatsId) {
+      res.add(s.split("_")[1]);
+    }
+    return res;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: AppColors.white,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
+      appBar: AppBar(
+          backgroundColor: AppColors.white,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => Navigator.pop(context),
+          ),
+          title: Text(
+            "New Chat",
+            style: TextStyle(
+              fontSize: 30,
+              color: AppColors.aubRed,
             ),
-            title: Text(
-              "New Chat",
-              style: TextStyle(
-                fontSize: 30,
-                color: AppColors.aubRed,
+          )),
+      body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Card(
+              child: TextField(
+                decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.search), hintText: 'Search...'),
+                onChanged: (val) {
+                  setState(() {
+                    name = val;
+                  });
+                },
               ),
-            )),
-        body: Material(
-          type: MaterialType.transparency,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    popUpDialog(context);
-                  },
-                  child: Container(
-                    height: 60,
-                    color: AppColors.greychat,
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: Get.width * 0.1,
-                        ),
-                        Icon(
-                          Icons.add_box_outlined,
-                          color: AppColors.blue,
-                        ),
-                        SizedBox(
-                          width: Get.width * 0.07,
-                        ),
-                        Text(
-                          "Create a group chat",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: AppColors.blue,
-                          ),
-                        )
-                      ],
+              elevation: 0,
+            ),
+            GestureDetector(
+              onTap: () {
+                popUpDialog(context);
+              },
+              child: Container(
+                  alignment: Alignment.centerRight,
+                  height: 20,
+                  padding: EdgeInsets.only(right: 10),
+                  child: Text(
+                    "New Group",
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.black,
                     ),
-                  ),
-                ),
-                Divider(),
-                Flexible(
-                    child: StreamBuilder<QuerySnapshot>(
+                    textAlign: TextAlign.end,
+                  )),
+            ),
+            Divider(),
+            Flexible(
+                fit: FlexFit.loose,
+                child: StreamBuilder<QuerySnapshot>(
                   stream: users,
                   builder: (
                     BuildContext context,
@@ -115,47 +127,33 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     return ListView.builder(
                       itemCount: data.size,
                       itemBuilder: (context, index) {
-                        print(data.docs[index]['userId'] +
-                            "_" +
-                            data.docs[index]['firstName'] +
-                            " " +
-                            data.docs[index]['lastName']);
+                        print(data.docs[index]['email']);
                         if (data.docs[index]['userId'] !=
                                 auth.currentUser!.uid &&
-                            !userInfo.chatsId.contains(data.docs[index]
-                                    ['userId'] +
-                                "_" +
-                                data.docs[index]['firstName'] +
-                                " " +
-                                data.docs[index]['lastName'])) {
+                            !usersWithChat
+                                .contains(data.docs[index]['email'])) {
+                          String? imageUrl = null;
+                          try {
+                            imageUrl = data.docs[index]['profilePictureUrl'];
+                          } catch (e) {}
                           return userProfile(
                               data.docs[index]['firstName'] +
                                   " " +
                                   data.docs[index]['lastName'],
                               data.docs[index]['major'],
                               data.docs[index]['graduationYear'],
-                              data.docs[index]['userId']);
+                              data.docs[index]['userId'],
+                              imageUrl);
                         } else {
-                          return SizedBox(
-                            height: 0,
-                          );
+                          return Container();
                         }
                       },
                     );
                   },
                 )),
-                SizedBox(
-                  width: 0,
-                ),
-                Text(
-                  "Groups",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Flexible(
-                    child: StreamBuilder<QuerySnapshot>(
+            Flexible(
+                fit: FlexFit.loose,
+                child: StreamBuilder<QuerySnapshot>(
                   stream: groups,
                   builder: (
                     BuildContext context,
@@ -171,109 +169,129 @@ class _NewChatScreenState extends State<NewChatScreen> {
                     return ListView.builder(
                       itemCount: data.size,
                       itemBuilder: (context, index) {
-                        return groupProfile(
-                          data.docs[index]['groupName'],
-                          data.docs[index]['groupIcon'],
-                          data.docs[index]['chatId'],
-                          userInfo.firstName + " " + userInfo.lastName,
-                        );
+                        if (!usersWithChat
+                            .contains(data.docs[index]['groupName'])) {
+                          return groupProfile(
+                            data.docs[index]['groupName'],
+                            data.docs[index]['groupIcon'],
+                            data.docs[index]['chatId'],
+                            "${userInfo.firstName} ${userInfo.lastName}",
+                            data.docs[index]['members'],
+                          );
+                        } else {
+                          return SizedBox(height: 0, width: 0);
+                        }
                       },
                     );
                   },
                 )),
-              ]),
-        ));
+          ]),
+    );
   }
 
-  groupProfile(
-      String groupName, String groupIcon, String groupId, String userName) {
+  groupProfile(String groupName, String groupIcon, String groupId,
+      String userName, List<String> members) {
+    String memberNames = "";
+    for (String s in members) {
+      memberNames += s.split("_")[0];
+    }
     return Container(
         height: 105,
         child: Column(
           children: [
             ListTile(
-                leading: CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage("assets/default_profile.jpg"),
-                  backgroundColor: AppColors.circle,
-                  foregroundColor: AppColors.white,
-                ),
-                title: Text(
-                  groupName,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                subtitle: Row(
-                  children: [
-                    SizedBox(width: 5),
-                    new Spacer(),
-                    elevatedButton(
-                        text: "Join",
-                        onpress: () {
-                          //create a new chat between the users and redirect them to the chat page
-                          chatController.joinGroup(
-                              groupId, userName, groupName);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => NavBarView(
-                                        index: 3,
-                                      )));
-                        })
-                  ],
-                )),
+              leading: CircleAvatar(
+                radius: 40,
+                backgroundImage: AssetImage("assets/default_profile.jpg"),
+                backgroundColor: AppColors.circle,
+                foregroundColor: AppColors.white,
+              ),
+              title: Text(
+                groupName,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              subtitle: Row(
+                children: [
+                  Text(
+                    memberNames,
+                    overflow: TextOverflow.fade,
+                  )
+                ],
+              ),
+              trailing: elevatedButton(
+                  text: "Join",
+                  onpress: () {
+                    //create a new chat between the users and redirect them to the chat page
+                    chatController.joinGroup(groupId, userName, groupName);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NavBarView(
+                                  index: 3,
+                                )));
+                  }),
+            ),
             Divider(),
           ],
         ));
   }
 
-  userProfile(String userName, String major, int graduationYear, String uid) {
-    return Container(
-        height: 105,
-        child: Column(
-          children: [
-            ListTile(
-                leading: CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage("assets/default_profile.jpg"),
-                  backgroundColor: AppColors.circle,
-                  foregroundColor: AppColors.white,
+  userProfile(String userName, String major, int graduationYear, String uid,
+      String? imageUrl) {
+    return GestureDetector(
+        onTap: () async {
+          //create a new chat between the users and redirect them to the chat page
+          String userName = userInfo.firstName + " " + userInfo.lastName;
+          Chat chat = await chatController.createChat(
+              userName, auth.currentUser!.uid, uid, userInfo.email);
+          String groupName = "";
+          String temp = chat.chatName.split("_")[0];
+          if (temp == userName) {
+            groupName = chat.chatName.split("_")[1];
+          } else {
+            groupName = temp;
+          }
+
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChatPageScreen(
+                      chatId: chat.chatId,
+                      chatName: groupName,
+                      privateChat: !chat.isGroup,
+                      imageURL: chat.chatIcon)));
+        },
+        child: Container(
+            height: 88,
+            child: Column(
+              children: [
+                ListTile(
+                  leading: UserProfilePicture(
+                    imageURL: imageUrl,
+                    caption: userName,
+                    preview: false,
+                    radius: 20,
+                  ),
+                  title: Text(
+                    userName,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  subtitle: Row(
+                    children: [
+                      SizedBox(width: 5),
+                      Text(
+                        major + " | " + graduationYear.toString(),
+                        style: TextStyle(color: AppColors.grey, fontSize: 12),
+                      ),
+                      new Spacer(),
+                    ],
+                  ),
                 ),
-                title: Text(
-                  userName,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24),
-                ),
-                subtitle: Row(
-                  children: [
-                    SizedBox(width: 5),
-                    Text(
-                      major + " | " + graduationYear.toString(),
-                      style: TextStyle(color: AppColors.grey, fontSize: 15),
-                    ),
-                    new Spacer(),
-                    elevatedButton(
-                        text: "Chat",
-                        onpress: () {
-                          //create a new chat between the users and redirect them to the chat page
-                          chatController.createChat(
-                              userInfo.firstName +
-                                  " " +
-                                  userInfo.lastName,
-                              auth.currentUser!.uid,
-                              uid);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => NavBarView(
-                                        index: 3,
-                                      )));
-                        })
-                  ],
-                )),
-            Divider(),
-          ],
-        ));
+                Divider(),
+              ],
+            )));
   }
 
   popUpDialog(BuildContext context) {

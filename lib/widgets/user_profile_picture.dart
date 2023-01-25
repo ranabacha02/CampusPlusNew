@@ -43,7 +43,7 @@ class _UserProfilePictureState extends State<UserProfilePicture> {
       },
       child: CircleAvatar(
         // to be changed
-        backgroundImage: widget.imageURL != null
+        backgroundImage: widget.imageURL != null && widget.imageURL != ""
             ? CachedNetworkImageProvider(widget.imageURL!)
             : AssetImage("assets/default_profile.jpg") as ImageProvider,
         radius: widget.radius,
