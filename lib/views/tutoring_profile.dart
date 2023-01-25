@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import '../widgets/main_course.dart';
@@ -27,8 +28,8 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
-  late final userInfo;
-  late final List<dynamic> coursesList = userInfo?["tutoringClasses"];
+  late final MyUser userInfo;
+  late final List<dynamic> coursesList = userInfo.tutoringClasses;
   late String course;
 
 

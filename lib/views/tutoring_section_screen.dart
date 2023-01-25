@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import '../widgets/main_course.dart';
@@ -18,7 +19,7 @@ class TutoringSectionScreen extends StatefulWidget{
 }
 
 class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
-  late final userInfo;
+  late final MyUser userInfo;
   String name="";
   final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
