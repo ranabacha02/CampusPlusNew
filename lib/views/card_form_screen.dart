@@ -6,6 +6,8 @@ import '../controller/data_controller.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 
+import '../model/clean_user_model.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 
 class MainCardForm extends StatefulWidget {
@@ -28,12 +30,15 @@ class _MainCardFormState extends State<MainCardForm> {
   CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
+  late final CleanUser cleanUserInfo;
   @override
   void initState() {
     super.initState();
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
+    cleanUserInfo = CleanUser.fromMyUser(userInfo);
+
   }
 
   @override
@@ -137,25 +142,15 @@ class _MainCardFormState extends State<MainCardForm> {
         cards
             .add(
             { 'event': _eventController.text,
-              'createdBy': userInfo['userId'] ,
-              'name': userInfo['firstName'],
-              'users':[userInfo],
+              'createdBy': cleanUserInfo.userId ,
+              'name': cleanUserInfo.firstName,
+              'users':[cleanUserInfo.toFirestore()],
               'dateCreated': DateTime.now(),
               'eventStart': chosenDateTime,
             })
             .then((docRef)=>
                   {
-                users.doc(userInfo["userId"]).collection("CreatedCards")
-                    .doc(docRef.id)
-                    .set({ 'event': _eventController.text,
-                          'createdBy': userInfo['userId'] ,
-                          'name': userInfo['firstName'],
-                          'users':[userInfo],
-                          'dateCreated': DateTime.now(),
-                          'eventStart': chosenDateTime,
-                    })
-                    .then((docRef)=> print("joined"))
-                    .catchError((error)=> print('Failed to add user: $error'))
+                    print("should have posted")
                   }
             )
             .catchError((error)=> print('Failed to add user: $error'));

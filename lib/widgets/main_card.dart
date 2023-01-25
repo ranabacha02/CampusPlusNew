@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../model/clean_user_model.dart';
+
 class MainCard extends StatelessWidget {
    MainCard({
     Key? key,
@@ -17,17 +19,17 @@ class MainCard extends StatelessWidget {
   }) : super(key: key);
 
   final String cardId;
-  final  userInfo;
+  final CleanUser userInfo;
   final String event;
   final String name;
   final bool personal;
-  List<dynamic> usersJoined;
+  List<CleanUser> usersJoined;
   final DateTime date;
   CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
 
   @override
   Widget build(BuildContext context) {
-    bool joined = usersJoined.where((user)=> (user["userId"].contains(userInfo["userId"]))).length>0;
+    bool joined = usersJoined.where((user)=> (user.userId.contains(userInfo.userId))).length>0;
     DateTime now = DateTime.now();
     bool today = DateTime(date.year, date.month, date.day).difference(DateTime(now.year,now.month,now.day)).inDays==0;
     return
@@ -76,7 +78,7 @@ class MainCard extends StatelessWidget {
                                   backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                                   foregroundColor: Colors.white,
                                   child: Text(
-                                      usersJoined[0]["firstName"][0],
+                                      usersJoined[0].firstName[0],
                                     style: TextStyle(
                                     fontSize: 22,
                                     color: Colors.white,
@@ -94,7 +96,7 @@ class MainCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    usersJoined[0]["firstName"],
+                                    usersJoined[0].firstName,
                                     style: TextStyle(
                                       fontFamily: 'Roboto',
                                       fontSize: 14,
@@ -237,19 +239,19 @@ class MainCard extends StatelessWidget {
                           radius: 15,
                           backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                           foregroundColor: Colors.white,
-                          child: Text(usersJoined[1]["firstName"][0]),
+                          child: Text(usersJoined[1].firstName[0]),
                         ): SizedBox.shrink(),
                          usersJoined.length >2 ? CircleAvatar(
                           radius: 15,
                           backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                           foregroundColor: Colors.white,
-                          child: Text(usersJoined[2]["firstName"][0]),
+                          child: Text(usersJoined[2].firstName[0]),
                         ): SizedBox.shrink(),
                         usersJoined.length >3 ? CircleAvatar(
                           radius: 15,
                           backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                           foregroundColor: Colors.white,
-                          child: Text(usersJoined[3]["firstName"][0]),
+                          child: Text(usersJoined[3].firstName[0]),
                         ): SizedBox.shrink(),
                       ]
                     )

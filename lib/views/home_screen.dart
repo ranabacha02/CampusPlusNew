@@ -109,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                          name: data.docs[index]['name'],
                          personal: true,
                          userInfo: cleanUserInfo,
-                         usersJoined: data.docs[index]['users'],
+                         usersJoined: data.docs[index]['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
                          date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                      );}
                    else{
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         name: data.docs[index]['name'],
                         personal: false,
                         userInfo: cleanUserInfo,
-                        usersJoined: data.docs[index]['users'],
+                        usersJoined: data.docs[index]['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
                         date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                     );}
                  },

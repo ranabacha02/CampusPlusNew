@@ -1,3 +1,4 @@
+import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,8 +25,8 @@ class CardDetails extends StatelessWidget {
   final String name;
   final bool personal;
   final bool joined;
-  final Map<String, dynamic> userInfo;
-  List<dynamic> usersJoined;
+  final CleanUser userInfo;
+  List<CleanUser> usersJoined;
   final DateTime date;
   CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
 
@@ -68,7 +69,7 @@ class CardDetails extends StatelessWidget {
                                     backgroundColor: AppColors.circle,
                                     foregroundColor: AppColors.white,
                                     child: Text(
-                                      usersJoined[0]["firstName"][0] +  usersJoined[0]["lastName"][0],
+                                      usersJoined[0].firstName[0] +  usersJoined[0].lastName[0],
                                       style: TextStyle(
                                         color: AppColors.black,
                                         fontWeight: FontWeight.w600,
@@ -80,16 +81,16 @@ class CardDetails extends StatelessWidget {
                                   height: Get.height * 0.01,
                                 ),
                                 Text(
-                                  usersJoined[0]["firstName"] +
+                                  usersJoined[0].firstName +
                                       " " +
-                                      usersJoined[0]["lastName"],
+                                      usersJoined[0].lastName,
                                   style: TextStyle(
                                       fontSize: 24,
                                       color: AppColors.black,
                                       fontWeight: FontWeight.w600),
                                 ),
                                 Text(
-                                  "" + usersJoined[0]["major"] + " | " +usersJoined[0]["graduationYear"].toString()??"",
+                                  "" + usersJoined[0].major + " | " +usersJoined[0].graduationYear.toString()??"",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Color.fromRGBO(107, 114, 128, 1),
@@ -165,7 +166,7 @@ class CardDetails extends StatelessWidget {
                                       radius: 20,
                                       backgroundColor: Color.fromRGBO(144, 0, 49, 1),
                                       foregroundColor: Colors.white,
-                                      child: Text(user["firstName"][0]),
+                                      child: Text(user.firstName[0]),
                                     )
                                 ],
                             )
