@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:campus_plus/controller/edit_profile_controller.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ import '../utils/app_colors.dart';
 import '../widgets/nav_bar.dart';
 
 class EditAccountScreen extends StatefulWidget {
-  final Map<dynamic, dynamic> userInfo;
+  final MyUser userInfo;
   bool delete;
   File? photo;
   Image? displayImage;
@@ -58,7 +59,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       {required this.delete, this.photo, this.displayImage});
 
   late DataController dataController;
-  late final userInfo;
+  late MyUser userInfo;
   bool showPassword = false;
 
   @override
@@ -72,12 +73,12 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
   @override
   Widget build(BuildContext context) {
-    firstNameController.text = userInfo["firstName"];
-    lastNameController.text = userInfo["lastName"];
-    majorController.text = userInfo["major"];
-    graduationYearController.text = userInfo["graduationYear"].toString();
-    mobileNumberController.text = userInfo["mobilePhoneNumber"].toString();
-    descriptionController.text = userInfo["description"].toString();
+    firstNameController.text = userInfo.firstName;
+    lastNameController.text = userInfo.lastName;
+    majorController.text = userInfo.major;
+    graduationYearController.text = userInfo.graduationYear.toString();
+    mobileNumberController.text = userInfo.mobilePhoneNumber.toString();
+    descriptionController.text = userInfo.description.toString();
 
     if (displayImage == null) {
       displayImage = Image.asset("assets/default_profile.jpg");
@@ -140,7 +141,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   major: majorController.text.trim(),
                   graduationYear:
                       int.parse(graduationYearController.text.trim()),
-                  mobileNumber: int.parse(mobileNumberController.text.trim()),
+                  mobilePhoneNumber: int.parse(mobileNumberController.text.trim()),
                   context: context,
                   photo: photo,
                   delete: false,
