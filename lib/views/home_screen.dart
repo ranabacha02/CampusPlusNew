@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import '../controller/card_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/clean_user_model.dart';
+import '../model/user_model.dart';
 import '../widgets/main_card.dart';
 import 'card_form_screen.dart';
 import 'package:campus_plus/views/notifications.dart';
@@ -16,17 +19,31 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final Stream<QuerySnapshot> cards = FirebaseFirestore.instance.collection('Cards').orderBy('eventStart').snapshots();
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
-  DataController dataController = Get.put(DataController());
-  late var userInfo = dataController.getLocalData();
 
+  late DataController dataController;
+  late CardController cardController;
+  late final MyUser userInfo;
+  late final CleanUser cleanUserInfo;
+  Stream? cards;
   @override
   void initState() {
     super.initState();
-    // print("init1");
-    // print("init2");
+
+    dataController = Get.put(DataController());
+    cardController = Get.put(CardController());
+    userInfo = dataController.getLocalData();
+    cleanUserInfo = CleanUser.fromMyUser(userInfo);
+    gettingCards();
+  }
+
+  gettingCards() async {
+    await cardController.getCards().then((snapshot) {
+      setState(() {
+        cards = snapshot;
+      });
+    });
   }
 
   @override
@@ -71,29 +88,27 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Container(
           color: AppColors.white,
          // child: userInfo ==null ? Text('hello') : Text('Bye'),
-         child: StreamBuilder<QuerySnapshot>(
+         child: StreamBuilder(
              stream: cards,
              builder: (
-                 BuildContext context,
-                 AsyncSnapshot<QuerySnapshot> snapshot,
-             ) {
+                 BuildContext context, AsyncSnapshot snapshot) {
+               if(!snapshot.hasData){
+                 return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
+               }
                if(snapshot.hasError){
                  return Text('Something went wrong');
-               }
-               if(snapshot.connectionState == ConnectionState.waiting){
-                 return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
                }
                final data = snapshot.requireData;
                return ListView.builder(
                  itemCount: data.size,
                  itemBuilder: (context, index){
-                   if(data.docs[index]['createdBy']== userInfo['userId']){
+                   if(data.docs[index]['createdBy']== cleanUserInfo.userId){
                      return MainCard(
                          cardId: data.docs[index].id,
                          event: data.docs[index]['event'],
                          name: data.docs[index]['name'],
                          personal: true,
-                         userInfo: userInfo,
+                         userInfo: cleanUserInfo,
                          usersJoined: data.docs[index]['users'],
                          date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                      );}
@@ -103,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         event: data.docs[index]['event'],
                         name: data.docs[index]['name'],
                         personal: false,
-                        userInfo: userInfo,
+                        userInfo: cleanUserInfo,
                         usersJoined: data.docs[index]['users'],
                         date: (data.docs[index]['eventStart'] as Timestamp).toDate(),
                     );}
