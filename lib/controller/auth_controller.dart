@@ -14,7 +14,8 @@ class AuthController extends GetxController {
 
   var isLoading = false.obs;
 
-  Future<void> signIn({String? email, String? password}) async {
+  Future signIn(
+      {String? email, String? password, required BuildContext context}) async {
     isLoading(true);
     SharedPreferences pref = await SharedPreferences.getInstance();
 
@@ -23,10 +24,6 @@ class AuthController extends GetxController {
         .then((value) async {
       //Login Success
       isLoading(false);
-      print("logged in");
-      pref.setString("email", email);
-      print(auth.currentUser!.emailVerified.toString());
-      print(auth.currentUser!.uid);
       DataController dataController = Get.put(DataController());
       await dataController.getUserInfo();
       if (!auth.currentUser!.emailVerified) {
@@ -34,12 +31,19 @@ class AuthController extends GetxController {
             'E-mail is not verified.\nPlease verify your email before proceeding.',
             colorText: Colors.white, backgroundColor: Colors.blue);
       } else {
-        Get.to(() => NavBarView(index: 2));
+        Navigator.pushAndRemoveUntil(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => NavBarView(
+              index: 2,
+            ),
+          ),
+          (Route<dynamic> route) => false,
+        );
       }
     }).catchError((e) {
       isLoading(false);
       Get.snackbar('Error', "$e");
-
       ///Error occurred
     });
   }
@@ -69,16 +73,6 @@ class AuthController extends GetxController {
         Get.to(() => LoginView());
         dataController.addUser(
             email, firstName, lastName, graduationYear, major, mobileNumber);
-        //   Get.to(() => EmailVerificationScreen(email: email));
-        //   verifyingEmail(
-        //       email: email,
-        //       password: password,
-        //       firstName: firstName,
-        //       lastName: lastName,
-        //       graduationYear: graduationYear,
-        //       mobileNumber: mobileNumber,
-        //       major: major);
-        // });
       }).catchError((e) {
         /// print error information
         Get.snackbar("Error in authentication:", "$e");

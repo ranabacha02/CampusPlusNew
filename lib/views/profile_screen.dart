@@ -82,13 +82,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             type: MaterialType.transparency,
             child: SingleChildScrollView(
                 child: Container(
-                  color: AppColors.white,
-                  child: Padding(
-                    padding: EdgeInsets.all(12.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+              color: AppColors.white,
+              child: Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     SizedBox(
                       height: Get.height * 0.01,
                     ),
@@ -106,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Spacer(),
                         IconButton(
-                                onPressed: () => {
+                            onPressed: () => {
                                   Navigator.push(
                                       context,
                                       PageTransition(
@@ -143,9 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: Get.height * 0.01,
                           ),
                           Text(
-                            userInfo.firstName +
-                                " " +
-                                userInfo.lastName,
+                            userInfo.firstName + " " + userInfo.lastName,
                             style: TextStyle(
                                 fontSize: 30,
                                 color: AppColors.black,
@@ -164,8 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                           SizedBox(
-                                height: Get.height * 0.01,
-                              ),
+                            height: Get.height * 0.01,
+                          ),
                           Text(
                               userInfo.description == ""
                                   ? "Description here..."
@@ -266,18 +264,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               text: 'Sign out',
                               onpress: () {
                                 authController.signOut();
-                                Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => LoginView()));
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (context) => LoginView()),
+                                  (Route<dynamic> route) => false,
+                                );
                               },
                               icon: Icons.logout,
                             ))),
-                      ],
-                    ),
-                  ),
-                ))));
+                  ],
+                ),
+              ),
+            ))));
   }
 
   Future<File> _fileFromImageUrl(var url) async {

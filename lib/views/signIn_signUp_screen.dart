@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
@@ -81,11 +82,6 @@ class _LoginViewState extends State<LoginView> {
                 Container(
                   child: myText(
                       text: 'Campus+',
-                      // style: GoogleFonts.roboto(
-                      //   letterSpacing: 0,
-                      //   fontSize: 35,
-                      //   fontWeight: FontWeight.w400,
-                      // ),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 40,
@@ -266,14 +262,14 @@ class _LoginViewState extends State<LoginView> {
                   width: Get.width,
                   child: elevatedButton(
                     text: 'Login',
-                    onpress: () {
+                    onpress: () async {
                       if (!formKey.currentState!.validate()) {
                         return;
                       }
-
                       authController.signIn(
                           email: emailController.text.trim(),
-                          password: passwordController.text.trim());
+                          password: passwordController.text.trim(),
+                          context: context);
                     },
                   ),
                 )),
@@ -340,27 +336,6 @@ class _LoginViewState extends State<LoginView> {
         SizedBox(
           height: Get.height * 0.02,
         ),
-        // DropdownButton(
-        //   // Initial Value
-        //   value: dropdownValue,
-        //   // Down Arrow Icon
-        //   icon: const Icon(Icons.keyboard_arrow_down),
-        //
-        //   // Array list of items
-        //   items: items.map((String items) {
-        //     return DropdownMenuItem(
-        //       value: items,
-        //       child: Text(items),
-        //     );
-        //   }).toList(),
-        //   // After selecting the desired option,it will
-        //   // change button value to selected value
-        //   onChanged: (String? newValue) {
-        //     setState(() {
-        //       dropdownValue = newValue!;
-        //     });
-        //   },
-        // ),
         myTextField(
           bool: false,
           text: 'Major',
@@ -443,7 +418,7 @@ class _LoginViewState extends State<LoginView> {
                 width: Get.width,
                 child: elevatedButton(
                   text: 'Sign Up',
-                  onpress: () {
+                  onpress: () async {
                     print("hello world");
                     if (!formKey.currentState!.validate()) {
                       print("failure to sign up");

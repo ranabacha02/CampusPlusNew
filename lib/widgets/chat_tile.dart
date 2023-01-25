@@ -73,23 +73,36 @@ class _GroupTileState extends State<ChatTile> {
       groupName = value["groupName"];
     }
 
-    CollectionReference users = FirebaseFirestore.instance.collection('Users');
-    var data = await users.where("userId", isEqualTo: recipientId).get();
-    print(recipientId);
-    var data2 = data.docs.first.data() as Map<String, dynamic>;
-
-    setState(() {
-      message = chatCollection.doc(chatId).snapshots();
-      readStatus = chatCollection
-          .doc(chatId)
-          .collection("readStatus")
-          .doc(auth.currentUser!.uid)
-          .snapshots();
-      bool temp = !(value["isGroup"] as bool);
-      imageURL = data2["profilePictureURL"];
-      if (!temp) imageURL = null;
-      // print(temp);
-    });
+    if (recipientId != null && recipientId != "") {
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('Users');
+      var data = await users.where("userId", isEqualTo: recipientId).get();
+      //print(recipientId);
+      var data2 = data.docs.first.data() as Map<String, dynamic>;
+      setState(() {
+        message = chatCollection.doc(chatId).snapshots();
+        readStatus = chatCollection
+            .doc(chatId)
+            .collection("readStatus")
+            .doc(auth.currentUser!.uid)
+            .snapshots();
+        if (value["isGroup"] as bool) {
+          imageURL = null;
+        } else {
+          imageURL = data2["profilePictureURL"];
+        }
+      });
+    } else {
+      setState(() {
+        message = chatCollection.doc(chatId).snapshots();
+        readStatus = chatCollection
+            .doc(chatId)
+            .collection("readStatus")
+            .doc(auth.currentUser!.uid)
+            .snapshots();
+        imageURL = null;
+      });
+    }
   }
 
   @override

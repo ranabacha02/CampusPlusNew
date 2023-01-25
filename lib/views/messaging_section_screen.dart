@@ -117,8 +117,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
         if (snapshot.hasData) {
           if (snapshot.data['chatsId'] != null) {
             if (snapshot.data['chatsId'].length != 0) {
-              print(snapshot.data['chatsId']);
-
+            //  print(snapshot.data['chatsId']);
               return Expanded(
                   child: ListView.builder(
                 itemCount: snapshot.data['chatsId'].length,
