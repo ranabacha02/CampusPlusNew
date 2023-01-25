@@ -1,3 +1,4 @@
+import 'package:campus_plus/model/user_model.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:campus_plus/widgets/chat_date_tile.dart';
 import 'package:campus_plus/widgets/chat_file_picker.dart';
@@ -42,7 +43,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
 
   late ChatController chatController;
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
   late final userName;
   Stream? chats;
 
@@ -52,7 +53,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    userName = userInfo['firstName'] + " " + userInfo['lastName'];
+    userName = userInfo.firstName + " " + userInfo.lastName;
     getChat();
   }
 
@@ -233,7 +234,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                     }
                     String nextDate = DateFormat.yMMMEd().format(dateTime2);
 
-                    if (userName + "_" + userInfo['userId'] != currentSender) {
+                    if (userName + "_" + userInfo.userId != currentSender) {
                       bool temp = nextSender == currentSender;
                       previousSender = currentSender;
                       if (nextDate != currentDate) {
@@ -414,7 +415,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     if (messageController.text.isNotEmpty) {
       Map<String, dynamic> chatMessageMap = {
         "message": messageController.text,
-        "sender": userName + "_" + userInfo['userId'],
+        "sender": userName + "_" + userInfo.userId,
         "time": DateTime.now().millisecondsSinceEpoch,
       };
 
