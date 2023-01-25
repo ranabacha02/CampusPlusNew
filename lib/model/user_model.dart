@@ -6,13 +6,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 
 class MyUser {
-  final String firstName;
-  final String lastName;
-  final String major;
-  final String email;
-  final int graduationYear;
+  String firstName;
+  String lastName;
+  String major;
+  String email;
+  int graduationYear;
   DateTime lastLogged;
-  final int mobilePhoneNumber;
+  int mobilePhoneNumber;
   List<String> rentals;
   List<String> chatsId;
   List<String> tutoringClasses;
