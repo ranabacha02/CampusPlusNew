@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:campus_plus/views/profile_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -22,29 +23,29 @@ class EditProfileController extends GetxController {
       String? lastName,
       String? major,
       int? graduationYear,
-      int? mobileNumber,
+      int? mobilePhoneNumber,
       required BuildContext context,
-      required Map<String, dynamic> userInfo,
+      required MyUser userInfo,
       File? photo,
       required bool delete}) async {
     DataController dataController = Get.put(DataController());
     users.doc(auth.currentUser!.uid).set({
-      'email': userInfo["email"],
+      'email': userInfo.email,
       'firstName': firstName,
       'lastName': lastName,
       'major': major,
-      'mobilePhoneNumber': mobileNumber,
+      'mobilePhoneNumber': mobilePhoneNumber,
       'graduationYear': graduationYear,
       'userId': auth.currentUser!.uid,
-      'chatsId': userInfo["chatsId"],
+      'chatsId': userInfo.chatsId,
     }).then((value) async {
       print("user updated");
 
-      userInfo["firstName"] = firstName;
-      userInfo["lastName"] = lastName;
-      userInfo["major"] = major;
-      userInfo["graduationYear"] = graduationYear;
-      userInfo["mobilePhoneNumber"] = mobileNumber;
+      userInfo.firstName = firstName ?? userInfo.firstName;
+      userInfo.lastName = lastName ?? userInfo.lastName;
+      userInfo.major = major ?? userInfo.major;
+      userInfo.graduationYear = graduationYear ?? userInfo.graduationYear;
+      userInfo.mobilePhoneNumber = mobilePhoneNumber ?? userInfo.graduationYear;
 
       if (delete) {
         await dataController.deleteProfilePicture();
