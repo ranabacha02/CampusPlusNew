@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../controller/data_controller.dart';
+import '../model/user_model.dart';
 
 
 class MainCourseForm extends StatefulWidget {
@@ -22,7 +23,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
   CollectionReference courses = FirebaseFirestore.instance.collection('Courses');
 
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
   @override
   void initState() {
     super.initState();
@@ -87,7 +88,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
       child: Text("Add Course"),
       onPressed: (){
         courses
-            .add({'createdBy': userInfo['userId'] , 'name': userInfo['firstName'], 'event': _courseController.text, 'department':_departmentController.text})
+            .add({'createdBy': userInfo.userId , 'name': userInfo.firstName, 'event': _courseController.text, 'department':_departmentController.text})
             .then((value)=> print('Course added'))
             .catchError((error)=> print('Failed to add user: $error'));
         Navigator.pop(context);
