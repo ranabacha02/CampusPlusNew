@@ -17,4 +17,23 @@ class CleanUser{
       profilePictureURL = user.profilePictureURL,
       userId = user.userId;
 
+  CleanUser.fromFirestore(Map<String, dynamic> snapshot):
+      firstName = snapshot['firstName'],
+      lastName = snapshot['lastName'],
+      major = snapshot['major'],
+      graduationYear = snapshot['graduationYear'],
+      profilePictureURL = snapshot['profilePictureURL'],
+      userId = snapshot['userId'];
+
+  Map<String, dynamic> toFirestore() {
+    return{
+      'firstName': firstName,
+      'lastName': lastName,
+      'major': major,
+      'graduationYear': graduationYear,
+      'profilePictureURL': profilePictureURL,
+      'userId': userId
+    };
+  }
+
 }
