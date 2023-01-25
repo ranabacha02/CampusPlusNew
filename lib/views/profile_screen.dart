@@ -13,6 +13,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
@@ -37,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   late DataController dataController;
-  late final userInfo;
+  late final MyUser userInfo;
 
   Image? displayImage;
 
@@ -141,9 +142,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: Get.height * 0.01,
                           ),
                           Text(
-                            userInfo?["firstName"] +
+                            userInfo.firstName +
                                 " " +
-                                userInfo?["lastName"],
+                                userInfo.lastName,
                             style: TextStyle(
                                 fontSize: 30,
                                 color: AppColors.black,
@@ -151,9 +152,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           Text(
                             "" +
-                                    userInfo?["major"] +
+                                    userInfo.major +
                                     " | " +
-                                    userInfo["graduationYear"].toString() ??
+                                    userInfo.graduationYear.toString() ??
                                 "",
                             style: TextStyle(
                               fontSize: 18,
@@ -165,9 +166,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: Get.height * 0.01,
                               ),
                           Text(
-                              userInfo?["description"] == ""
+                              userInfo.description == ""
                                   ? "Description here..."
-                                  : userInfo?["description"],
+                                  : userInfo.description,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   fontSize: 16,
