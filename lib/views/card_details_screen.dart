@@ -197,7 +197,7 @@ class CardDetails extends StatelessWidget {
                                     )
                                 ),
                                 onPressed:(){
-                                  cards.doc(cardId).update({"users": FieldValue.arrayUnion([userInfo]),})
+                                  cards.doc(cardId).update({"users": FieldValue.arrayUnion([userInfo.toFirestore()]),})
                                       .then((doc)=> {print("joined"),Navigator.pop(context),},
                                       onError: (e)=>print("Erorr updating document $e"));
 
@@ -229,7 +229,7 @@ class CardDetails extends StatelessWidget {
                                     )
                                 ),
                                 onPressed:(){
-                                  !personal ? cards.doc(cardId).update({"users": FieldValue.arrayRemove([userInfo]),})
+                                  !personal ? cards.doc(cardId).update({"users": FieldValue.arrayRemove([userInfo.toFirestore()]),})
                                       .then((doc)=> {print("left"),Navigator.pop(context)},
                                     onError: (e)=>print("Erorr updating document $e"),
                                   ):

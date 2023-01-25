@@ -43,7 +43,7 @@ class MainCard extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.all(Radius.circular(25)),
                     child: Material(
-                      color: Color.fromRGBO(220, 220, 220, 1),
+                      color: Color.fromRGBO(242, 242, 242, 1.0),
                       child:  InkWell(
                         onTap: (){
                           Navigator.push(
