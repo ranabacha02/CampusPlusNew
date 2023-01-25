@@ -50,22 +50,20 @@ class MyUser {
         profilePictureURL = profilePictureURL ?? "",
         userId = userId ?? "";
 
-  MyUser.fromFirestore(Map<String, Object?> snapshot)
-      : this(
-    firstName: snapshot['firstName'] as String,
-          lastName: snapshot['lastName'] as String,
-          email: snapshot['email'] as String,
-          major: snapshot['major'] as String,
-          graduationYear: snapshot['graduationYear'] as int,
-          mobilePhoneNumber: snapshot['mobilePhoneNumber'] as int,
-          rentals: (snapshot['rentals'] as List).cast<String>(),
-          chatsId: (snapshot['chatsId'] as List).cast<String>(),
-          tutoringClasses: (snapshot['tutoringClasses'] as List).cast<String>(),
-          description: snapshot['description'] as String,
-          lastLogged: DateTime.now(),
-          profilePictureURL: snapshot['profilePictureURL'],
-          userId: snapshot['userId']
-        );
+  MyUser.fromFirestore(Map<String, dynamic> snapshot):
+        firstName = snapshot['firstName'],
+        lastName = snapshot['lastName'],
+        email = snapshot['email'],
+        major = snapshot['major'],
+        graduationYear = snapshot['graduationYear'],
+        mobilePhoneNumber = snapshot['mobilePhoneNumber'],
+        rentals = List<String>.from(snapshot['rentals'] ??= []),
+        chatsId = List<String>.from(snapshot['chatsId'] ??= []),
+        tutoringClasses = List<String>.from(snapshot['tutoringClasses'] ??= []),
+        description = snapshot['description'],
+        lastLogged = DateTime.now(),
+        profilePictureURL = snapshot['profilePictureURL'],
+        userId = snapshot['userId'];
 
   Map<String, Object?> toFirestore() {
     return {
