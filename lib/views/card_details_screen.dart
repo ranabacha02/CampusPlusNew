@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../controller/card_controller.dart';
 import '../utils/app_colors.dart';
 import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class CardDetails extends StatelessWidget {
 
@@ -28,8 +30,7 @@ class CardDetails extends StatelessWidget {
   final CleanUser userInfo;
   List<CleanUser> usersJoined;
   final DateTime date;
-  CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
-
+  CardController cardController = Get.put(CardController());
 
   @override
   Widget build(BuildContext context) {
@@ -81,9 +82,7 @@ class CardDetails extends StatelessWidget {
                                   height: Get.height * 0.01,
                                 ),
                                 Text(
-                                  usersJoined[0].firstName +
-                                      " " +
-                                      usersJoined[0].lastName,
+                                  usersJoined[0].firstName + " " + usersJoined[0].lastName,
                                   style: TextStyle(
                                       fontSize: 24,
                                       color: AppColors.black,
@@ -197,10 +196,8 @@ class CardDetails extends StatelessWidget {
                                     )
                                 ),
                                 onPressed:(){
-                                  cards.doc(cardId).update({"users": FieldValue.arrayUnion([userInfo.toFirestore()]),})
-                                      .then((doc)=> {print("joined"),Navigator.pop(context),},
-                                      onError: (e)=>print("Erorr updating document $e"));
-
+                                  cardController.joinCard(cardId, userInfo);
+                                  Navigator.pop(context);
                                 },
                               ):
                               TextButton(
@@ -229,14 +226,8 @@ class CardDetails extends StatelessWidget {
                                     )
                                 ),
                                 onPressed:(){
-                                  !personal ? cards.doc(cardId).update({"users": FieldValue.arrayRemove([userInfo.toFirestore()]),})
-                                      .then((doc)=> {print("left"),Navigator.pop(context)},
-                                    onError: (e)=>print("Erorr updating document $e"),
-                                  ):
-                                  cards.doc(cardId).delete()
-                                      .then((doc)=> {print("Document deleted"),Navigator.pop(context)},
-                                      onError: (e)=> print("Error updating document $e")
-                                  );
+                                  !personal ? cardController.leaveCard(cardId, userInfo) : cardController.removeCard(cardId);
+                                  Navigator.pop(context);
                                 },
                               ),
                             ],

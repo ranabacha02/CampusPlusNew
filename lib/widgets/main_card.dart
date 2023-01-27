@@ -2,8 +2,10 @@ import 'package:campus_plus/views/card_details_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
-
+import '../controller/card_controller.dart';
 import '../model/clean_user_model.dart';
 
 class MainCard extends StatelessWidget {
@@ -25,7 +27,7 @@ class MainCard extends StatelessWidget {
   final bool personal;
   List<CleanUser> usersJoined;
   final DateTime date;
-  CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
+  CardController cardController = Get.put(CardController());
 
   @override
   Widget build(BuildContext context) {
@@ -149,10 +151,7 @@ class MainCard extends StatelessWidget {
                                           )
                                       ),
                                       onPressed:(){
-                                        cards.doc(cardId).update({"users": FieldValue.arrayUnion([userInfo.toFirestore()]),})
-                                            .then((doc)=> print("joined"),
-                                            onError: (e)=>print("Erorr updating document $e"));
-
+                                        cardController.joinCard(cardId, userInfo);
                                       },
                                     ):
                                     TextButton(
@@ -187,14 +186,7 @@ class MainCard extends StatelessWidget {
                                           )
                                       ),
                                       onPressed:(){
-                                        !personal ? cards.doc(cardId).update({"users": FieldValue.arrayRemove([userInfo.toFirestore()]),})
-                                            .then((doc)=> print("left"),
-                                          onError: (e)=>print("Erorr updating document $e"),
-                                        ):
-                                        cards.doc(cardId).delete()
-                                            .then((doc)=> print("Document deleted"),
-                                            onError: (e)=> print("Error updating document $e")
-                                        );
+                                        !personal ? cardController.leaveCard(cardId, userInfo) : cardController.removeCard(cardId);
                                       },
                                     ),
                                   ]
