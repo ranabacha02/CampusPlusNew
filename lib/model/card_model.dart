@@ -25,10 +25,10 @@ class MyCard {
 
   MyCard.fromFirestore(Map<String, dynamic> snapshot):
         event = snapshot['event'],
-        dateCreated = snapshot['dateCreated'],
-        eventStart = snapshot['eventStart'],
+        dateCreated = snapshot['dateCreated'].toDate(),
+        eventStart = snapshot['eventStart'].toDate(),
         createdBy = snapshot['createdBy'],
-        users = snapshot['users'];
+        users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList();
 
   Map<String, dynamic> toFirestore(){
     return {
@@ -53,9 +53,9 @@ class MyCard {
   }
   static Future joinCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user]),})
+    cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]),})
         .then((doc)=> print("joined"),
-        onError: (e)=>print("Erorr updating document $e"));
+        onError: (e)=>print("Error updating document $e"));
   }
   static Future leaveCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
@@ -63,7 +63,7 @@ class MyCard {
     MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
     List<CleanUser> cardUsers = card.users;
     CleanUser target = cardUsers.firstWhere((usr) => usr.userId==user.userId);
-    cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target]),})
+    cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),})
         .then((doc)=> print("left"),
         onError: (e)=>print("Erorr updating document $e"));
   }
