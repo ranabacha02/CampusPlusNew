@@ -24,10 +24,10 @@ class MyCard {
   });
 
   MyCard.fromFirestore(Map<String, dynamic> snapshot):
+        createdBy = snapshot['createdBy'],
         event = snapshot['event'],
         dateCreated = snapshot['dateCreated'].toDate(),
         eventStart = snapshot['eventStart'].toDate(),
-        createdBy = snapshot['createdBy'],
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList();
 
   Map<String, dynamic> toFirestore(){
@@ -36,6 +36,7 @@ class MyCard {
       'event' : event,
       'dateCreated' : dateCreated,
       'eventStart' : eventStart,
+      'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList()
     };
   }
 
@@ -43,13 +44,7 @@ class MyCard {
 
   Future createCard() async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    cardCollection.add({
-      "createdBy" : createdBy,
-      "event": event,
-      "dateCreated": dateCreated,
-      "eventStart": eventStart,
-      "users": users
-    });
+    cardCollection.add(this.toFirestore());
   }
   static Future joinCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
