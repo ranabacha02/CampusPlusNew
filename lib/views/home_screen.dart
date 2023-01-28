@@ -14,6 +14,8 @@ import 'package:campus_plus/views/notifications.dart';
 
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -48,8 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // print("build");
-    // print(userInfo);
     return Scaffold(
         appBar: AppBar(
             backgroundColor: AppColors.white,
@@ -62,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: AppColors.aubRed,
               ),
             ),
+            elevation: 0,
             actions: <Widget>[
               IconButton(
                   onPressed: () => {
@@ -87,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ]),
         body: Container(
           color: AppColors.white,
-         // child: userInfo ==null ? Text('hello') : Text('Bye'),
          child: StreamBuilder(
              stream: cards,
              builder: (
@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                  return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
                }
                if(snapshot.hasError){
-                 return Text('Something went wrong');
+                 return const Text('Something went wrong');
                }
                final data = snapshot.requireData;
                return ListView.builder(
