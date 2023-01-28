@@ -12,7 +12,6 @@ class MainCard extends StatelessWidget {
    MainCard({
     Key? key,
     required this.event,
-    required this.name,
     required this.personal,
     required this.cardId,
     required this.userInfo,
@@ -23,7 +22,6 @@ class MainCard extends StatelessWidget {
   final String cardId;
   final CleanUser userInfo;
   final String event;
-  final String name;
   final bool personal;
   List<CleanUser> usersJoined;
   final DateTime date;
@@ -53,7 +51,6 @@ class MainCard extends StatelessWidget {
                               MaterialPageRoute(builder: (context){
                                 return CardDetails(
                                     event: event,
-                                    name: name,
                                     personal: personal,
                                     joined: joined,
                                     cardId: cardId,

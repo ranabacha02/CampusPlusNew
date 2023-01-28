@@ -13,7 +13,6 @@ class CardDetails extends StatelessWidget {
   CardDetails({
     Key? key,
     required this.event,
-    required this.name,
     required this.personal,
     required this.joined,
     required this.cardId,
@@ -24,7 +23,6 @@ class CardDetails extends StatelessWidget {
 
   final String cardId;
   final String event;
-  final String name;
   final bool personal;
   final bool joined;
   final CleanUser userInfo;

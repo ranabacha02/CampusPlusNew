@@ -106,7 +106,6 @@ class _HomeScreenState extends State<HomeScreen> {
                      return MainCard(
                          cardId: data.docs[index].id,
                          event: data.docs[index]['event'],
-                         name: data.docs[index]['name'],
                          personal: true,
                          userInfo: cleanUserInfo,
                          usersJoined: data.docs[index]['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
@@ -116,7 +115,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     return MainCard(
                         cardId: data.docs[index].id,
                         event: data.docs[index]['event'],
-                        name: data.docs[index]['name'],
                         personal: false,
                         userInfo: cleanUserInfo,
                         usersJoined: data.docs[index]['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
