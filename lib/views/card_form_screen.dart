@@ -5,7 +5,8 @@ import 'package:get/get_core/src/get_main.dart';
 import '../controller/data_controller.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
-
+import '../controller/card_controller.dart';
+import '../model/card_model.dart';
 import '../model/clean_user_model.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
@@ -27,11 +28,11 @@ class _MainCardFormState extends State<MainCardForm> {
   final List<String>_audienceList = ["Everyone", "MyDepartment", "MyYear"];
   String _selectedVal = "Everyone";
   DateTime chosenDateTime = DateTime.now();
-  CollectionReference cards = FirebaseFirestore.instance.collection('Cards');
-  CollectionReference users = FirebaseFirestore.instance.collection('Users');
   late DataController dataController;
   late final MyUser userInfo;
   late final CleanUser cleanUserInfo;
+  CardController cardController = Get.put(CardController());
+
   @override
   void initState() {
     super.initState();
@@ -116,7 +117,6 @@ class _MainCardFormState extends State<MainCardForm> {
                   onConfirm: (date) {
                     setState(() {
                       chosenDateTime =date;
-                      print(chosenDateTime);
                     });
                   },
                   currentTime: DateTime.now(),
@@ -139,24 +139,8 @@ class _MainCardFormState extends State<MainCardForm> {
     return OutlinedButton(
       child: Text("Post Card"),
       onPressed: (){
-        cards
-            .add(
-            { 'event': _eventController.text,
-              'createdBy': cleanUserInfo.userId ,
-              'name': cleanUserInfo.firstName,
-              'users':[cleanUserInfo.toFirestore()],
-              'dateCreated': DateTime.now(),
-              'eventStart': chosenDateTime,
-            })
-            .then((docRef)=>
-                  {
-                    print("should have posted")
-                  }
-            )
-            .catchError((error)=> print('Failed to add user: $error'));
-
-        //TO DO: add createdCard to USER
-
+        MyCard card = MyCard(createdBy: cleanUserInfo.userId, event: _eventController.text, dateCreated: DateTime.now(), eventStart: chosenDateTime, users:[cleanUserInfo]);
+        card.createCard();
         Navigator.pop(context);
       },
     );
