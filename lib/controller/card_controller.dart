@@ -24,16 +24,16 @@ class CardController{
     card.createCard();
   }
 
-  Future joinCard(String cardId, CleanUser user) async {
-    MyCard.joinCard(cardId, user);
+  Future<bool> joinCard(String cardId, CleanUser user) async {
+    return MyCard.joinCard(cardId, user);
   }
 
-  Future leaveCard(String cardId, CleanUser user) async {
-    MyCard.leaveCard(cardId, user);
+  Future<bool> leaveCard(String cardId, CleanUser user) async {
+    return MyCard.leaveCard(cardId, user);
   }
 
-  Future removeCard(String cardId) async {
-    MyCard.removeCard(cardId);
+  Future<bool> removeCard(String cardId) async {
+    return MyCard.removeCard(cardId);
   }
 
   Future getCards() async {
