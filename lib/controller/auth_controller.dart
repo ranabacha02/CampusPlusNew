@@ -31,9 +31,10 @@ class AuthController extends GetxController {
             'E-mail is not verified.\nPlease verify your email before proceeding.',
             colorText: Colors.white, backgroundColor: Colors.blue);
       } else {
+        pref.setString("email", email);
         Navigator.pushAndRemoveUntil(
           context,
-          new MaterialPageRoute(
+           MaterialPageRoute(
             builder: (context) => NavBarView(
               index: 2,
             ),
