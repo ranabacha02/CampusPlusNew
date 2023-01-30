@@ -11,6 +11,7 @@ import '../model/user_model.dart';
 import '../widgets/main_card.dart';
 import 'card_form_screen.dart';
 import 'package:campus_plus/views/notifications.dart';
+import 'package:campus_plus/views/schedule.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -75,7 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                   icon: Image.asset('assets/postIcon.png')),
               IconButton(
-                  onPressed: () => {print("hello world")},
+                  onPressed: () => {Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context){
+                        return Schedule();
+                      })
+                  )},
                   icon: Image.asset('assets/calendarIcon.png')),
               IconButton(
                   onPressed: () => { Navigator.push(

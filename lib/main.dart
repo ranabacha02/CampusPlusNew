@@ -19,7 +19,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  // prefs.remove("email");
+  prefs.remove("email");
   var email = prefs.getString("email");
   DataController dataController = Get.put(DataController());
   FirebaseAuth auth = FirebaseAuth.instance;
