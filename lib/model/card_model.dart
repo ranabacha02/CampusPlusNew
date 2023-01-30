@@ -46,28 +46,27 @@ class MyCard {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     cardCollection.add(this.toFirestore());
   }
-  static Future joinCard(String cardId, CleanUser user) async {
+  static Future<bool> joinCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]),})
-        .then((doc)=> print("joined"),
-        onError: (e)=>print("Error updating document $e"));
+    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]),})
+        .then((doc)=> true, onError: (e)=>false);
+    return complete;
   }
-  static Future leaveCard(String cardId, CleanUser user) async {
+  static Future<bool> leaveCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
     MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
     List<CleanUser> cardUsers = card.users;
     CleanUser target = cardUsers.firstWhere((usr) => usr.userId==user.userId);
-    cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),})
-        .then((doc)=> print("left"),
-        onError: (e)=>print("Erorr updating document $e"));
+    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),})
+        .then((doc)=> true, onError: (e)=>false);
+    return complete;
   }
 
-  static Future removeCard(String cardId) async {
+  static Future<bool> removeCard(String cardId) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    cardCollection.doc(cardId).delete()
-        .then((doc)=> print("Document deleted"),
-        onError: (e)=> print("Error updating document $e"));
+    final complete = cardCollection.doc(cardId).delete().then((doc)=> true, onError: (e)=> false);
+    return complete;
   }
 
   static Stream<QuerySnapshot<Object?>> getCards(){
