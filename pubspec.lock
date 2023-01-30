@@ -373,6 +373,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.7.0"
+  like_button:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: e75f08e388babe0115f2d48896b982e95d9fb985
+      url: "https://github.com/azy99/like_button.git"
+    source: git
+    version: "2.0.5"
   lints:
     dependency: transitive
     description:
