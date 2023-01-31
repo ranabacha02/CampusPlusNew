@@ -4,6 +4,7 @@ import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 
 import '../utils/app_colors.dart';
+import 'home_screen.dart';
 
 
 
@@ -62,9 +63,15 @@ class _DemoAppState extends State<DemoApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(leading: IconButton(
+        icon: Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context){
+              return HomeScreen();
+            })),
+      ),
         backgroundColor: AppColors.aubRed,
-        title: Text('Notifications'),
+        title: Text('My Schedule'),
       ),
       body:  SafeArea(
         child: Container(
