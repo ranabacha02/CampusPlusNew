@@ -14,6 +14,7 @@ class MyCard {
   // final List<String> tags;
   FirebaseAuth auth = FirebaseAuth.instance;
   List<CleanUser> users;
+  List<String> userIds;
 
   MyCard({
     required this.createdBy,
@@ -21,6 +22,7 @@ class MyCard {
     required this.dateCreated,
     required this.eventStart,
     required this.users,
+    required this.userIds,
   });
 
   MyCard.fromFirestore(Map<String, dynamic> snapshot):
@@ -28,7 +30,8 @@ class MyCard {
         event = snapshot['event'],
         dateCreated = snapshot['dateCreated'].toDate(),
         eventStart = snapshot['eventStart'].toDate(),
-        users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList();
+        users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
+        userIds =  List<String>.from(snapshot['userIds']);
 
   Map<String, dynamic> toFirestore(){
     return {
@@ -36,7 +39,8 @@ class MyCard {
       'event' : event,
       'dateCreated' : dateCreated,
       'eventStart' : eventStart,
-      'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList()
+      'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
+      'userIds' : userIds
     };
   }
 
@@ -48,7 +52,7 @@ class MyCard {
   }
   static Future<bool> joinCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]),})
+    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]), "userIds": FieldValue.arrayUnion([user.userId])})
         .then((doc)=> true, onError: (e)=>false);
     return complete;
   }
@@ -58,7 +62,7 @@ class MyCard {
     MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
     List<CleanUser> cardUsers = card.users;
     CleanUser target = cardUsers.firstWhere((usr) => usr.userId==user.userId);
-    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),})
+    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),"userIds": FieldValue.arrayRemove([user.userId])})
         .then((doc)=> true, onError: (e)=>false);
     return complete;
   }
@@ -69,26 +73,31 @@ class MyCard {
     return complete;
   }
 
-  static Stream<QuerySnapshot<Object?>> getCards(){
+  static Stream<QuerySnapshot<Object?>> getStreamOfCards(){
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     return cardCollection.orderBy('eventStart').snapshots();
   }
 
-  static Future getMyCards(String userId) async{
+  static Future<List<MyCard>> getAllCards() async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    return cardCollection.where("createdBy", isEqualTo: userId).get().then(
-          (res) => print("Successfully completed"),
-      onError: (e) => print("Error completing: $e"),
-    );
+    final snapshots = await cardCollection.get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
   }
 
-// Future getMyJoinedCards(){
-//   final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-//   return cardCollection.where("users", isEqualTo: auth.currentUser!.uid).get().then(
-//         (res) => print("Successfully completed"),
-//     onError: (e) => print("Error completing: $e"),
-//   );
-// }
+  static Future getMyCreatedCards(String userId) async{
+    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
+    final snapshots = await cardCollection.where("createdBy", isEqualTo: userId).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future getMyJoinedCards(String userId) async{
+    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
+    final snapshots = await cardCollection.where("userIds", arrayContains: userId).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
 
 
 }
