@@ -21,6 +21,7 @@ class CardController{
       dateCreated: dateCreated,
       eventStart: eventStart,
       users: [user],
+      userIds: []
     );
     card.createCard();
   }
@@ -37,12 +38,20 @@ class CardController{
     return MyCard.removeCard(cardId);
   }
 
-  Future getCards() async {
-    return MyCard.getCards();
+  Future getStreamOfCards() async {
+    return MyCard.getStreamOfCards();
   }
 
+  Future getAllCards() async {
+    return MyCard.getAllCards();
+  }
+
+
   Future getMyCards() async{
-    return MyCard.getMyCards(auth.currentUser!.uid);
+    final myCreatedCards = await MyCard.getMyCreatedCards(auth.currentUser!.uid);
+    final myJoinedCards = await MyCard.getMyJoinedCards(auth.currentUser!.uid);
+    List<MyCard> myCards = myCreatedCards + myJoinedCards;
+    return myCards;
   }
 
 
