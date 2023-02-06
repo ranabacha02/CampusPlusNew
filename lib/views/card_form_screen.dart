@@ -139,8 +139,7 @@ class _MainCardFormState extends State<MainCardForm> {
     return OutlinedButton(
       child: Text("Post Card"),
       onPressed: (){
-        MyCard card = MyCard(createdBy: cleanUserInfo.userId, event: _eventController.text, dateCreated: DateTime.now(), eventStart: chosenDateTime, users:[cleanUserInfo]);
-        card.createCard();
+        cardController.createCard(_eventController.text, DateTime.now(),chosenDateTime);
         Navigator.pop(context);
       },
     );
