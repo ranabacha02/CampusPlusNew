@@ -2,8 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
+import 'package:page_transition/page_transition.dart';
 
+import '../controller/card_controller.dart';
+import '../model/card_model.dart';
 import '../utils/app_colors.dart';
+import '../widgets/nav_bar.dart';
 import 'home_screen.dart';
 
 
@@ -17,34 +21,10 @@ class _DemoAppState extends State<DemoApp> {
 
   DateTime selectedDay = DateTime.now();
   late List <CleanCalendarEvent> selectedEvent;
-  Map<DateTime, List<CleanCalendarEvent>> events ={
-    DateTime (DateTime.now().year,DateTime.now().month,DateTime.now().day):
-    [
-      CleanCalendarEvent('Event A',
-          startTime: DateTime(
-              DateTime.now().year,DateTime.now().month,DateTime.now().day,10,0),
-          endTime:  DateTime(
-              DateTime.now().year,DateTime.now().month,DateTime.now().day,12,0),
-          description: 'A special event',
-          color: Colors.black),
-    ],
+  Map<DateTime, List<CleanCalendarEvent>> events ={};
+  final cardController = CardController();
 
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 2):
-    [
-      CleanCalendarEvent('Event B',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 12, 0),
-          color: Colors.orange),
-      CleanCalendarEvent('Event C',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.pink),
-    ],
-  };
+
 
   void _handleData(date){
     setState(() {
@@ -58,18 +38,44 @@ class _DemoAppState extends State<DemoApp> {
     // TODO: implement initState
     selectedEvent = events[selectedDay] ?? [];
     super.initState();
+    fetchEvents();
+  }
+
+  void fetchEvents() async{
+    List<MyCard> joinedCards = await cardController.getCards();
+    joinedCards.forEach((card) {
+      if (!events.containsKey(card.eventStart)) {
+        events[card.eventStart] = [];
+      }
+      events[card.eventStart]?.add(CleanCalendarEvent(
+        card.event,
+        startTime: card.eventStart,
+        endTime: card.eventStart.add(Duration(hours: 2)),
+        color: Colors.black,
+      ));
+    });
+    print(events);
+    setState(() {
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(leading: IconButton(
-        icon: Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context){
-              return HomeScreen();
-            })),
-      ),
+      appBar: AppBar(
+        //automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () =>
+              Navigator.push(context,
+                PageTransition(
+                  child: NavBarView(index: 2,),
+                  type: PageTransitionType.leftToRightJoined,
+                  childCurrent: DemoApp(),
+                ),),
+        ),
         backgroundColor: AppColors.aubRed,
         title: Text('My Schedule'),
       ),
@@ -84,6 +90,7 @@ class _DemoAppState extends State<DemoApp> {
             bottomBarColor: Colors.deepOrange,
             onRangeSelected: (range) {
               print('selected Day ${range.from},${range.to}');
+
             },
             onDateSelected: (date){
               return _handleData(date);

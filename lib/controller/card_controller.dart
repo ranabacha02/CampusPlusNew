@@ -12,6 +12,7 @@ class CardController{
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
+
   Future createCard(String event, DateTime dateCreated, DateTime eventStart) async {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyCard card= MyCard(
@@ -43,6 +44,10 @@ class CardController{
   Future getMyCards() async{
     return MyCard.getMyCards(auth.currentUser!.uid);
   }
+
+
+
+
 
 
 }
