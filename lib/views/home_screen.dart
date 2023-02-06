@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   gettingCards() async {
-    await cardController.getCards().then((snapshot) {
+    await cardController.getStreamOfCards().then((snapshot) {
       setState(() {
         cards = snapshot;
       });
