@@ -1,36 +1,33 @@
 import 'dart:io';
 import 'dart:core';
 import 'package:campus_plus/model/clean_user_model.dart';
-import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyCourse {
   String createdBy;
-  String event;
+  String courseName;
   String department;
+  //TODO refactor price to be an integer
   String price;
   CleanUser user;
-  // final Timestamp eventEnd;
-  // final List<String> tags;
   FirebaseAuth auth = FirebaseAuth.instance;
 
 
   MyCourse({
     required this.createdBy,
-    required this.event,
+    required this.courseName,
     required this.department,
     required this.price,
     required this.user,
-
   });
 
   MyCourse.fromFirestore(Map<String, dynamic> snapshot):
         createdBy = snapshot['createdBy'],
-        event = snapshot['event'],
+        courseName = snapshot['courseName'],
         department = snapshot['department'],
         price = snapshot['price'],
-        user = snapshot['user'];
+        user = CleanUser.fromFirestore(snapshot['user']);
 
 
 
@@ -39,12 +36,10 @@ class MyCourse {
   Map<String, dynamic> toFirestore(){
     return {
       'createdBy': createdBy,
-      'event' : event,
+      'courseName' : courseName,
       'department' : department,
       'price' : price,
-      'user' : user,
-
-
+      'user' : user.toFirestore(),
     };
   }
 
@@ -65,7 +60,7 @@ class MyCourse {
 
   static Stream<QuerySnapshot<Object?>> getStreamOfCourses(){
     final CollectionReference courseCollection = FirebaseFirestore.instance.collection("Courses");
-    return courseCollection.orderBy('eventStart').snapshots();
+    return courseCollection.snapshots();
   }
 
   static Future<List<MyCourse>> getAllCourses() async {
