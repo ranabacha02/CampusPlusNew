@@ -83,7 +83,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                           user: CleanUser.fromFirestore(data.docs[index]['user']),
                          );
                     }
-                    if (data2['searchInput']
+                    if (data2['user']
                         .toString()
                         .toLowerCase()
                         .contains(searchInput.toLowerCase())) {
