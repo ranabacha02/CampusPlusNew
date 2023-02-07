@@ -23,6 +23,7 @@ class DataController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = FirebaseStorage.instance;
 
+
   Future getUserInfo() async {
     DocumentSnapshot snapshot = await await users.doc(auth.currentUser!.uid).get();
     MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);

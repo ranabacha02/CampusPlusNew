@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import '../controller/course_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/clean_user_model.dart';
 import '../model/user_model.dart';
 
 
@@ -19,6 +21,9 @@ class _MainCourseFormState extends State<MainCourseForm> {
 
   final _courseController = TextEditingController();
   final _departmentController = TextEditingController();
+  final _priceController = TextEditingController();
+  late final CleanUser cleanUserInfo;
+  CourseController courseController = Get.put(CourseController());
 
   CollectionReference courses = FirebaseFirestore.instance.collection('Courses');
 
@@ -35,6 +40,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
   void dispose(){
     _courseController.dispose();
     _departmentController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -72,6 +78,18 @@ class _MainCourseFormState extends State<MainCourseForm> {
             SizedBox(
               height: 20,
             ),
+            TextFormField(
+              controller: _priceController,
+              decoration: InputDecoration(
+                  labelText: 'Price',
+                  prefixIcon: Icon(Icons.emoji_people_rounded),
+                  border: OutlineInputBorder()
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+
 
             SizedBox(
               height: 20,
@@ -87,12 +105,16 @@ class _MainCourseFormState extends State<MainCourseForm> {
     return OutlinedButton(
       child: Text("Add Course"),
       onPressed: (){
-        courses
-            .add({'createdBy': userInfo.userId , 'name': userInfo.firstName, 'event': _courseController.text, 'department':_departmentController.text})
-            .then((value)=> print('Course added'))
-            .catchError((error)=> print('Failed to add user: $error'));
-        Navigator.pop(context);
-      },
+        courseController.createcourse(_courseController.text, _departmentController.text, _priceController.text);
+      }
+      // onPressed: (){
+      //   courses
+      //       .add({'createdBy': userInfo.userId , 'name': userInfo.firstName, 'event': _courseController.text, 'department':_departmentController.text})
+      //       .then((value)=> print('Course added'))
+      //       .catchError((error)=> print('Failed to add user: $error'));
+      //   Navigator.pop(context);
+      // },
     );
   }
 }
+
