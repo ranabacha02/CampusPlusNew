@@ -105,7 +105,7 @@ class _MainCourseFormState extends State<MainCourseForm> {
     return OutlinedButton(
       child: const Text("Add Course"),
       onPressed: (){
-        courseController.createCourse(_courseController.text, _departmentController.text, _priceController.text);
+        courseController.createCourse(_courseController.text, _departmentController.text, int.parse(_priceController.text));
         Navigator.pop(context);
       }
     );

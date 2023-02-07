@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:core';
 import 'package:campus_plus/model/clean_user_model.dart';
@@ -9,7 +10,7 @@ class MyCourse {
   String courseName;
   String department;
   //TODO refactor price to be an integer
-  String price;
+  int price;
   CleanUser user;
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -26,7 +27,7 @@ class MyCourse {
         createdBy = snapshot['createdBy'],
         courseName = snapshot['courseName'],
         department = snapshot['department'],
-        price = snapshot['price'],
+        price = int.parse(snapshot['price']),
         user = CleanUser.fromFirestore(snapshot['user']);
 
 

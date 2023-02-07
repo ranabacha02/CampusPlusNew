@@ -79,7 +79,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                       return MainCourse(
                           courseName: snapshot.data!.docs[index]['courseName'],
                           department: snapshot.data!.docs[index]['department'],
-                          price: int.parse(snapshot.data!.docs[index]['price']),
+                          price: snapshot.data!.docs[index]['price'],
                           user: CleanUser.fromFirestore(data.docs[index]['user']),
                          );
                     }
@@ -90,7 +90,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                       return MainCourse(
                         courseName: snapshot.data!.docs[index]['courseName'],
                         department: snapshot.data!.docs[index]['department'],
-                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        price: snapshot.data!.docs[index]['price'],
                         user: CleanUser.fromFirestore(data.docs[index]['user']),
                       );
                     }
@@ -101,7 +101,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                       return MainCourse(
                         courseName: snapshot.data!.docs[index]['courseName'],
                         department: snapshot.data!.docs[index]['department'],
-                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        price: snapshot.data!.docs[index]['price'],
                         user: CleanUser.fromFirestore(data.docs[index]['user']),
                       );
                     }
@@ -112,7 +112,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
                       return MainCourse(
                         courseName: snapshot.data!.docs[index]['courseName'],
                         department: snapshot.data!.docs[index]['department'],
-                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        price: snapshot.data!.docs[index]['price'],
                         user: CleanUser.fromFirestore(data.docs[index]['user']),
                       );
                     }

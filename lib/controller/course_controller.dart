@@ -14,7 +14,7 @@ class CourseController extends GetxController {
   DataController dataController = Get.put(DataController());
 
 
-  void createCourse(String courseName, String department, String price) {
+  void createCourse(String courseName, String department, int price) {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyCourse course= MyCourse(
         createdBy: auth.currentUser!.uid,
