@@ -1,3 +1,4 @@
+import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,18 +8,16 @@ import 'ContactPage.dart';
 class MainCourse extends StatelessWidget {
   const MainCourse({
     Key? key,
-    required this.event,
-    required this.name,
+    required this.courseName,
     required this.department,
     required this.price,
-
-
+    required this.user,
   }) : super(key: key);
 
-  final String event;
-  final String name;
+  final String courseName;
   final String department;
   final int price;
+  final CleanUser user;
 
 
 
@@ -31,7 +30,7 @@ class MainCourse extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              Container(
+              const SizedBox(
                 height: 100,
                 width: 100,
                 // decoration: BoxDecoration(
@@ -48,30 +47,30 @@ class MainCourse extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      name,
-                      style: TextStyle(
+                      user.firstName,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontFamily: 'Roboto',
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      event,
-                      style: TextStyle(
+                      courseName,
+                      style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 16,
                       ),
                     ),
                     Text(
                       department,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 16,
                       ),
                     ),
                     Text(
-                      "Price per hour : "+ price.toString() + "\$",
-                      style: TextStyle(
+                      "Price per hour : $price\$",
+                      style: const TextStyle(
                         fontFamily: 'Roboto',
                         fontSize: 16,
                       ),
@@ -80,7 +79,7 @@ class MainCourse extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.contact_mail),
+                icon: const Icon(Icons.contact_mail),
                 onPressed: () { Navigator.push(
                   context,
                   MaterialPageRoute(
