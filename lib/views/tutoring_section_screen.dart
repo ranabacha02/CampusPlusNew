@@ -1,15 +1,12 @@
+import 'package:campus_plus/controller/course_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
-
-import '../controller/auth_controller.dart';
-import '../controller/data_controller.dart';
-import '../model/user_model.dart';
+import '../model/clean_user_model.dart';
 import '../utils/app_colors.dart';
-import '../widgets/app_widgets.dart';
 import '../widgets/main_course.dart';
 import 'coursesForm.dart';
 
@@ -19,29 +16,27 @@ class TutoringSectionScreen extends StatefulWidget{
 }
 
 class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
-  late final MyUser userInfo;
-  String name="";
-  final Stream<QuerySnapshot> courses = FirebaseFirestore.instance.collection('Courses').snapshots();
-  Size size = WidgetsBinding.instance.window.physicalSize /
-      WidgetsBinding.instance.window.devicePixelRatio;
-
-  late AuthController authController;
-  CollectionReference users = FirebaseFirestore.instance.collection('Users');
+  Size size = WidgetsBinding.instance.window.physicalSize / WidgetsBinding.instance.window.devicePixelRatio;
+  Stream? courses;
   FirebaseAuth auth = FirebaseAuth.instance;
-
-  late DataController dataController;
-
-
-
-  late String course;
-
+  late CourseController courseController;
+  String searchInput="";
+  
   @override
   void initState() {
     super.initState();
-    authController = Get.put(AuthController());
-    dataController = Get.put(DataController());
-    userInfo = dataController.getLocalData();
+    courseController = Get.put(CourseController());
+    gettingCourses();
   }
+  
+  gettingCourses() async{
+    await courseController.getStreamOfCourses().then((snapshot){
+      setState(() {
+        courses = snapshot;
+      });
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,11 +48,11 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
           ),
             title: Card(
               child: TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.search), hintText: 'Search...'),
                 onChanged: (val) {
                   setState(() {
-                    name = val;
+                    searchInput = val;
                   });
                 },
               ),
@@ -65,62 +60,61 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
         ),
         body: Container(
             color: AppColors.white,
-            child: StreamBuilder<QuerySnapshot>(
+            child: StreamBuilder(
               stream: courses,
               builder: (
-                  BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot,
-                  ) {
-                if(snapshot.hasError){
-                  return Text('Something went wrong');
+                  BuildContext context, AsyncSnapshot snapshot) {
+                if(!snapshot.hasData){
+                  return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
                 }
-                if(snapshot.connectionState == ConnectionState.waiting){
-                  return const Text('Loading');
-
+                if(snapshot.hasError){
+                  return const Text('Something went wrong');
                 }
                 final data = snapshot.requireData;
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index){
-
-                    var data2 = snapshot.data!.docs[index].data()
-                    as Map<String, dynamic>;
-                    if (name.isEmpty){
-                      return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name'],
+                    var data2 = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+                    if (searchInput.isEmpty){
+                      return MainCourse(
+                          courseName: snapshot.data!.docs[index]['courseName'],
                           department: snapshot.data!.docs[index]['department'],
-                          price: snapshot.data!.docs[index]['price'],
+                          price: int.parse(snapshot.data!.docs[index]['price']),
+                          user: CleanUser.fromFirestore(data.docs[index]['user']),
                          );
                     }
-                    if (data2['name']
+                    if (data2['searchInput']
                         .toString()
                         .toLowerCase()
-                        .contains(name.toLowerCase())) {
-                      return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department'],
-                          price: snapshot.data!.docs[index]['price'],
-                          );
+                        .contains(searchInput.toLowerCase())) {
+                      return MainCourse(
+                        courseName: snapshot.data!.docs[index]['courseName'],
+                        department: snapshot.data!.docs[index]['department'],
+                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        user: CleanUser.fromFirestore(data.docs[index]['user']),
+                      );
                     }
-                    if (data2['event']
+                    if (data2['courseName']
                         .toString()
                         .toLowerCase()
-                        .contains(name.toLowerCase())) {
-                      return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department'],
-                          price: snapshot.data!.docs[index]['price'],
-                          );
+                        .contains(searchInput.toLowerCase())) {
+                      return MainCourse(
+                        courseName: snapshot.data!.docs[index]['courseName'],
+                        department: snapshot.data!.docs[index]['department'],
+                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        user: CleanUser.fromFirestore(data.docs[index]['user']),
+                      );
                     }
                     if (data2['department']
                         .toString()
                         .toLowerCase()
-                        .contains(name.toLowerCase())) {
-                      return MainCourse(event: snapshot.data!.docs[index]['event'],
-                          name: snapshot.data!.docs[index]['name'],
-                          department: snapshot.data!.docs[index]['department'],
-                          price: snapshot.data!.docs[index]['price'],
-                         );
+                        .contains(searchInput.toLowerCase())) {
+                      return MainCourse(
+                        courseName: snapshot.data!.docs[index]['courseName'],
+                        department: snapshot.data!.docs[index]['department'],
+                        price: int.parse(snapshot.data!.docs[index]['price']),
+                        user: CleanUser.fromFirestore(data.docs[index]['user']),
+                      );
                     }
                     else {
                       return Container();

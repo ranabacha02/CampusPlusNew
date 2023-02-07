@@ -55,43 +55,43 @@ class _MainCourseFormState extends State<MainCourseForm> {
         backgroundColor: Color.fromRGBO(144, 0, 49, 1),
       ),
       body: Container(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         child: ListView(
           children: [
             TextFormField(
               controller: _courseController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Course Name',
                   prefixIcon: Icon(Icons.emoji_people_rounded),
                   border: OutlineInputBorder()
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextFormField(
               controller: _departmentController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Department',
                   prefixIcon: Icon(Icons.emoji_people_rounded),
                   border: OutlineInputBorder()
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             TextFormField(
               controller: _priceController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   labelText: 'Price',
                   prefixIcon: Icon(Icons.emoji_people_rounded),
                   border: OutlineInputBorder()
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
 
 
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             myBtn(context),
@@ -103,17 +103,11 @@ class _MainCourseFormState extends State<MainCourseForm> {
 
   OutlinedButton myBtn(BuildContext context) {
     return OutlinedButton(
-      child: Text("Add Course"),
+      child: const Text("Add Course"),
       onPressed: (){
-        courseController.createcourse(_courseController.text, _departmentController.text, _priceController.text);
+        courseController.createCourse(_courseController.text, _departmentController.text, _priceController.text);
+        Navigator.pop(context);
       }
-      // onPressed: (){
-      //   courses
-      //       .add({'createdBy': userInfo.userId , 'name': userInfo.firstName, 'event': _courseController.text, 'department':_departmentController.text})
-      //       .then((value)=> print('Course added'))
-      //       .catchError((error)=> print('Failed to add user: $error'));
-      //   Navigator.pop(context);
-      // },
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -24,15 +25,10 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
       WidgetsBinding.instance.window.devicePixelRatio;
 
   late AuthController authController;
-  CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
-
   late DataController dataController;
   late final MyUser userInfo;
   late final List<dynamic> coursesList = userInfo.tutoringClasses;
-  late String course;
-
-
 
 
 
@@ -95,7 +91,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
                 return ListView.builder(
                   itemCount: data.size,
                   itemBuilder: (context, index){
-                    return MainCourse(event: data.docs[index]['event'], name: data.docs[index]['name'], department: data.docs[index]['department'], price: data.docs[index]['price']);
+                    return MainCourse(courseName: data.docs[index]['courseName'], department: data.docs[index]['department'], price: data.docs[index]['price'], user: CleanUser.fromFirestore(data.docs[index]['user']));
                   },
                 );
               },
