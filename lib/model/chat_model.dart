@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -59,6 +60,15 @@ class Chat {
     final CollectionReference chatCollection =
         FirebaseFirestore.instance.collection("chats");
 
+    DataController dataController = Get.put(DataController());
+    MyUser myUser = dataController.getLocalData();
+    for (String id in myUser.chatsId) {
+      if (id.split("_")[1] == recipientEmail) {
+        chatId = id.split("_")[0];
+        return this;
+      }
+    }
+
     DocumentReference groupDocumentReference = await chatCollection.add({
       "isGroup": isGroup,
       "chatName": chatName,
@@ -108,7 +118,6 @@ class Chat {
       "chatsId": FieldValue.arrayUnion(["${groupDocumentReference.id}_$email"])
     });
 
-    DataController dataController = Get.put(DataController());
     dataController.getUserInfo();
 
     return this;

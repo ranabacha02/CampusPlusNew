@@ -1,4 +1,5 @@
 import 'package:campus_plus/widgets/card_info.dart';
+import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -96,17 +97,23 @@ class MainCard extends StatelessWidget {
                         children: [
                           Expanded(
                             flex: 1,
-                            child: CircleAvatar(
+                            // child: CircleAvatar(
+                            //   radius: 20,
+                            //   backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
+                            //   foregroundColor: Colors.white,
+                            //   child: Text(
+                            //     usersJoined[0].firstName[0],
+                            //     style: const TextStyle(
+                            //       fontSize: 22,
+                            //       color: Colors.white,
+                            //     ),
+                            //   ),
+                            // ),
+                            child: UserProfilePicture(
+                              imageURL: usersJoined[0].profilePictureURL,
                               radius: 20,
-                              backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                              foregroundColor: Colors.white,
-                              child: Text(
-                                usersJoined[0].firstName[0],
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              caption: usersJoined[0].firstName,
+                              preview: false,
                             ),
                           ),
                           const SizedBox(height: 10, width: 7,),
@@ -176,26 +183,29 @@ class MainCard extends StatelessWidget {
               left: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2) + 40 : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8) / 2 + 40,
               child: Row(children: [
                 usersJoined.length > 1
-                    ? CircleAvatar(
+                    ? UserProfilePicture(
+                        imageURL: usersJoined[1].profilePictureURL,
+                        caption: usersJoined[1].firstName,
                         radius: 15,
-                        backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                        foregroundColor: Colors.white,
-                        child: Text(usersJoined[1].firstName[0]),
-                      ) : const SizedBox.shrink(),
+                        preview: false,
+                      )
+                    : const SizedBox.shrink(),
                 usersJoined.length > 2
-                    ? CircleAvatar(
+                    ? UserProfilePicture(
+                        imageURL: usersJoined[2].profilePictureURL,
+                        caption: usersJoined[2].firstName,
                         radius: 15,
-                        backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                        foregroundColor: Colors.white,
-                        child: Text(usersJoined[2].firstName[0]),
-                      ) : const SizedBox.shrink(),
+                        preview: false,
+                      )
+                    : const SizedBox.shrink(),
                 usersJoined.length > 3
-                    ? CircleAvatar(
+                    ? UserProfilePicture(
+                        imageURL: usersJoined[3].profilePictureURL,
+                        caption: usersJoined[3].firstName,
                         radius: 15,
-                        backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                        foregroundColor: Colors.white,
-                        child: Text(usersJoined[3].firstName[0]),
-                      ) : const SizedBox.shrink(),
+                        preview: false,
+                      )
+                    : const SizedBox.shrink(),
               ])), //The JoinedUserIcons
         ]));
   }

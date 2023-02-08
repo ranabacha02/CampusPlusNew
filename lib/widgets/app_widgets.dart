@@ -42,16 +42,19 @@ Widget myTextField(
       TextEditingController? controller,
       Function? validator}) {
   return Container(
+    //color: AppColors.whitegrey,
     height: 45,
     child: TextFormField(
       validator: (input) => validator!(input),
       obscureText: bool,
       controller: controller,
       decoration: InputDecoration(
+          filled: true,
+          fillColor: AppColors.whitegrey,
           contentPadding: EdgeInsets.only(top: 5),
           errorStyle: TextStyle(fontSize: 0),
           hintStyle: TextStyle(
-            color: AppColors.genderTextColor,
+            color: AppColors.white2,
           ),
           hintText: text,
           prefixIcon: Image.asset(

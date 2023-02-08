@@ -16,6 +16,8 @@ import 'package:path/path.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
+import '../widgets/app_widgets.dart';
+import '../widgets/forum_widget.dart';
 import '../widgets/message_tile.dart';
 
 class ChatPageScreen extends StatefulWidget {
@@ -46,6 +48,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
   late final MyUser userInfo;
   late final userName;
   Stream? chats;
+  bool isChat = true;
 
   @override
   void initState() {
@@ -67,130 +70,185 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                  icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () {
-                    chatController.markRead(widget.chatId);
-                    Navigator.push(
-                        context,
-                        //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
-
-                        PageTransition(
-                            type: PageTransitionType.leftToRightPop,
-                            child: NavBarView(index: 3),
-                            childCurrent: ChatPageScreen(
-                              imageURL: widget.imageURL,
-                              privateChat: widget.privateChat,
-                              chatId: widget.chatId,
-                              chatName: widget.chatName,
-                            )));
-                  }),
-              title: Row(
-                children: [
-                  widget.imageURL != null && widget.imageURL != ""
-                      ? UserProfilePicture(
-                          imageURL: widget.imageURL!,
-                          caption: widget.chatName,
-                          radius: 25,
-                        )
-                      : CircleAvatar(
-                          backgroundImage:
-                              AssetImage("assets/default_profile.jpg"),
-                        ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Text(
-                    widget.chatName,
-                    style: TextStyle(color: AppColors.aubRed, fontSize: 24),
-                  ),
-                ],
-              ),
-              backgroundColor: AppColors.white,
-            ),
-            body: SingleChildScrollView(
-              child: Column(
-                // fit: StackFit.passthrough,
-                children: <Widget>[
-                  // chat messages here
-                  chatMessages(widget.privateChat),
-                  Container(
-                    alignment: Alignment.bottomCenter,
-                    width: MediaQuery.of(context).size.width,
-                    child: Container(
-                      padding: const EdgeInsets.only(
-                          left: 20, top: 12, right: 20, bottom: 20),
-                      width: MediaQuery.of(context).size.width,
-                      color: Colors.grey[700],
-                      child: Row(children: [
-                        Expanded(
-                          child: Container(
-                              padding: const EdgeInsets.only(
-                                left: 20,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.circular(35.0),
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: messageController,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                      maxLines: 5,
-                                      minLines: 1,
-                                      decoration: const InputDecoration(
-                                        hintText: "Send a message...",
-                                        hintStyle: TextStyle(
-                                            color: Colors.white, fontSize: 16),
-                                        border: InputBorder.none,
-                                      ),
-                                    ),
-                                  ),
-                                  ChatFileUploads(
-                                    imageUrl: widget.imageURL,
-                                    chatName: widget.chatName,
-                                    chatId: widget.chatId,
-                                    privateChat: widget.privateChat,
-                                  ),
-                                ],
-                              )),
-                        ),
-                        const SizedBox(
-                          width: 12,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            sendMessage();
-                          },
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              color: AppColors.blueChat,
-                              borderRadius: BorderRadius.circular(30),
+    return DefaultTabController(
+        length: 2,
+        child: GestureDetector(
+            onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+            },
+            child: Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                      icon: Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () {
+                        chatController.markRead(widget.chatId);
+                        Navigator.push(
+                            context,
+                            //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
+                            PageTransition(
+                                type: PageTransitionType.leftToRightPop,
+                                child: NavBarView(index: 3),
+                                childCurrent: ChatPageScreen(
+                                  imageURL: widget.imageURL,
+                                  privateChat: widget.privateChat,
+                                  chatId: widget.chatId,
+                                  chatName: widget.chatName,
+                                )));
+                      }),
+                  title: Row(
+                    children: [
+                      widget.imageURL != null && widget.imageURL != ""
+                          ? UserProfilePicture(
+                              imageURL: widget.imageURL!,
+                              caption: widget.chatName,
+                              radius: 25,
+                            )
+                          : CircleAvatar(
+                              backgroundImage:
+                                  AssetImage("assets/default_profile.jpg"),
                             ),
-                            child: const Center(
-                                child: Icon(
-                              Icons.send,
-                              color: Colors.white,
-                            )),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        widget.chatName,
+                        style: TextStyle(color: AppColors.aubRed, fontSize: 24),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: AppColors.white,
+                ),
+                body: widget.privateChat
+                    ? Column(
+                        //mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TabBar(
+                            labelPadding: EdgeInsets.all(Get.height * 0.01),
+                            unselectedLabelColor: Colors.grey,
+                            labelColor: Colors.black,
+                            indicatorColor: Colors.black,
+                            onTap: (v) {
+                              setState(() {
+                                isChat = !isChat;
+                              });
+                            },
+                            tabs: [
+                              myText(
+                                text: 'Chat',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              myText(
+                                text: 'Forum',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ]),
+                          Flexible(
+                            fit: FlexFit.loose,
+                            child: TabBarView(
+                              children: [
+                                chatWidget(context),
+                                forumWidget(),
+                              ],
+                            ),
+                          )
+                        ],
+                      )
+                    : chatWidget(context))));
+  }
+
+  Widget chatWidget(BuildContext context) {
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints viewportConstraints) {
+      return SingleChildScrollView(
+        //physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          children: <Widget>[
+            // chat messages here
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: viewportConstraints.maxHeight - 100,
+              ),
+              child: chatMessages(widget.privateChat),
+            ),
+            //type bar
+            Container(
+              alignment: Alignment.bottomCenter,
+              width: MediaQuery.of(context).size.width,
+              child: Container(
+                padding: const EdgeInsets.only(
+                    left: 20, top: 12, right: 20, bottom: 20),
+                width: MediaQuery.of(context).size.width,
+                color: Colors.grey[700],
+                child: Row(children: [
+                  Expanded(
+                    child: Container(
+                        padding: const EdgeInsets.only(
+                          left: 20,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(35.0),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: messageController,
+                                style: const TextStyle(color: Colors.white),
+                                maxLines: 5,
+                                minLines: 1,
+                                decoration: const InputDecoration(
+                                  hintText: "Send a message...",
+                                  hintStyle: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                  border: InputBorder.none,
+                                ),
+                              ),
+                            ),
+                            ChatFileUploads(
+                              imageUrl: widget.imageURL,
+                              chatName: widget.chatName,
+                              chatId: widget.chatId,
+                              privateChat: widget.privateChat,
+                            ),
+                          ],
+                        )),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      sendMessage();
+                    },
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: AppColors.blueChat,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: const Center(
+                          child: Icon(
+                        Icons.send,
+                        color: Colors.white,
+                      )),
                     ),
                   )
-                ],
+                ]),
               ),
-            )));
+            )
+          ],
+        ),
+      );
+    });
   }
 
   chatMessages(bool privateChat) {
@@ -200,7 +258,9 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
         String previousSender = "";
         return snapshot.hasData
             ? Container(
-            height: MediaQuery.of(context).size.height * 0.783,
+                height: privateChat
+                    ? MediaQuery.of(context).size.height * 0.73
+                    : MediaQuery.of(context).size.height * 0.783,
                 child: ListView.builder(
                   reverse: true,
                   itemCount: snapshot.data.docs.length,
@@ -242,6 +302,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                           if (snapshot.data.docs[index] != null &&
                               snapshot.data.docs[index]['type'] == 'image') {
                             return Column(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 chatDateTile(currentDate),
                                 ReceivedMessageTile(
