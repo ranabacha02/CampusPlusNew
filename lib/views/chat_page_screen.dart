@@ -78,6 +78,11 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
               FocusManager.instance.primaryFocus?.unfocus();
             },
             child: Scaffold(
+                extendBody: true,
+                bottomNavigationBar: SizedBox(
+                  height: 1,
+                ),
+                resizeToAvoidBottomInset: true,
                 appBar: AppBar(
                   leading: IconButton(
                       icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -152,15 +157,15 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                     ),
                     Flexible(
                       fit: FlexFit.loose,
-                      child: TabBarView(
-                        children: [
+                            child: TabBarView(
+                              children: [
                                 chatWidget(context),
                                 ForumWidget(
                                   chatId: widget.chatId,
                                 ),
                               ],
-                      ),
-                    )
+                            ),
+                          )
                   ],
                 )
                     : chatWidget(context))));
@@ -185,6 +190,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
               alignment: Alignment.bottomCenter,
               width: MediaQuery.of(context).size.width,
               child: Container(
+                height: 80,
                 padding: const EdgeInsets.only(
                     left: 20, top: 12, right: 20, bottom: 20),
                 width: MediaQuery.of(context).size.width,
@@ -240,9 +246,9 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                       ),
                       child: const Center(
                           child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                      )),
+                            Icons.send,
+                            color: Colors.white,
+                          )),
                     ),
                   )
                 ]),

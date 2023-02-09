@@ -35,16 +35,18 @@ class ChatController {
     String recipientName =
         recipientInfo["firstName"] + " " + recipientInfo["lastName"];
     Chat chat =
-    new Chat(chatName: recipientName + "_" + userName, isGroup: false);
+        new Chat(chatName: recipientName + "_" + userName, isGroup: false);
     return chat.createChat(
         userEmail, recipientName, recipientId, recipientInfo["email"]);
   }
 
   getChatsId() async {
     CollectionReference userCollection =
-    FirebaseFirestore.instance.collection('Users');
+        FirebaseFirestore.instance.collection('Users');
     return userCollection.doc(auth.currentUser!.uid).snapshots();
   }
+
+  getChatsFromChatsId(List<String> chatsId) {}
 
   getChats(String groupId) async {
     Chat chat = new Chat(chatId: groupId);
