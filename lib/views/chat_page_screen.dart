@@ -71,6 +71,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+        initialIndex: 0,
         length: 2,
         child: GestureDetector(
             onTap: () {
@@ -99,14 +100,14 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                     children: [
                       widget.imageURL != null && widget.imageURL != ""
                           ? UserProfilePicture(
-                              imageURL: widget.imageURL!,
-                              caption: widget.chatName,
-                              radius: 25,
-                            )
+                        imageURL: widget.imageURL!,
+                        caption: widget.chatName,
+                        radius: 25,
+                      )
                           : CircleAvatar(
-                              backgroundImage:
-                                  AssetImage("assets/default_profile.jpg"),
-                            ),
+                        backgroundImage:
+                        AssetImage("assets/default_profile.jpg"),
+                      ),
                       SizedBox(
                         width: 20,
                       ),
@@ -120,46 +121,48 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                 ),
                 body: widget.privateChat
                     ? Column(
-                        //mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TabBar(
-                            labelPadding: EdgeInsets.all(Get.height * 0.01),
-                            unselectedLabelColor: Colors.grey,
-                            labelColor: Colors.black,
-                            indicatorColor: Colors.black,
-                            onTap: (v) {
-                              setState(() {
-                                isChat = !isChat;
-                              });
-                            },
-                            tabs: [
-                              myText(
-                                text: 'Chat',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              myText(
-                                text: 'Forum',
-                                style: TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
+                  //mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TabBar(
+                      labelPadding: EdgeInsets.all(Get.height * 0.01),
+                      unselectedLabelColor: Colors.grey,
+                      labelColor: Colors.black,
+                      indicatorColor: Colors.black,
+                      onTap: (v) {
+                        setState(() {
+                          isChat = !isChat;
+                        });
+                      },
+                      tabs: [
+                        myText(
+                          text: 'Chat',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
                           ),
-                          Flexible(
-                            fit: FlexFit.loose,
-                            child: TabBarView(
-                              children: [
+                        ),
+                        myText(
+                          text: 'Forum',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      fit: FlexFit.loose,
+                      child: TabBarView(
+                        children: [
                                 chatWidget(context),
-                                forumWidget(),
+                                ForumWidget(
+                                  chatId: widget.chatId,
+                                ),
                               ],
-                            ),
-                          )
-                        ],
-                      )
+                      ),
+                    )
+                  ],
+                )
                     : chatWidget(context))));
   }
 
@@ -244,7 +247,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                   )
                 ]),
               ),
-            )
+            ),
           ],
         ),
       );
