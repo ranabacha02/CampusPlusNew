@@ -43,7 +43,10 @@ class _MainCardFormState extends State<MainCardForm> {
 }
 
 
-//help, gym
+enum AttendeeLimit {noLimit, one, two, three, four, five, six, seven, eight, nine, ten}
+enum Audience {everyone, department, gender}
+enum TagsFilter { study, food, fun, sports}
+
 class MyCustomForm extends StatefulWidget {
   const MyCustomForm({Key? key}) : super(key: key);
 
@@ -55,6 +58,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
   @override
   void dispose(){
+    //not sure if others have to be disposed
     _eventController.dispose();
     super.dispose();
   }
@@ -64,6 +68,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
   DateTime chosenDateTime = DateTime.now();
   CardController cardController = Get.put(CardController());
   final filter = ProfanityFilter();
+  bool favorite = false;
+  final List<String> _tags = <String>[];
+  Audience selectedAudience = Audience.everyone;
+  AttendeeLimit selectedLimit = AttendeeLimit.noLimit;
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -92,7 +101,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
             const SizedBox(
               height: 20,
             ),
-            const TagFilterChip(),
+            buildTagFilterChip(),
             const SizedBox(
               height: 20,
             ),
@@ -122,20 +131,21 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const AudiencePopupMenu(),
+                    buildAudiencePopupMenuButton(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.blue, style: BorderStyle.solid)),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-
+                            cardController.createCard(event: _eventController.text, audience: selectedAudience.name, attendeeLimit: selectedLimit.index, dateCreated: DateTime.now(), eventStart: chosenDateTime, tags: _tags);
+                            Navigator.pop(context);
                           }
                         },
                         child: const Text('Create'),
                       ),
                     ),
-                    const AttendeeLimitPopupMenu(),
+                    buildAttendeeLimitPopupMenuButton(),
                   ],
                 ),
               )
@@ -144,134 +154,92 @@ class _MyCustomFormState extends State<MyCustomForm> {
         )
     );
   }
-}
 
-enum TagsFilter { study, food, fun, sports}
-class TagFilterChip extends StatefulWidget {
-  const TagFilterChip({Key? key}) : super(key: key);
+  PopupMenuButton<AttendeeLimit> buildAttendeeLimitPopupMenuButton() {
+    return PopupMenuButton<AttendeeLimit>(
+                icon: const Icon(Icons.block_flipped),
+                initialValue: selectedLimit,
+                onSelected: (AttendeeLimit item) {
+                  setState(() {
+                    selectedLimit = item;
+                  });
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<AttendeeLimit>>[
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.noLimit,
+                    child: Text('No Limit'),
+                  ),
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.one,
+                    child: Text('One'),
+                  ),
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.two,
+                    child: Text('Two'),
+                  ),
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.three,
+                    child: Text('Three'),
+                  ),
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.five,
+                    child: Text('Five'),
+                  ),
+                  const PopupMenuItem<AttendeeLimit>(
+                    value: AttendeeLimit.ten,
+                    child: Text('Ten'),
+                  ),
+                ],
+              );
+  }
 
-  @override
-  State<TagFilterChip> createState() => _TagFilterChipState();
-}
+  PopupMenuButton<Audience> buildAudiencePopupMenuButton() {
+    return PopupMenuButton<Audience>(
+              icon: const Icon(Icons.people_outline),
+              initialValue: selectedAudience,
+              onSelected: (Audience item) {
+                setState(() {
+                  selectedAudience = item;
+                });
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Audience>>[
+                const PopupMenuItem<Audience>(
+                  value: Audience.everyone,
+                  child: Text('Everyone'),
+                ),
+                const PopupMenuItem<Audience>(
+                  value: Audience.department,
+                  child: Text('My department'),
+                ),
+                const PopupMenuItem<Audience>(
+                  value: Audience.gender,
+                  child: Text('My gender'),
+                ),
+              ],
+            );
+  }
 
-class _TagFilterChipState extends State<TagFilterChip> {
-  bool favorite = false;
-  final List<String> _filters = <String>[];
-  @override
-  Widget build(BuildContext context) {
+  Wrap buildTagFilterChip() {
     return Wrap(
       spacing: 5.0,
       children: TagsFilter.values.map((TagsFilter tag){
         return FilterChip(
             label: Text(tag.name),
-            selected: _filters.contains(tag.name),
+            selected: _tags.contains(tag.name),
             onSelected: (bool value){
               setState(() {
                 if (value) {
-                  if (!_filters.contains(tag.name)) {
-                    _filters.add(tag.name);
+                  if (!_tags.contains(tag.name)) {
+                    _tags.add(tag.name);
                   }
                 } else {
-                  _filters.removeWhere((String name) {
+                  _tags.removeWhere((String name) {
                     return name == tag.name;
                   });
                 }
               });
-        });
+            });
       }).toList(),
-    );
-  }
-}
-
-enum Audience {everyone, department, gender}
-class AudiencePopupMenu extends StatefulWidget {
-  const AudiencePopupMenu({Key? key}) : super(key: key);
-
-
-  @override
-  State<AudiencePopupMenu> createState() => _AudiencePopupMenuState();
-}
-
-class _AudiencePopupMenuState extends State<AudiencePopupMenu> {
-  Audience selectedAudience = Audience.everyone;
-  @override
-  Widget build(BuildContext context) {
-    return  PopupMenuButton<Audience>(
-      icon: const Icon(Icons.people_outline),
-      initialValue: selectedAudience,
-      // Callback that sets the selected popup menu item.
-      onSelected: (Audience item) {
-        setState(() {
-          selectedAudience = item;
-        });
-      },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<Audience>>[
-        const PopupMenuItem<Audience>(
-          value: Audience.everyone,
-          child: Text('Everyone'),
-        ),
-        const PopupMenuItem<Audience>(
-          value: Audience.department,
-          child: Text('My department'),
-        ),
-        const PopupMenuItem<Audience>(
-          value: Audience.gender,
-          child: Text('My gender'),
-        ),
-      ],
-    );
-  }
-}
-
-
-enum AttendeeLimit {one, two, three, five, ten, noLimit}
-class AttendeeLimitPopupMenu extends StatefulWidget {
-  const AttendeeLimitPopupMenu({Key? key}) : super(key: key);
-
-
-  @override
-  State<AttendeeLimitPopupMenu> createState() => _AttendeeLimitPopupMenuState();
-}
-
-class _AttendeeLimitPopupMenuState extends State<AttendeeLimitPopupMenu> {
-  AttendeeLimit selectedLimit = AttendeeLimit.noLimit;
-  @override
-  Widget build(BuildContext context) {
-    return  PopupMenuButton<AttendeeLimit>(
-      icon: const Icon(Icons.block_flipped),
-      initialValue: selectedLimit,
-      // Callback that sets the selected popup menu item.
-      onSelected: (AttendeeLimit item) {
-        setState(() {
-          selectedLimit = item;
-        });
-      },
-      itemBuilder: (BuildContext context) => <PopupMenuEntry<AttendeeLimit>>[
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.noLimit,
-          child: Text('No Limit'),
-        ),
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.one,
-          child: Text('One'),
-        ),
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.two,
-          child: Text('Two'),
-        ),
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.three,
-          child: Text('Three'),
-        ),
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.five,
-          child: Text('Five'),
-        ),
-        const PopupMenuItem<AttendeeLimit>(
-          value: AttendeeLimit.ten,
-          child: Text('Ten'),
-        ),
-      ],
     );
   }
 }
