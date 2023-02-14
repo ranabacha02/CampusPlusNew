@@ -6,19 +6,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 class MyCard {
   String createdBy;
   String event;
+  String audience;
+  int attendeeLimit;
   DateTime dateCreated;
   DateTime eventStart;
   // final Timestamp eventEnd;
-  // final List<String> tags;
-  FirebaseAuth auth = FirebaseAuth.instance;
+  List<String> tags;
   List<CleanUser> users;
   List<String> userIds;
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   MyCard({
     required this.createdBy,
     required this.event,
+    required this.audience,
+    required this.attendeeLimit,
     required this.dateCreated,
     required this.eventStart,
+    required this.tags,
     required this.users,
     required this.userIds,
   });
@@ -26,8 +31,11 @@ class MyCard {
   MyCard.fromFirestore(Map<String, dynamic> snapshot):
         createdBy = snapshot['createdBy'],
         event = snapshot['event'],
+        audience = snapshot['audience'],
+        attendeeLimit = snapshot['attendeeLimit'],
         dateCreated = snapshot['dateCreated'].toDate(),
         eventStart = snapshot['eventStart'].toDate(),
+        tags = List<String>.from(snapshot['tags']),
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
         userIds =  List<String>.from(snapshot['userIds']);
 
@@ -35,8 +43,11 @@ class MyCard {
     return {
       'createdBy': createdBy,
       'event' : event,
+      'audience': audience,
+      'attendeeLimit': attendeeLimit,
       'dateCreated' : dateCreated,
       'eventStart' : eventStart,
+      'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds
     };
@@ -44,9 +55,10 @@ class MyCard {
 
 
 
-  Future createCard() async {
+  Future<bool> createCard() async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    cardCollection.add(this.toFirestore());
+    final complete = cardCollection.add(this.toFirestore()).then((doc)=> true, onError: (r)=> false);
+    return complete;
   }
   static Future<bool> joinCard(String cardId, CleanUser user) async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
