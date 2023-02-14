@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import '../controller/card_controller.dart';
 import '../model/clean_user_model.dart';
-import '../utils/app_colors.dart';
 
 class MainCard extends StatelessWidget {
   MainCard({
@@ -50,6 +49,19 @@ class MainCard extends StatelessWidget {
                               child: Stack(
                                   alignment: AlignmentDirectional.center,
                                   children: [
+                                    Positioned(
+                                      top: 42,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                          radius: 42,
+                                          child:UserProfilePicture(
+                                            imageURL: usersJoined[0].profilePictureURL,
+                                            caption: "${usersJoined[0].firstName} ${usersJoined[0].lastName}",
+                                            radius: 40,
+                                            preview: false,
+                                          )
+                                      )
+                                    ),
                                 Positioned(
                                     top: 100,
                                     child: ClipPath(
@@ -72,21 +84,6 @@ class MainCard extends StatelessWidget {
                                         )
                                     )
                                 ),
-                                Positioned(
-                                  top: 40,
-                                  child: CircleAvatar(
-                                    radius: 40,
-                                    backgroundColor: AppColors.circle,
-                                    foregroundColor: AppColors.white,
-                                    child: Text(usersJoined[0].firstName[0] + usersJoined[0].lastName[0],
-                                      style: TextStyle(
-                                        color: AppColors.black,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 30,
-                                      ),
-                                    ),
-                                  ),
-                                ),
                               ]))),
                   child: Container(
                     width: (MediaQuery.of(context).size.width) > 500 ? 500 * 0.92 : (MediaQuery.of(context).size.width) * 0.92,
@@ -97,22 +94,10 @@ class MainCard extends StatelessWidget {
                         children: [
                           Expanded(
                             flex: 1,
-                            // child: CircleAvatar(
-                            //   radius: 20,
-                            //   backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                            //   foregroundColor: Colors.white,
-                            //   child: Text(
-                            //     usersJoined[0].firstName[0],
-                            //     style: const TextStyle(
-                            //       fontSize: 22,
-                            //       color: Colors.white,
-                            //     ),
-                            //   ),
-                            // ),
                             child: UserProfilePicture(
                               imageURL: usersJoined[0].profilePictureURL,
                               radius: 20,
-                              caption: usersJoined[0].firstName,
+                              caption: "${usersJoined[0].firstName} ${usersJoined[0].lastName}",
                               preview: false,
                             ),
                           ),
@@ -185,7 +170,7 @@ class MainCard extends StatelessWidget {
                 usersJoined.length > 1
                     ? UserProfilePicture(
                         imageURL: usersJoined[1].profilePictureURL,
-                        caption: usersJoined[1].firstName,
+                        caption: "${usersJoined[1].firstName} ${usersJoined[1].lastName}",
                         radius: 15,
                         preview: false,
                       )
@@ -193,7 +178,7 @@ class MainCard extends StatelessWidget {
                 usersJoined.length > 2
                     ? UserProfilePicture(
                         imageURL: usersJoined[2].profilePictureURL,
-                        caption: usersJoined[2].firstName,
+                        caption: "${usersJoined[2].firstName} ${usersJoined[2].lastName}",
                         radius: 15,
                         preview: false,
                       )
@@ -201,7 +186,7 @@ class MainCard extends StatelessWidget {
                 usersJoined.length > 3
                     ? UserProfilePicture(
                         imageURL: usersJoined[3].profilePictureURL,
-                        caption: usersJoined[3].firstName,
+                        caption: "${usersJoined[3].firstName} ${usersJoined[3].lastName}",
                         radius: 15,
                         preview: false,
                       )

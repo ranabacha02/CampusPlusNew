@@ -1,4 +1,5 @@
 import 'package:campus_plus/model/clean_user_model.dart';
+import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../controller/card_controller.dart';
@@ -116,12 +117,12 @@ class CardInfo extends StatelessWidget {
             children:
             [
               for (var user in usersJoined.sublist(1,))
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: const Color.fromRGBO(144, 0, 49, 1),
-                  foregroundColor: Colors.white,
-                  child: Text(user.firstName[0]),
-                )
+                UserProfilePicture(
+                      imageURL: user.profilePictureURL,
+                      caption: "${user.firstName} ${user.lastName}",
+                      radius: 20,
+                      preview: true,
+                    )
             ],
           ),
           SizedBox(
