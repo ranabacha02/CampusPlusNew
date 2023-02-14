@@ -13,17 +13,26 @@ class CardController{
   DataController dataController = Get.put(DataController());
 
 
-  Future createCard(String event, DateTime dateCreated, DateTime eventStart) async {
+  Future<bool> createCard(
+      {required String event,
+      required String audience,
+      required int attendeeLimit,
+      required DateTime dateCreated,
+      required DateTime eventStart,
+      required List<String> tags}) async {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyCard card= MyCard(
       createdBy: auth.currentUser!.uid,
       event: event,
+      audience: audience,
+      attendeeLimit: attendeeLimit,
       dateCreated: dateCreated,
       eventStart: eventStart,
+      tags: tags,
       users: [user],
       userIds: []
     );
-    card.createCard();
+    return card.createCard();
   }
 
   Future<bool> joinCard(String cardId, CleanUser user) async {
