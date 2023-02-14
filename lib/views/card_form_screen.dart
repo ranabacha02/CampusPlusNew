@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:profanity_filter/profanity_filter.dart';
 import '../controller/card_controller.dart';
 import '../utils/app_colors.dart';
 
@@ -62,7 +63,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
   final _eventController = TextEditingController();
   DateTime chosenDateTime = DateTime.now();
   CardController cardController = Get.put(CardController());
-
+  final filter = ProfanityFilter();
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -82,7 +83,9 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 if(value?.isEmpty ?? true){
                   return 'Please enter some text';
                 }
-
+                if(filter.hasProfanity(value ?? "")){
+                  return 'No cursing';
+                }
                 return null;
               },
             ),
