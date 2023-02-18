@@ -1,7 +1,12 @@
 import 'dart:core';
+import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+
+final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
+DataController dataController = Get.put(DataController());
 
 class MyCard {
   String id = "";
@@ -79,13 +84,11 @@ class MyCard {
     return complete;
   }
   static Future<bool> joinCard(String cardId, CleanUser user) async {
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]), "userIds": FieldValue.arrayUnion([user.userId])})
         .then((doc)=> true, onError: (e)=>false);
     return complete;
   }
   static Future<bool> leaveCard(String cardId, CleanUser user) async {
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
     MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
     List<CleanUser> cardUsers = card.users;
@@ -96,7 +99,6 @@ class MyCard {
   }
 
   static Future<bool> removeCard(String cardId) async {
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     final complete = cardCollection.doc(cardId).delete().then((doc)=> true, onError: (e)=> false);
     return complete;
   }
@@ -107,21 +109,32 @@ class MyCard {
   }
 
   static Future<List<MyCard>> getAllCards() async {
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
+    final snapshots = await cardCollection.orderBy('eventStart').get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future<List<MyCard>> getAllVisibleCards() async{
+    String gender = dataController.getLocalData().gender;
+    String department = dataController.getLocalData().department;
+    final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).orderBy("eventStart").get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future<List<MyCard>> getTaggedCards() async{
     final snapshots = await cardCollection.orderBy('eventStart').get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
 
   static Future getMyCreatedCards(String userId) async{
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     final snapshots = await cardCollection.where("createdBy", isEqualTo: userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
 
   static Future getMyJoinedCards(String userId) async{
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     final snapshots = await cardCollection.where("userIds", arrayContains: userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
