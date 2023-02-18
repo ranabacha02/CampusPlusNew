@@ -19,6 +19,7 @@ class CardController{
       required int attendeeLimit,
       required DateTime dateCreated,
       required DateTime eventStart,
+      required DateTime eventEnd,
       required List<String> tags}) async {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyCard card= MyCard(
@@ -28,6 +29,7 @@ class CardController{
       attendeeLimit: attendeeLimit,
       dateCreated: dateCreated,
       eventStart: eventStart,
+      eventEnd: eventEnd,
       tags: tags,
       users: [user],
       userIds: []
@@ -51,7 +53,7 @@ class CardController{
     return MyCard.getStreamOfCards();
   }
 
-  Future getAllCards() async {
+  Future<List<MyCard>> getAllCards() async {
     return MyCard.getAllCards();
   }
 
