@@ -1,9 +1,11 @@
+import 'package:campus_plus/controller/data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../controller/card_controller.dart';
+import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 
 class MainCardForm extends StatefulWidget {
@@ -55,6 +57,19 @@ class MyCustomForm extends StatefulWidget {
 }
 
 class _MyCustomFormState extends State<MyCustomForm> {
+  final _formKey = GlobalKey<FormState>();
+  final _eventController = TextEditingController();
+  DateTime eventStart = DateTime.now();
+  DateTime eventEnd = DateTime.now().add(const Duration(hours:1));
+  late CardController cardController;
+  late DataController dataController;
+  late final MyUser userInfo;
+
+  final filter = ProfanityFilter();
+  bool favorite = false;
+  final List<String> _tags = <String>[];
+  Audience selectedAudience = Audience.everyone;
+  AttendeeLimit selectedLimit = AttendeeLimit.noLimit;
 
   @override
   void dispose(){
@@ -63,16 +78,13 @@ class _MyCustomFormState extends State<MyCustomForm> {
     super.dispose();
   }
 
-  final _formKey = GlobalKey<FormState>();
-  final _eventController = TextEditingController();
-  DateTime eventStart = DateTime.now();
-  DateTime eventEnd = DateTime.now().add(const Duration(hours:1));
-  CardController cardController = Get.put(CardController());
-  final filter = ProfanityFilter();
-  bool favorite = false;
-  final List<String> _tags = <String>[];
-  Audience selectedAudience = Audience.everyone;
-  AttendeeLimit selectedLimit = AttendeeLimit.noLimit;
+  @override
+  void initState(){
+    super.initState();
+    cardController = Get.put(CardController());
+    dataController = Get.put(DataController());
+    userInfo = dataController.getLocalData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,7 +190,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.blue, style: BorderStyle.solid)),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            cardController.createCard(event: _eventController.text, audience: selectedAudience.name, attendeeLimit: selectedLimit.index, dateCreated: DateTime.now(), eventStart: eventStart, eventEnd: eventEnd, tags: _tags);
+                            String audience;
+                            if(selectedAudience.name=="department") {
+                              audience = userInfo.department;
+                            }
+                            else if(selectedAudience.name=="gender"){
+                              audience = userInfo.gender;
+                            }
+                            else{
+                              audience = "Everyone";
+                            }
+                            cardController.createCard(event: _eventController.text, audience: audience, attendeeLimit: selectedLimit.index, dateCreated: DateTime.now(), eventStart: eventStart, eventEnd: eventEnd, tags: _tags);
                             Navigator.pop(context);
                           }
                         },
