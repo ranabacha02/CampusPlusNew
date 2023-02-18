@@ -1,13 +1,13 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 
 class MyUser {
   String firstName;
   String lastName;
+  String gender;
+  String department;
   String major;
   String email;
   int graduationYear;
@@ -25,6 +25,8 @@ class MyUser {
   MyUser({
     String? firstName,
     String? lastName,
+    String? gender,
+    String? department,
     String? major,
     int? graduationYear,
     String? email,
@@ -38,6 +40,8 @@ class MyUser {
     userId,
   })  : firstName = firstName ?? "",
         lastName = lastName ?? "",
+        gender = gender ?? "",
+        department = department ?? "",
         major = major ?? "",
         graduationYear = graduationYear ?? 9999,
         email = email ?? "",
@@ -53,6 +57,8 @@ class MyUser {
   MyUser.fromFirestore(Map<String, dynamic> snapshot):
         firstName = snapshot['firstName'],
         lastName = snapshot['lastName'],
+        gender = snapshot['gender'],
+        department = snapshot['department'],
         email = snapshot['email'],
         major = snapshot['major'],
         graduationYear = snapshot['graduationYear'],
@@ -69,6 +75,8 @@ class MyUser {
     return {
       'firstName': firstName,
       'lastName': lastName,
+      'gender': gender,
+      'department': department,
       'email': email,
       'major': major,
       'graduationYear': graduationYear,
@@ -88,6 +96,8 @@ class MyUser {
           'email': email,
           'firstName': firstName,
           'lastName': lastName,
+          'gender': gender,
+          'department': department,
           'major': major,
           'mobilePhoneNumber': mobilePhoneNumber,
           'graduationYear': graduationYear,
