@@ -1,3 +1,4 @@
+import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 

@@ -12,11 +12,7 @@ import 'package:firebase_core/firebase_core.dart';
 class MockAuth extends Mock implements AuthController {}
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+
 
   Widget makeTestableWidget({required Widget child, required AuthController auth}) {
     return AuthProvider(
