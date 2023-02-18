@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import '../controller/card_controller.dart';
 import '../controller/data_controller.dart';
 import '../model/clean_user_model.dart';
@@ -70,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context){
-                    return MainCardForm();
+                    return const MainCardForm();
                     })
                     )
                   },
@@ -79,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onPressed: () => {Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context){
-                        return Schedule();
+                        return const Schedule();
                       })
                   )},
                   icon: Image.asset('assets/calendarIcon.png')),
