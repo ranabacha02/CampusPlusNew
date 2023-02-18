@@ -11,6 +11,7 @@ import 'package:campus_plus/utils/app_colors.dart';
 class LoginView extends StatefulWidget {
   LoginView({Key? key}) : super(key: key);
 
+
   @override
   State<LoginView> createState() => _LoginViewState();
 }
@@ -158,8 +159,10 @@ class _LoginViewState extends State<LoginView> {
                   bool: false,
                   icon: 'assets/userIcon.png',
                   text: 'E-mail',
-                  validator: (String input) {
+                  validator: (String input)
+                  {
                     if (input.isEmpty) {
+                      EmailFieldValidator.validate;
                       Get.snackbar('Warning', 'Email is required.',
                           colorText: Colors.white,
                           backgroundColor: Colors.blue);
@@ -167,6 +170,7 @@ class _LoginViewState extends State<LoginView> {
                     }
 
                     if (!input.contains('@')) {
+                      EmailFieldValidator.validate;
                       Get.snackbar('Warning', 'Email is invalid.',
                           colorText: Colors.white,
                           backgroundColor: Colors.blue);
@@ -174,6 +178,7 @@ class _LoginViewState extends State<LoginView> {
                     }
 
                     List<String> x = input.split("@");
+                    EmailFieldValidator.validate;
                     if (x[1] != "mail.aub.edu") {
                       Get.snackbar(
                           'Warning', 'Email should end with @mail.aub.edu',
@@ -192,6 +197,7 @@ class _LoginViewState extends State<LoginView> {
                   text: 'Password',
                   validator: (String input) {
                     if (input.isEmpty) {
+                      PasswordFieldValidator.validate;
                       Get.snackbar('Warning', 'Password is required.',
                           colorText: Colors.white,
                           backgroundColor: Colors.blue);
@@ -203,8 +209,10 @@ class _LoginViewState extends State<LoginView> {
                           'Warning', 'Password should be 6+ characters.',
                           colorText: Colors.white,
                           backgroundColor: Colors.blue);
+                      PasswordFieldValidator.validate;
                       return '';
                     }
+                    PasswordFieldValidator.validate;
                   },
                   controller: passwordController),
               InkWell(
@@ -458,5 +466,17 @@ class _LoginViewState extends State<LoginView> {
             )),
       ],
     ));
+  }
+}
+
+class EmailFieldValidator {
+  static String? validate(String value) {
+    return value.isEmpty ? 'Email can\'t be empty' : null;
+  }
+}
+
+class PasswordFieldValidator {
+  static String? validate(String value) {
+    return value.isEmpty ? 'Password can\'t be empty' : null;
   }
 }
