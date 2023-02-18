@@ -57,6 +57,10 @@ class CardController{
     return MyCard.getAllCards();
   }
 
+  Future<List<MyCard>> getAllVisibleCards() async{
+    return MyCard.getAllVisibleCards();
+  }
+
 
   Future getMyCards() async{
     final myCreatedCards = await MyCard.getMyCreatedCards(auth.currentUser!.uid);
