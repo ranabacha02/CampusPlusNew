@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<MyCard>> gettingCards() async {
-    return await cardController.getAllCards();
+    return await cardController.getAllVisibleCards();
   }
 
   Future<void> refreshCards() async {
