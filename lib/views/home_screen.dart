@@ -27,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late CardController cardController;
   late final MyUser userInfo;
   late final CleanUser cleanUserInfo;
-  List<MyCard>? cards;
+  late Future<List<MyCard>> futureCards;
 
   @override
   void initState() {
@@ -37,13 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
     cardController = Get.put(CardController());
     userInfo = dataController.getLocalData();
     cleanUserInfo = CleanUser.fromMyUser(userInfo);
-    gettingCards();
+    futureCards = gettingCards();
   }
 
-  Future<void> gettingCards() async {
-    final newCards = await cardController.getAllCards();
-    setState(()  {
-      cards = newCards;
+  Future<List<MyCard>> gettingCards() async {
+    return await cardController.getAllCards();
+  }
+
+  Future<void> refreshCards() async {
+    final newCards = gettingCards();
+    setState(() {
+      futureCards = newCards;
     });
   }
 
@@ -64,13 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
             elevation: 0,
             actions: <Widget>[
               IconButton(
-                  onPressed: () => {
-                    Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context){
-                    return const MainCardForm();
-                    })
-                    )
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context){
+                        return const MainCardForm();
+                      }),
+                    );
+                    refreshCards();
                   },
                   icon: Image.asset('assets/postIcon.png')),
               IconButton(
@@ -91,15 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   icon: Image.asset('assets/notificationIcon.png')),
             ]),
         body: FutureBuilder(
-          future: cardController.getAllCards(),
+          future: futureCards,
           builder: (context, snapshot){
               return RefreshIndicator(
                 key: _refreshIndicatorKey,
                 color: Colors.white,
                 backgroundColor: Colors.blue,
                 strokeWidth: 4.0,
-                onRefresh: gettingCards,
-                child: _listView(snapshot, cleanUserInfo)
+                onRefresh: refreshCards,
+                child: _listView(snapshot, cleanUserInfo, refreshCards)
             );
           },
         )
@@ -107,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo) {
+Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo, Function refreshCards) {
   if(!snapshot.hasData){
     return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
   }
@@ -120,6 +125,7 @@ Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo) {
     itemBuilder: (context, index){
       if(data[index].createdBy == cleanUserInfo.userId){
         return MainCard(
+          refreshCards: refreshCards,
           cardId: data[index].id,
           event: data[index].event,
           personal: true,
@@ -129,6 +135,7 @@ Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo) {
         );}
       else{
         return MainCard(
+          refreshCards: refreshCards,
           cardId: data[index].id,
           event: data[index].event,
           personal: false,

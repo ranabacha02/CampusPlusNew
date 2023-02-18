@@ -10,6 +10,7 @@ import '../model/clean_user_model.dart';
 class MainCard extends StatelessWidget {
   MainCard({
     Key? key,
+    required this.refreshCards,
     required this.event,
     required this.personal,
     required this.cardId,
@@ -17,7 +18,7 @@ class MainCard extends StatelessWidget {
     required this.usersJoined,
     required this.date,
   }) : super(key: key);
-
+  final Function refreshCards;
   final String cardId;
   final CleanUser userInfo;
   final String event;
@@ -135,7 +136,7 @@ class MainCard extends StatelessWidget {
                           !personal ? Expanded(
                             flex: 1,
                             child: Center(
-                              child: JoinButton(joined: joined, cardId: cardId, userInfo: userInfo),
+                              child: JoinButton(refreshCards: refreshCards, joined: joined, cardId: cardId, userInfo: userInfo),
                             ),
                           ):  const Expanded(flex:1, child: SizedBox(),),
                         ]),
@@ -147,7 +148,7 @@ class MainCard extends StatelessWidget {
           personal ? Positioned(
             top: 15,
             right: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2 + 20) : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8 + 15),
-            child:  ToggleMenu(cardId: cardId),
+            child:  ToggleMenu(refreshCards: refreshCards, cardId: cardId),
           ): const SizedBox(), //The Toggle Button
           Positioned(
               top: 92,
@@ -199,11 +200,12 @@ class MainCard extends StatelessWidget {
 class JoinButton extends StatelessWidget {
   JoinButton({
     Key? key,
+    required this.refreshCards,
     required this.joined,
     required this.cardId,
     required this.userInfo,
   }) : super(key: key);
-
+  final Function refreshCards;
   final bool joined;
   final String cardId;
   final CleanUser userInfo;
@@ -216,12 +218,12 @@ class JoinButton extends StatelessWidget {
       onTap: (isLiked) async {
         if(!isLiked){
           final bool success = await cardController.joinCard(cardId, userInfo);
-          if(success) {return !isLiked;}
+          if(success) {refreshCards(); return !isLiked;}
           else {return isLiked;}
         }
         else {
           final bool success = await cardController.leaveCard(cardId, userInfo);
-          if (success) {return !isLiked;}
+          if (success) {refreshCards(); return !isLiked;}
           else {return isLiked;}
         }
       },
@@ -237,8 +239,9 @@ class JoinButton extends StatelessWidget {
 }
 
 class ToggleMenu extends StatefulWidget {
-  const ToggleMenu({super.key, required this.cardId});
+  ToggleMenu({super.key,required this.refreshCards, required this.cardId});
   final String cardId;
+  Function refreshCards;
   @override
   State<ToggleMenu> createState() => _ToggleMenuState();
 }
@@ -257,7 +260,7 @@ class _ToggleMenuState extends State<ToggleMenu> {
           showDialog(
               context: context,
               builder: (BuildContext context) =>
-                DeleteDialog(cardId: widget.cardId,)
+                DeleteDialog(refreshCards: widget.refreshCards, cardId: widget.cardId,)
           );
           }
         },
@@ -278,10 +281,11 @@ class _ToggleMenuState extends State<ToggleMenu> {
 
 class DeleteDialog extends StatelessWidget {
   DeleteDialog({
+    required this.refreshCards,
     required this.cardId,
     Key? key,
   }) : super(key: key);
-
+  Function refreshCards;
   final String cardId;
   CardController cardController = Get.put(CardController());
 
@@ -321,6 +325,7 @@ class DeleteDialog extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       cardController.removeCard(cardId);
+                      refreshCards();
                       Navigator.pop(context);
                     },
                     child: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
