@@ -33,11 +33,13 @@ class DataController extends GetxController {
 
   late MyUser storedData;
 
-  addUser(String? email, String? firstName, String? lastName,
+  addUser(String? email, String? firstName, String? gender, String? department, String? lastName,
       int? graduationYear, String? major, int? mobilePhoneNumber) {
-    MyUser user = new MyUser(
+    MyUser user = MyUser(
       firstName: firstName,
       lastName: lastName,
+      gender: gender,
+      department: department,
       email: email,
       graduationYear: graduationYear,
       major: major,
@@ -134,12 +136,12 @@ class DataController extends GetxController {
   }
 
   Future<String> uploadProfilePic(File image) async {
-    MyUser user = new MyUser();
+    MyUser user = MyUser();
     return user.uploadProfilePic(image);
   }
 
   deleteProfilePicture() async {
-    MyUser user = new MyUser();
+    MyUser user = MyUser();
     user.deleteProfilePicture();
   }
 }
