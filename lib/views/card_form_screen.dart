@@ -65,7 +65,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
 
   final _formKey = GlobalKey<FormState>();
   final _eventController = TextEditingController();
-  DateTime chosenDateTime = DateTime.now();
+  DateTime eventStart = DateTime.now();
+  DateTime eventEnd = DateTime.now().add(const Duration(hours:1));
   CardController cardController = Get.put(CardController());
   final filter = ProfanityFilter();
   bool favorite = false;
@@ -101,30 +102,69 @@ class _MyCustomFormState extends State<MyCustomForm> {
             const SizedBox(
               height: 20,
             ),
-            buildTagFilterChip(),
+            Row(
+              children: [
+                const Text("Tags"),
+                const SizedBox(width: 40),
+                buildTagFilterChip(),
+              ],
+            ),
             const SizedBox(
               height: 20,
             ),
-            OutlinedButton(
-                onPressed: () {
-                  DatePicker.showDateTimePicker(
-                    context,
-                    showTitleActions: true,
-                    minTime: DateTime.now(),
-                    maxTime: DateTime.now().add(const Duration(hours:168)),
-                    onChanged: (date) {},
-                    onConfirm: (date) {
-                      setState(() {
-                        chosenDateTime =date;
-                      });
+            Row(
+              children: [
+                const Text("Event Start"),
+                const SizedBox(width:26),
+                OutlinedButton(
+                    onPressed: () {
+                      DatePicker.showDateTimePicker(
+                        context,
+                        showTitleActions: true,
+                        minTime: DateTime.now(),
+                        maxTime: DateTime.now().add(const Duration(hours:168)),
+                        onChanged: (date) {},
+                        onConfirm: (date) {
+                          setState(() {
+                            eventStart =date;
+                            eventEnd = date.add(const Duration(hours:1));
+                          });
+                        },
+                        locale: LocaleType.en,
+                      );
                     },
-                    currentTime: DateTime.now(),
-                    locale: LocaleType.en,
-                  );
-                },
-                style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.black, style: BorderStyle.solid)),
-                child: Text(DateFormat.yMMMd('en_US').add_jm().format(chosenDateTime), style: TextStyle(color: Colors.black),)
+                    style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.black, style: BorderStyle.solid)),
+                    child: Text(DateFormat.yMMMd('en_US').add_jm().format(eventStart), style: const TextStyle(color: Colors.black),)
+                ),
+              ],
             ),
+            const SizedBox(height: 20,),
+            Row(
+              children: [
+                const Text("Event End"),
+                const SizedBox(width: 33),
+                OutlinedButton(
+                    onPressed: () {
+                      DatePicker.showDateTimePicker(
+                        context,
+                        showTitleActions: true,
+                        minTime: eventStart.add(const Duration(hours: 1)),
+                        maxTime: eventStart.add(const Duration(hours:24)),
+                        onChanged: (date) {},
+                        onConfirm: (date) {
+                          setState(() {
+                            eventEnd =date;
+                          });
+                        },
+                        locale: LocaleType.en,
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.black, style: BorderStyle.solid)),
+                    child: Text(DateFormat.yMMMd('en_US').add_jm().format(eventEnd), style: const TextStyle(color: Colors.black),)
+                ),
+              ],
+            ),
+
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
@@ -138,7 +178,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.blue, style: BorderStyle.solid)),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            cardController.createCard(event: _eventController.text, audience: selectedAudience.name, attendeeLimit: selectedLimit.index, dateCreated: DateTime.now(), eventStart: chosenDateTime, tags: _tags);
+                            cardController.createCard(event: _eventController.text, audience: selectedAudience.name, attendeeLimit: selectedLimit.index, dateCreated: DateTime.now(), eventStart: eventStart, eventEnd: eventEnd, tags: _tags);
                             Navigator.pop(context);
                           }
                         },
