@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyCard {
+  String id = "";
   String createdBy;
   String event;
   String audience;
@@ -30,6 +31,7 @@ class MyCard {
   });
 
   MyCard.fromFirestore(Map<String, dynamic> snapshot):
+        id = snapshot['id'],
         createdBy = snapshot['createdBy'],
         event = snapshot['event'],
         audience = snapshot['audience'],
@@ -59,8 +61,21 @@ class MyCard {
 
 
   Future<bool> createCard() async {
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    final complete = cardCollection.add(this.toFirestore()).then((doc)=> true, onError: (r)=> false);
+    final DocumentReference newCardRef = FirebaseFirestore.instance.collection("Cards").doc();
+    final cardData = {
+      'id' : newCardRef.id,
+      'createdBy': createdBy,
+      'event' : event,
+      'audience': audience,
+      'attendeeLimit': attendeeLimit,
+      'dateCreated' : dateCreated,
+      'eventStart' : eventStart,
+      'eventEnd' : eventEnd,
+      'tags' : tags,
+      'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
+      'userIds' : userIds
+    };
+    final complete = newCardRef.set(cardData).then((doc)=> true, onError: (r)=> false);
     return complete;
   }
   static Future<bool> joinCard(String cardId, CleanUser user) async {

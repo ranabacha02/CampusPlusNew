@@ -53,7 +53,7 @@ class CardController{
     return MyCard.getStreamOfCards();
   }
 
-  Future getAllCards() async {
+  Future<List<MyCard>> getAllCards() async {
     return MyCard.getAllCards();
   }
 
