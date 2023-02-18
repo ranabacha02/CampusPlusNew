@@ -51,6 +51,15 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> updatePage() async {
+    final newCards = gettingCards();
+    await Future.delayed(const Duration(milliseconds: 800));
+    setState(() {
+      futureCards = newCards;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
                 backgroundColor: Colors.blue,
                 strokeWidth: 4.0,
-                onRefresh: refreshCards,
+                onRefresh: updatePage,
                 child: _listView(snapshot, cleanUserInfo, refreshCards)
             );
           },
