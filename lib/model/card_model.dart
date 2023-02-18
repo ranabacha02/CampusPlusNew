@@ -108,7 +108,7 @@ class MyCard {
 
   static Future<List<MyCard>> getAllCards() async {
     final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
-    final snapshots = await cardCollection.get();
+    final snapshots = await cardCollection.orderBy('eventStart').get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
