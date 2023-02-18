@@ -10,7 +10,7 @@ class MyCard {
   int attendeeLimit;
   DateTime dateCreated;
   DateTime eventStart;
-  // final Timestamp eventEnd;
+  DateTime eventEnd;
   List<String> tags;
   List<CleanUser> users;
   List<String> userIds;
@@ -23,6 +23,7 @@ class MyCard {
     required this.attendeeLimit,
     required this.dateCreated,
     required this.eventStart,
+    required this.eventEnd,
     required this.tags,
     required this.users,
     required this.userIds,
@@ -35,6 +36,7 @@ class MyCard {
         attendeeLimit = snapshot['attendeeLimit'],
         dateCreated = snapshot['dateCreated'].toDate(),
         eventStart = snapshot['eventStart'].toDate(),
+        eventEnd = snapshot['eventEnd'].toDate(),
         tags = List<String>.from(snapshot['tags']),
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
         userIds =  List<String>.from(snapshot['userIds']);
@@ -47,6 +49,7 @@ class MyCard {
       'attendeeLimit': attendeeLimit,
       'dateCreated' : dateCreated,
       'eventStart' : eventStart,
+      'eventEnd' : eventEnd,
       'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds
