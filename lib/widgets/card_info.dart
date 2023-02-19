@@ -1,8 +1,8 @@
-import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../controller/card_controller.dart';
+import '../model/card_model.dart';
 import '../utils/app_colors.dart';
 import 'package:get/get.dart';
 
@@ -10,23 +10,15 @@ import 'package:get/get.dart';
 class CardInfo extends StatelessWidget {
   CardInfo({
     Key? key,
-    required this.usersJoined,
-    required this.event,
-    required this.date,
+    required this.card,
     required this.joined,
     required this.personal,
-    required this.cardId,
-    required this.userInfo,
-  }) : super(key: key);
 
-  final List<CleanUser> usersJoined;
-  final String event;
-  final DateTime date;
+  }) : super(key: key);
+  final MyCard card;
   final bool joined;
   final bool personal;
   final CardController cardController = Get.put(CardController());
-  final String cardId;
-  final CleanUser userInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -42,14 +34,14 @@ class CardInfo extends StatelessWidget {
               Column(
                   children: [
                     Text(
-                      "${usersJoined[0].firstName} ${usersJoined[0].lastName}",
+                      "${card.users[0].firstName} ${card.users[0].lastName}",
                       style: TextStyle(
                           fontSize: 24,
                           color: AppColors.black,
                           fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "${usersJoined[0].major} | ${usersJoined[0].graduationYear}",
+                      "${card.users[0].major} | ${card.users[0].graduationYear}",
                       style: const TextStyle(
                         fontSize: 14,
                         color: Color.fromRGBO(107, 114, 128, 1),
@@ -59,9 +51,9 @@ class CardInfo extends StatelessWidget {
                   ] )
             ],
           ),
-
+          const SizedBox(height: 10),
           Text(
-            "Description",
+            "Event",
             textAlign: TextAlign.left,
             style: TextStyle(
               fontSize: 16,
@@ -69,122 +61,97 @@ class CardInfo extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(
-            height: Get.height * 0.01,
+          const SizedBox(
+            height: 8,
           ),
           Text(
-              event,
+              card.event,
               textAlign: TextAlign.left,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 16,
-                color: AppColors.black,
+                color: Color.fromRGBO(107, 114, 128, 1),
               )
           ),
-          SizedBox(
-            height: Get.height * 0.01,
+          const SizedBox(
+            height: 10,
           ),
-          Text(
-            "Date",
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.black,
-              fontWeight: FontWeight.w600,
+          Row(children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text(
+                "Start",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                  DateFormat.MMMd().add_jm().format(card.eventStart),
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Color.fromRGBO(107, 114, 128, 1),
+                  )
+              ),
+            ],),
+            const SizedBox(
+              width: 40,
             ),
-          ),
-          SizedBox(
-            height: Get.height * 0.01,
-          ),
-          Text(
-              DateFormat.MMMd().add_jm().format(date),
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.black,
-              )
-          ),
-          SizedBox(
-            height: Get.height * 0.01,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text(
+                "End",
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                  DateFormat.MMMd().add_jm().format(card.eventEnd),
+                  textAlign: TextAlign.left,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Color.fromRGBO(107, 114, 128, 1),
+                  )
+              ),
+            ],),
+          ],),
+          const SizedBox(
+            height: 10,
           ),
           const Text(
               "Attendees",
+              textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600,)
           ),
-          SizedBox(
-            height: Get.height * 0.01,
+          const SizedBox(
+            height: 10,
           ),
-          Row(
-            children:
-            [
-              for (var user in usersJoined.sublist(1,))
-                UserProfilePicture(
-                      imageURL: user.profilePictureURL,
-                      caption: "${user.firstName} ${user.lastName}",
-                      radius: 20,
-                      preview: true,
-                    )
-            ],
-          ),
-          SizedBox(
-            height: Get.height * 0.03,
-          ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     !joined && !personal ?TextButton(
-          //       child: Container(
-          //           padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
-          //           decoration: BoxDecoration(
-          //               color: const Color.fromRGBO(29, 171, 135, 1),
-          //               border: Border.all(
-          //                 style: BorderStyle.none,
-          //               ),
-          //               borderRadius: const BorderRadius.all(Radius.circular(20),)
-          //           ),
-          //           child: const Text(
-          //             'Ok, Join!',
-          //             style: TextStyle(fontSize: 20,
-          //                 fontWeight: FontWeight.w600,
-          //                 color: Colors.white),
-          //           )
-          //       ),
-          //       onPressed:(){
-          //         cardController.joinCard(cardId, userInfo);
-          //         refreshCards();
-          //         Navigator.pop(context);
-          //       },
-          //     ):
-          //     TextButton(
-          //       child: Container(
-          //           padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
-          //           decoration: BoxDecoration(
-          //               color: Colors.red,
-          //               border: Border.all(
-          //                 style: BorderStyle.none,
-          //               ),
-          //               borderRadius: const BorderRadius.all(Radius.circular(20),)
-          //           ),
-          //           child: !personal ? const Text(
-          //             'Leave',
-          //             style: TextStyle(fontSize: 20,
-          //                 fontWeight: FontWeight.w600,
-          //                 color: Colors.white),
-          //           ):
-          //           const Text(
-          //             'Remove',
-          //             style: TextStyle(fontSize: 20,
-          //                 fontWeight: FontWeight.w600,
-          //                 color: Colors.white),
-          //           )
-          //       ),
-          //       onPressed:(){
-          //         !personal ? cardController.leaveCard(cardId, userInfo) : cardController.removeCard(cardId);
-          //         refreshCards();
-          //         Navigator.pop(context);
-          //       },
-          //     ),
-          //   ],
-          // )
+         Wrap(
+          spacing: 4,
+          runSpacing: 5,
+          children:
+          [for (var user in card.users.sublist(1,))
+              UserProfilePicture(
+                imageURL: user.profilePictureURL,
+                caption: "${user.firstName} ${user.lastName}",
+                radius: 20,
+                preview: true,
+              )
+          ],
+        ),
         ],
       ),
     );
