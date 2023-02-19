@@ -81,7 +81,7 @@ class CardController{
   }
 
 
-  Future getMyCards() async{
+  Future<List<MyCard>> getMyCards() async{
     final myCreatedCards = await MyCard.getMyCreatedCards(auth.currentUser!.uid);
     final myJoinedCards = await MyCard.getMyJoinedCards(auth.currentUser!.uid);
     List<MyCard> myCards = myCreatedCards + myJoinedCards;
