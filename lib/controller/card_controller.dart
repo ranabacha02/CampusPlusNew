@@ -1,16 +1,12 @@
 import 'package:campus_plus/model/clean_user_model.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/card_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'data_controller.dart';
 
 class CardController{
-
-  final CollectionReference chatCollection = FirebaseFirestore.instance.collection("Cards");
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
-
 
   Future<bool> createCard(
       {required String event,
