@@ -66,7 +66,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
   late final MyUser userInfo;
 
   final filter = ProfanityFilter();
-  bool favorite = false;
   final List<String> _tags = <String>[];
   Audience selectedAudience = Audience.everyone;
   AttendeeLimit selectedLimit = AttendeeLimit.noLimit;
