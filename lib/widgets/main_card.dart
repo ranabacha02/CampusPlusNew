@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import '../controller/card_controller.dart';
+import '../utils/app_colors.dart';
 
 class MainCard extends StatelessWidget {
   MainCard({
@@ -54,6 +55,7 @@ class MainCard extends StatelessWidget {
                                             caption: "${card.users[0].firstName} ${card.users[0].lastName}",
                                             radius: 40,
                                             preview: false,
+                                            userId: card.users[0].userId,
                                           )
                                       )
                                     ),
@@ -91,6 +93,7 @@ class MainCard extends StatelessWidget {
                               radius: 20,
                               caption: "${card.users[0].firstName} ${card.users[0].lastName}",
                               preview: false,
+                              userId: card.users[0].userId,
                             ),
                           ),
                           const SizedBox(height: 10, width: 7,),
@@ -155,34 +158,47 @@ class MainCard extends StatelessWidget {
                     textAlign: TextAlign.right,
                   ))), //The Date
           Positioned(
-              top: 95.0,
+              top: 100.0,
               left: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2) + 40 : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8) / 2 + 40,
-              child: Row(children: [
-                //TODO convert to for loop till 3
+              child: Wrap(
+                  spacing: 5,
+                  children: [
                 card.users.length > 1
                     ? UserProfilePicture(
                         imageURL: card.users[1].profilePictureURL,
                         caption: "${card.users[1].firstName} ${card.users[1].lastName}",
                         radius: 15,
                         preview: false,
-                      )
-                    : const SizedBox.shrink(),
+                        userId: card.users[1].userId
+                      ) : const SizedBox.shrink(),
                 card.users.length > 2
                     ? UserProfilePicture(
                         imageURL: card.users[2].profilePictureURL,
                         caption: "${card.users[2].firstName} ${card.users[2].lastName}",
                         radius: 15,
                         preview: false,
-                      )
-                    : const SizedBox.shrink(),
+                        userId: card.users[2].userId
+                      ) : const SizedBox.shrink(),
                 card.users.length > 3
                     ? UserProfilePicture(
                         imageURL: card.users[3].profilePictureURL,
                         caption: "${card.users[3].firstName} ${card.users[3].lastName}",
                         radius: 15,
                         preview: false,
-                      )
-                    : const SizedBox.shrink(),
+                        userId: card.users[3].userId
+                      ) : const SizedBox.shrink(),
+                card.users.length > 4
+                    ? CircleAvatar(
+                        radius: 15,
+                        backgroundColor: AppColors.grey,
+                        child: CircleAvatar(
+                          backgroundColor:  Colors.white,
+                          foregroundColor: Colors.black,
+                          radius: 14,
+                          child: card.users.length< 99 ? Text("${card.users.length-4}+", style: const TextStyle(fontSize: 12.5),): const Text("...", style: TextStyle(fontSize: 16),)
+                        )
+
+                ) : const SizedBox.shrink(),
               ])), //The JoinedUserIcons
         ]));
   }
