@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../controller/card_controller.dart';
 import '../controller/data_controller.dart';
 import '../model/card_model.dart';
-import '../model/clean_user_model.dart';
 import '../model/user_model.dart';
 import '../widgets/main_card.dart';
 import 'card_form_screen.dart';
@@ -28,18 +27,15 @@ class _HomeScreenState extends State<HomeScreen> {
   late DataController dataController;
   late CardController cardController;
   late final MyUser userInfo;
-  late final CleanUser cleanUserInfo;
   late Future<List<MyCard>> futureCards;
   final List<String> _tags = <String>[];
 
   @override
   void initState() {
     super.initState();
-
     dataController = Get.put(DataController());
     cardController = Get.put(CardController());
     userInfo = dataController.getLocalData();
-    cleanUserInfo = CleanUser.fromMyUser(userInfo);
     futureCards = gettingCards();
   }
 
@@ -144,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: Colors.blue,
                   strokeWidth: 4.0,
                   onRefresh: updatePage,
-                  child: _listView(snapshot, cleanUserInfo, refreshCards, buildTagFilterChip)
+                  child: _listView(snapshot, userInfo, refreshCards, buildTagFilterChip)
               );
             },
           )
@@ -153,41 +149,33 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo, Function refreshCards, Function buildTagFilterChip) {
+Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCards, Function buildTagFilterChip) {
   if(!snapshot.hasData){
     return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
   }
   if(snapshot.hasError){
     return const Text('Something went wrong');
   }
-  final data = snapshot.data;
+  final cards = snapshot.data;
   return
      Column(
         children: [
           const SizedBox(height:20),
           buildTagFilterChip(),
           Expanded(child: ListView.builder(
-            itemCount: data.length,
+            itemCount: cards.length,
             itemBuilder: (context, index){
-              if(data[index].createdBy == cleanUserInfo.userId){
+              if(cards[index].createdBy == userInfo.userId){
                 return MainCard(
-                  refreshCards: refreshCards,
-                  cardId: data[index].id,
-                  event: data[index].event,
+                  card: cards[index],
                   personal: true,
-                  userInfo: cleanUserInfo,
-                  usersJoined: data[index].users,
-                  date: data[index].eventStart,
+                  refreshCards: refreshCards,
                 );}
               else{
                 return MainCard(
-                  refreshCards: refreshCards,
-                  cardId: data[index].id,
-                  event: data[index].event,
+                  card: cards[index],
                   personal: false,
-                  userInfo: cleanUserInfo,
-                  usersJoined: data[index].users,
-                  date: data[index].eventStart,
+                  refreshCards: refreshCards,
                 );}
             },
           )),

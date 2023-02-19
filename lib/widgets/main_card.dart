@@ -1,37 +1,31 @@
+import 'package:campus_plus/model/card_model.dart';
 import 'package:campus_plus/widgets/card_info.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:like_button/like_button.dart';
 import '../controller/card_controller.dart';
-import '../model/clean_user_model.dart';
 
 class MainCard extends StatelessWidget {
   MainCard({
     Key? key,
-    required this.refreshCards,
-    required this.event,
+    required this.card,
     required this.personal,
-    required this.cardId,
-    required this.userInfo,
-    required this.usersJoined,
-    required this.date,
+    required this.refreshCards
   }) : super(key: key);
-  final Function refreshCards;
-  final String cardId;
-  final CleanUser userInfo;
-  final String event;
+  final MyCard card;
   final bool personal;
-  final List<CleanUser> usersJoined;
-  final DateTime date;
+  final Function refreshCards;
   final CardController cardController = Get.put(CardController());
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
-    bool joined = usersJoined.where((user)=> (user.userId.contains(userInfo.userId))).isNotEmpty;
+    bool joined = card.users.where((user)=> (user.userId.contains(auth.currentUser!.uid))).isNotEmpty;
     DateTime now = DateTime.now();
-    bool today = DateTime(date.year, date.month, date.day).difference(DateTime(now.year, now.month, now.day)).inDays == 0;
+    bool today = DateTime(card.eventStart.year, card.eventStart.month, card.eventStart.day).difference(DateTime(now.year, now.month, now.day)).inDays == 0;
     return Container(
         height: 130,
         margin: const EdgeInsets.only(top: 10),
@@ -56,8 +50,8 @@ class MainCard extends StatelessWidget {
                                         backgroundColor: Colors.white,
                                           radius: 42,
                                           child:UserProfilePicture(
-                                            imageURL: usersJoined[0].profilePictureURL,
-                                            caption: "${usersJoined[0].firstName} ${usersJoined[0].lastName}",
+                                            imageURL: card.users[0].profilePictureURL,
+                                            caption: "${card.users[0].firstName} ${card.users[0].lastName}",
                                             radius: 40,
                                             preview: false,
                                           )
@@ -69,19 +63,16 @@ class MainCard extends StatelessWidget {
                                         clipper: CustomPath(),
                                         child: Container(
                                             width: (MediaQuery.of(context).size.width) > 500 ? 500 * 0.85 : (MediaQuery.of(context).size.width) * 0.85,
-                                            height: 500,
+                                            // height: 500,
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.circular(20),
                                               color: Colors.white,
                                             ),
                                             child: CardInfo(
-                                                usersJoined: usersJoined,
-                                                event: event,
-                                                date: date,
+                                                card: card,
                                                 joined: joined,
-                                                personal: personal,
-                                                cardId: cardId,
-                                                userInfo: userInfo)
+                                                personal: personal
+                                            )
                                         )
                                     )
                                 ),
@@ -96,9 +87,9 @@ class MainCard extends StatelessWidget {
                           Expanded(
                             flex: 1,
                             child: UserProfilePicture(
-                              imageURL: usersJoined[0].profilePictureURL,
+                              imageURL: card.users[0].profilePictureURL,
                               radius: 20,
-                              caption: "${usersJoined[0].firstName} ${usersJoined[0].lastName}",
+                              caption: "${card.users[0].firstName} ${card.users[0].lastName}",
                               preview: false,
                             ),
                           ),
@@ -109,7 +100,7 @@ class MainCard extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  usersJoined[0].firstName,
+                                  card.users[0].firstName,
                                   style: const TextStyle(
                                     fontFamily: 'Roboto',
                                     fontSize: 14,
@@ -118,10 +109,9 @@ class MainCard extends StatelessWidget {
                                 ), //The Name of the cardCreator
                                 Expanded(
                                   child: Text(
-                                    event,
+                                    card.event,
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 3,
-                                    // softWrap: false,
                                     style: const TextStyle(
                                       color: Color.fromRGBO(107, 114, 128, 1),
                                       fontFamily: 'Roboto',
@@ -136,7 +126,7 @@ class MainCard extends StatelessWidget {
                           !personal ? Expanded(
                             flex: 1,
                             child: Center(
-                              child: JoinButton(refreshCards: refreshCards, joined: joined, cardId: cardId, userInfo: userInfo),
+                              child: JoinButton(refreshCards: refreshCards, joined: joined, cardId: card.id),
                             ),
                           ):  const Expanded(flex:1, child: SizedBox(),),
                         ]),
@@ -148,7 +138,7 @@ class MainCard extends StatelessWidget {
           personal ? Positioned(
             top: 15,
             right: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2 + 20) : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8 + 15),
-            child:  ToggleMenu(refreshCards: refreshCards, cardId: cardId),
+            child:  ToggleMenu(refreshCards: refreshCards, cardId: card.id),
           ): const SizedBox(), //The Toggle Button
           Positioned(
               top: 92,
@@ -161,33 +151,34 @@ class MainCard extends StatelessWidget {
                       border: Border.all(style: BorderStyle.none,),
                       borderRadius: const BorderRadius.all(Radius.circular(20),)),
                   child: Text(
-                    !today ? DateFormat.MMMd().add_jm().format(date) : ("Today, ${DateFormat.jm().format(date)}"),
+                    !today ? DateFormat.MMMd().add_jm().format(card.eventStart) : ("Today, ${DateFormat.jm().format(card.eventStart)}"),
                     textAlign: TextAlign.right,
                   ))), //The Date
           Positioned(
               top: 95.0,
               left: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2) + 40 : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8) / 2 + 40,
               child: Row(children: [
-                usersJoined.length > 1
+                //TODO convert to for loop till 3
+                card.users.length > 1
                     ? UserProfilePicture(
-                        imageURL: usersJoined[1].profilePictureURL,
-                        caption: "${usersJoined[1].firstName} ${usersJoined[1].lastName}",
+                        imageURL: card.users[1].profilePictureURL,
+                        caption: "${card.users[1].firstName} ${card.users[1].lastName}",
                         radius: 15,
                         preview: false,
                       )
                     : const SizedBox.shrink(),
-                usersJoined.length > 2
+                card.users.length > 2
                     ? UserProfilePicture(
-                        imageURL: usersJoined[2].profilePictureURL,
-                        caption: "${usersJoined[2].firstName} ${usersJoined[2].lastName}",
+                        imageURL: card.users[2].profilePictureURL,
+                        caption: "${card.users[2].firstName} ${card.users[2].lastName}",
                         radius: 15,
                         preview: false,
                       )
                     : const SizedBox.shrink(),
-                usersJoined.length > 3
+                card.users.length > 3
                     ? UserProfilePicture(
-                        imageURL: usersJoined[3].profilePictureURL,
-                        caption: "${usersJoined[3].firstName} ${usersJoined[3].lastName}",
+                        imageURL: card.users[3].profilePictureURL,
+                        caption: "${card.users[3].firstName} ${card.users[3].lastName}",
                         radius: 15,
                         preview: false,
                       )
@@ -203,12 +194,10 @@ class JoinButton extends StatelessWidget {
     required this.refreshCards,
     required this.joined,
     required this.cardId,
-    required this.userInfo,
   }) : super(key: key);
   final Function refreshCards;
   final bool joined;
   final String cardId;
-  final CleanUser userInfo;
   final CardController cardController = Get.put(CardController());
 
   @override
@@ -217,12 +206,12 @@ class JoinButton extends StatelessWidget {
       isLiked: joined,
       onTap: (isLiked) async {
         if(!isLiked){
-          final bool success = await cardController.joinCard(cardId, userInfo);
+          final bool success = await cardController.joinCard(cardId);
           if(success) {refreshCards(); return !isLiked;}
           else {return isLiked;}
         }
         else {
-          final bool success = await cardController.leaveCard(cardId, userInfo);
+          final bool success = await cardController.leaveCard(cardId);
           if (success) {refreshCards(); return !isLiked;}
           else {return isLiked;}
         }
@@ -349,7 +338,7 @@ class CustomPath extends CustomClipper<Path> {
     final path = Path();
     path.moveTo(0, 0);
     path.lineTo(size.width * 0.35, 0);
-    path.quadraticBezierTo(size.width * 0.5, size.height * 0.14, size.width * 0.65, 0);
+    path.quadraticBezierTo(size.width * 0.5, 68, size.width * 0.65, 0);
     path.lineTo(size.width, 0);
     path.lineTo(size.width, size.height);
     path.lineTo(0, size.height);
