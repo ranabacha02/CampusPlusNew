@@ -1,16 +1,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/views/image_preview_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import '../utils/app_colors.dart';
+import '../views/user_info_screen.dart';
 
 class UserProfilePicture extends StatefulWidget {
   final String? imageURL;
   final String caption;
   final double radius;
   bool preview;
+  String userId;
 
   UserProfilePicture({
     Key? key,
@@ -18,7 +18,9 @@ class UserProfilePicture extends StatefulWidget {
     required this.caption,
     required this.radius,
     bool? preview,
+    String? userId,
   })  : this.preview = preview != null ? preview : true,
+        this.userId = userId ?? "",
         super(key: key);
 
   @override
@@ -40,12 +42,17 @@ class _UserProfilePictureState extends State<UserProfilePicture> {
             );
           }));
         }
+        else if(widget.userId.isNotEmpty){
+          Navigator.push(context, MaterialPageRoute(builder: (context) {
+            return UserInfoScreen(userId: widget.userId);
+          }));
+        }
       },
       child: CircleAvatar(
         // to be changed
         backgroundImage: widget.imageURL != null && widget.imageURL != ""
             ? CachedNetworkImageProvider(widget.imageURL!)
-            : AssetImage("assets/default_profile.jpg") as ImageProvider,
+            : const AssetImage("assets/default_profile.jpg") as ImageProvider,
         radius: widget.radius,
         backgroundColor: AppColors.circle,
         foregroundColor: AppColors.white,
