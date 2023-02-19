@@ -24,7 +24,7 @@ class CardInfo extends StatelessWidget {
   final DateTime date;
   final bool joined;
   final bool personal;
-  CardController cardController = Get.put(CardController());
+  final CardController cardController = Get.put(CardController());
   final String cardId;
   final CleanUser userInfo;
 
@@ -128,61 +128,63 @@ class CardInfo extends StatelessWidget {
           SizedBox(
             height: Get.height * 0.03,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              !joined && !personal ?TextButton(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
-                    decoration: BoxDecoration(
-                        color: const Color.fromRGBO(29, 171, 135, 1),
-                        border: Border.all(
-                          style: BorderStyle.none,
-                        ),
-                        borderRadius: const BorderRadius.all(Radius.circular(20),)
-                    ),
-                    child: const Text(
-                      'Ok, Join!',
-                      style: TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    )
-                ),
-                onPressed:(){
-                  cardController.joinCard(cardId, userInfo);
-                  Navigator.pop(context);
-                },
-              ):
-              TextButton(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
-                    decoration: BoxDecoration(
-                        color: Colors.red,
-                        border: Border.all(
-                          style: BorderStyle.none,
-                        ),
-                        borderRadius: const BorderRadius.all(Radius.circular(20),)
-                    ),
-                    child: !personal ? const Text(
-                      'Leave',
-                      style: TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    ):
-                    const Text(
-                      'Remove',
-                      style: TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white),
-                    )
-                ),
-                onPressed:(){
-                  !personal ? cardController.leaveCard(cardId, userInfo) : cardController.removeCard(cardId);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          )
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     !joined && !personal ?TextButton(
+          //       child: Container(
+          //           padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
+          //           decoration: BoxDecoration(
+          //               color: const Color.fromRGBO(29, 171, 135, 1),
+          //               border: Border.all(
+          //                 style: BorderStyle.none,
+          //               ),
+          //               borderRadius: const BorderRadius.all(Radius.circular(20),)
+          //           ),
+          //           child: const Text(
+          //             'Ok, Join!',
+          //             style: TextStyle(fontSize: 20,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.white),
+          //           )
+          //       ),
+          //       onPressed:(){
+          //         cardController.joinCard(cardId, userInfo);
+          //         refreshCards();
+          //         Navigator.pop(context);
+          //       },
+          //     ):
+          //     TextButton(
+          //       child: Container(
+          //           padding: const EdgeInsets.symmetric(vertical: 14, horizontal:60),
+          //           decoration: BoxDecoration(
+          //               color: Colors.red,
+          //               border: Border.all(
+          //                 style: BorderStyle.none,
+          //               ),
+          //               borderRadius: const BorderRadius.all(Radius.circular(20),)
+          //           ),
+          //           child: !personal ? const Text(
+          //             'Leave',
+          //             style: TextStyle(fontSize: 20,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.white),
+          //           ):
+          //           const Text(
+          //             'Remove',
+          //             style: TextStyle(fontSize: 20,
+          //                 fontWeight: FontWeight.w600,
+          //                 color: Colors.white),
+          //           )
+          //       ),
+          //       onPressed:(){
+          //         !personal ? cardController.leaveCard(cardId, userInfo) : cardController.removeCard(cardId);
+          //         refreshCards();
+          //         Navigator.pop(context);
+          //       },
+          //     ),
+          //   ],
+          // )
         ],
       ),
     );
