@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+final CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
 class MyUser {
   String firstName;
   String lastName;
@@ -129,6 +130,12 @@ class MyUser {
     }).then((value) async {
       print("user updated");
     });
+  }
+
+  static Future<MyUser> getUserById(String userId) async {
+    final DocumentSnapshot snapshot = await usersCollection.doc(userId).get();
+    final MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);
+    return user;
   }
 
   Future<String> uploadProfilePic(File image) async {
