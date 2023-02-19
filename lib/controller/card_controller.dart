@@ -1,5 +1,4 @@
 import 'package:campus_plus/model/clean_user_model.dart';
-import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../model/card_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,12 +36,12 @@ class CardController{
     return card.createCard();
   }
 
-  Future<bool> joinCard(String cardId, CleanUser user) async {
-    return MyCard.joinCard(cardId, user);
+  Future<bool> joinCard(String cardId) async {
+    return MyCard.joinCard(cardId);
   }
 
-  Future<bool> leaveCard(String cardId, CleanUser user) async {
-    return MyCard.leaveCard(cardId, user);
+  Future<bool> leaveCard(String cardId) async {
+    return MyCard.leaveCard(cardId);
   }
 
   Future<bool> removeCard(String cardId) async {
@@ -82,8 +81,8 @@ class CardController{
 
 
   Future<List<MyCard>> getMyCards() async{
-    final myCreatedCards = await MyCard.getMyCreatedCards(auth.currentUser!.uid);
-    final myJoinedCards = await MyCard.getMyJoinedCards(auth.currentUser!.uid);
+    final myCreatedCards = await MyCard.getMyCreatedCards();
+    final myJoinedCards = await MyCard.getMyJoinedCards();
     List<MyCard> myCards = myCreatedCards + myJoinedCards;
     return myCards;
   }

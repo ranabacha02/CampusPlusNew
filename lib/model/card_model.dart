@@ -1,6 +1,7 @@
 import 'dart:core';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/clean_user_model.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -83,16 +84,19 @@ class MyCard {
     final complete = newCardRef.set(cardData).then((doc)=> true, onError: (r)=> false);
     return complete;
   }
-  static Future<bool> joinCard(String cardId, CleanUser user) async {
-    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([user.toFirestore()]), "userIds": FieldValue.arrayUnion([user.userId])})
+  static Future<bool> joinCard(String cardId) async {
+    final MyUser user = dataController.getLocalData();
+    final CleanUser cleanUser = CleanUser.fromMyUser(user);
+    final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayUnion([cleanUser.toFirestore()]), "userIds": FieldValue.arrayUnion([cleanUser.userId])})
         .then((doc)=> true, onError: (e)=>false);
     return complete;
   }
-  static Future<bool> leaveCard(String cardId, CleanUser user) async {
-    DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
-    MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
-    List<CleanUser> cardUsers = card.users;
-    CleanUser target = cardUsers.firstWhere((usr) => usr.userId==user.userId);
+  static Future<bool> leaveCard(String cardId) async {
+    final DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
+    final MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
+    final List<CleanUser> cardUsers = card.users;
+    final MyUser user = dataController.getLocalData();
+    final CleanUser target = cardUsers.firstWhere((usr) => usr.userId==user.userId);
     final complete = cardCollection.doc(cardId).update({"users": FieldValue.arrayRemove([target.toFirestore()]),"userIds": FieldValue.arrayRemove([user.userId])})
         .then((doc)=> true, onError: (e)=>false);
     return complete;
@@ -130,14 +134,16 @@ class MyCard {
     return cards;
   }
 
-  static Future getMyCreatedCards(String userId) async{
-    final snapshots = await cardCollection.where("createdBy", isEqualTo: userId).get();
+  static Future getMyCreatedCards() async{
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("createdBy", isEqualTo: user.userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
 
-  static Future getMyJoinedCards(String userId) async{
-    final snapshots = await cardCollection.where("userIds", arrayContains: userId).get();
+  static Future getMyJoinedCards() async{
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("userIds", arrayContains: user.userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
