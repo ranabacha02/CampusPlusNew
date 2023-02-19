@@ -1,20 +1,18 @@
 import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
-import '../widgets/app_widgets.dart';
 import '../widgets/main_course.dart';
 import 'coursesForm.dart';
 
 class TutoringProfileScreen extends StatefulWidget{
+  const TutoringProfileScreen({super.key});
+
   @override
   _TutoringProfileScreenState createState() => _TutoringProfileScreenState();
 }
@@ -46,7 +44,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.pop(context),
           ),
           actions: <Widget>[
@@ -54,7 +52,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
                 onPressed: () => {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return MainCourseForm();
+                        return const MainCourseForm();
                       }))
                     },
                 icon: Image.asset('assets/postIcon.png')),
@@ -81,7 +79,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
                   AsyncSnapshot<QuerySnapshot> snapshot,
                   ) {
                 if(snapshot.hasError){
-                  return Text('Something went wrong');
+                  return const Text('Something went wrong');
                 }
                 if(snapshot.connectionState == ConnectionState.waiting){
                   return const Text('Loading');

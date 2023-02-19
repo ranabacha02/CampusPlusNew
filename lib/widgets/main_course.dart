@@ -1,18 +1,11 @@
 import 'package:campus_plus/controller/chat_controller.dart';
-import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/clean_user_model.dart';
-import 'package:campus_plus/utils/app_colors.dart';
-import 'package:campus_plus/widgets/app_widgets.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
 import '../model/chat_model.dart';
 import '../views/chat_page_screen.dart';
-import 'ContactPage.dart';
 
 class MainCourse extends StatelessWidget {
   const MainCourse({
@@ -42,7 +35,7 @@ class MainCourse extends StatelessWidget {
                   imageURL: user.profilePictureURL,
                   caption: user.firstName,
                   radius: 30),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Expanded(
@@ -51,7 +44,7 @@ class MainCourse extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      user.firstName + " " + user.lastName,
+                      "${user.firstName} ${user.lastName}",
                       style: const TextStyle(
                         fontSize: 18,
                         fontFamily: 'Roboto',
@@ -92,7 +85,7 @@ class MainCourse extends StatelessWidget {
                             Get.put(ChatController());
 
                         Chat chat = await chatController.createChat(
-                            user.firstName + " " + user.lastName,
+                            "${user.firstName} ${user.lastName}",
                             auth.currentUser!.uid,
                             user.userId,
                             user.email);
@@ -103,7 +96,7 @@ class MainCourse extends StatelessWidget {
                                 builder: (context) => ChatPageScreen(
                                     chatId: chat.chatId,
                                     chatName:
-                                        user.firstName + " " + user.lastName,
+                                        "${user.firstName} ${user.lastName}",
                                     privateChat: chat.isGroup,
                                     imageURL: user.profilePictureURL)));
                       },
