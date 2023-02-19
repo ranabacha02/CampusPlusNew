@@ -122,8 +122,10 @@ class MyCard {
     return cards;
   }
 
-  static Future<List<MyCard>> getTaggedCards() async{
-    final snapshots = await cardCollection.orderBy('eventStart').get();
+  static Future<List<MyCard>> getTaggedCards(String tag) async{
+    String gender = dataController.getLocalData().gender;
+    String department = dataController.getLocalData().department;
+    final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).where("tags", arrayContains: tag).orderBy("eventStart").get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
