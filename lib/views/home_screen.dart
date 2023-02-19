@@ -19,6 +19,8 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+enum TagsFilter { study, food, fun, sports}
+
 class _HomeScreenState extends State<HomeScreen> {
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
@@ -28,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late final MyUser userInfo;
   late final CleanUser cleanUserInfo;
   late Future<List<MyCard>> futureCards;
+  final List<String> _tags = <String>[];
 
   @override
   void initState() {
@@ -46,19 +49,45 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> refreshCards() async {
     final newCards = gettingCards();
+    final filteredCards = cardController.filterCards(await newCards, _tags);
     setState(() {
-      futureCards = newCards;
+      futureCards = filteredCards;
     });
   }
 
   Future<void> updatePage() async {
     final newCards = gettingCards();
-    await Future.delayed(const Duration(milliseconds: 800));
+    final filteredCards = cardController.filterCards(await newCards, _tags);
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
-      futureCards = newCards;
+      futureCards = filteredCards;
     });
   }
 
+  Wrap buildTagFilterChip() {
+    return Wrap(
+      spacing: 5.0,
+      children: TagsFilter.values.map((TagsFilter tag){
+        return FilterChip(
+            label: Text(tag.name),
+            selected: _tags.contains(tag.name),
+            onSelected: (bool value){
+              setState(() {
+                if (value) {
+                  if (!_tags.contains(tag.name)) {
+                    _tags.add(tag.name);
+                  }
+                } else {
+                  _tags.removeWhere((String name) {
+                    return name == tag.name;
+                  });
+                }
+              });
+            }
+            );
+      }).toList(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 backgroundColor: Colors.blue,
                 strokeWidth: 4.0,
                 onRefresh: updatePage,
-                child: _listView(snapshot, cleanUserInfo, refreshCards)
+                child: _listView(snapshot, cleanUserInfo, refreshCards, buildTagFilterChip)
             );
           },
         )
@@ -121,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo, Function refreshCards) {
+Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo, Function refreshCards, Function buildTagFilterChip) {
   if(!snapshot.hasData){
     return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
   }
@@ -129,31 +158,38 @@ Widget _listView(AsyncSnapshot snapshot, CleanUser cleanUserInfo, Function refre
     return const Text('Something went wrong');
   }
   final data = snapshot.data;
-  return ListView.builder(
-    itemCount: data.length,
-    itemBuilder: (context, index){
-      if(data[index].createdBy == cleanUserInfo.userId){
-        return MainCard(
-          refreshCards: refreshCards,
-          cardId: data[index].id,
-          event: data[index].event,
-          personal: true,
-          userInfo: cleanUserInfo,
-          usersJoined: data[index].users,
-          date: data[index].eventStart,
-        );}
-      else{
-        return MainCard(
-          refreshCards: refreshCards,
-          cardId: data[index].id,
-          event: data[index].event,
-          personal: false,
-          userInfo: cleanUserInfo,
-          usersJoined: data[index].users,
-          date: data[index].eventStart,
-        );}
-    },
-  );
+  return
+     Column(
+        children: [
+          const SizedBox(height:20),
+          buildTagFilterChip(),
+          Expanded(child: ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (context, index){
+              if(data[index].createdBy == cleanUserInfo.userId){
+                return MainCard(
+                  refreshCards: refreshCards,
+                  cardId: data[index].id,
+                  event: data[index].event,
+                  personal: true,
+                  userInfo: cleanUserInfo,
+                  usersJoined: data[index].users,
+                  date: data[index].eventStart,
+                );}
+              else{
+                return MainCard(
+                  refreshCards: refreshCards,
+                  cardId: data[index].id,
+                  event: data[index].event,
+                  personal: false,
+                  userInfo: cleanUserInfo,
+                  usersJoined: data[index].users,
+                  date: data[index].eventStart,
+                );}
+            },
+          )),
+        ]
+      );
 }
 
 
