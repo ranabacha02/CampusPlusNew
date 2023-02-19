@@ -133,18 +133,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   )},
                   icon: Image.asset('assets/notificationIcon.png')),
             ]),
-        body: FutureBuilder(
-          future: futureCards,
-          builder: (context, snapshot){
+        body: Container(
+          color: Colors.white,
+          child: FutureBuilder(
+            future: futureCards,
+            builder: (context, snapshot){
               return RefreshIndicator(
-                key: _refreshIndicatorKey,
-                color: Colors.white,
-                backgroundColor: Colors.blue,
-                strokeWidth: 4.0,
-                onRefresh: updatePage,
-                child: _listView(snapshot, cleanUserInfo, refreshCards, buildTagFilterChip)
-            );
-          },
+                  key: _refreshIndicatorKey,
+                  color: Colors.white,
+                  backgroundColor: Colors.blue,
+                  strokeWidth: 4.0,
+                  onRefresh: updatePage,
+                  child: _listView(snapshot, cleanUserInfo, refreshCards, buildTagFilterChip)
+              );
+            },
+          )
         )
     );
   }
