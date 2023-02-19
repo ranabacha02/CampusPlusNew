@@ -61,6 +61,25 @@ class CardController{
     return MyCard.getAllVisibleCards();
   }
 
+  Future<List<MyCard>> getTaggedCards(List<String> tags) async {
+    List<MyCard> taggedCards=[];
+    for(String t in tags){
+      taggedCards.addAll(await MyCard.getTaggedCards(t));
+    }
+    return taggedCards;
+  }
+
+  Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async{
+    List<MyCard> taggedCards =[];
+    if(tags.isNotEmpty){
+      for(String tag in tags){
+        taggedCards.addAll(cards.where((card)=> card.tags.contains(tag)).toList());
+      }
+      return taggedCards;
+    }
+    return cards;
+  }
+
 
   Future getMyCards() async{
     final myCreatedCards = await MyCard.getMyCreatedCards(auth.currentUser!.uid);
@@ -68,10 +87,6 @@ class CardController{
     List<MyCard> myCards = myCreatedCards + myJoinedCards;
     return myCards;
   }
-
-
-
-
 
 
 }
