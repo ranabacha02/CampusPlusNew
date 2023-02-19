@@ -23,9 +23,9 @@ class MainCard extends StatelessWidget {
   final CleanUser userInfo;
   final String event;
   final bool personal;
-  List<CleanUser> usersJoined;
+  final List<CleanUser> usersJoined;
   final DateTime date;
-  CardController cardController = Get.put(CardController());
+  final CardController cardController = Get.put(CardController());
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +198,7 @@ class MainCard extends StatelessWidget {
 }
 
 class JoinButton extends StatelessWidget {
-  JoinButton({
+   JoinButton({
     Key? key,
     required this.refreshCards,
     required this.joined,
@@ -209,7 +209,7 @@ class JoinButton extends StatelessWidget {
   final bool joined;
   final String cardId;
   final CleanUser userInfo;
-  CardController cardController = Get.put(CardController());
+  final CardController cardController = Get.put(CardController());
 
   @override
   Widget build(BuildContext context) {
@@ -239,9 +239,13 @@ class JoinButton extends StatelessWidget {
 }
 
 class ToggleMenu extends StatefulWidget {
-  ToggleMenu({super.key,required this.refreshCards, required this.cardId});
+  const ToggleMenu({
+    Key? key,
+    required this.refreshCards,
+    required this.cardId
+  }) : super(key: key);
   final String cardId;
-  Function refreshCards;
+  final Function refreshCards;
   @override
   State<ToggleMenu> createState() => _ToggleMenuState();
 }
@@ -285,9 +289,9 @@ class DeleteDialog extends StatelessWidget {
     required this.cardId,
     Key? key,
   }) : super(key: key);
-  Function refreshCards;
+  final Function refreshCards;
   final String cardId;
-  CardController cardController = Get.put(CardController());
+  final CardController cardController = Get.put(CardController());
 
   @override
   Widget build(BuildContext context) {
