@@ -108,7 +108,6 @@ class MyCard {
   }
 
   static Stream<QuerySnapshot<Object?>> getStreamOfCards(){
-    final CollectionReference cardCollection = FirebaseFirestore.instance.collection("Cards");
     return cardCollection.orderBy('eventStart').snapshots();
   }
 
