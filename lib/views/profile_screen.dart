@@ -1,31 +1,27 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/views/recent_activity_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
-import 'package:campus_plus/widgets/image_file_picker.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
 import 'package:campus_plus/views/tutoring_profile.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
-
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
-
 import 'edit_account_screen.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
+  const ProfileScreen({super.key});
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
@@ -53,16 +49,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //print(userInfo.toString());
-    //print(auth.currentUser!.photoURL);
     if (auth.currentUser!.photoURL != null) {
       displayImage =
           Image(image: CachedNetworkImageProvider(auth.currentUser!.photoURL!));
     } else {
-      AssetImage("assets/default_profile.jpg");
+      const AssetImage("assets/default_profile.jpg");
     }
-
-    //print("display image in profile screen: " + displayImage.toString());
     return Scaffold(
         backgroundColor: AppColors.white,
         appBar: AppBar(
@@ -84,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Container(
               color: AppColors.white,
               child: Padding(
-                padding: EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,7 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         IconButton(
                             onPressed: () => {
                                   Navigator.push(
@@ -143,18 +135,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: Get.height * 0.01,
                           ),
                           Text(
-                            userInfo.firstName + " " + userInfo.lastName,
+                            "${userInfo.firstName} ${userInfo.lastName}",
                             style: TextStyle(
                                 fontSize: 30,
                                 color: AppColors.black,
                                 fontWeight: FontWeight.w600),
                           ),
                           Text(
-                            "" +
-                                    userInfo.major +
-                                    " | " +
-                                    userInfo.graduationYear.toString() ??
-                                "",
+                            "${userInfo.major} | ${userInfo.graduationYear}" ?? "",
                             style: TextStyle(
                               fontSize: 18,
                               color: AppColors.black,
@@ -192,7 +180,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      AccountSettingsScreen()))
+                                      const RecentActivityScreen()))
                         },
                         //width: 0.492,
                       ),
@@ -251,7 +239,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     Obx(() => authController.isLoading.value
-                        ? Center(
+                        ? const Center(
                             child: CircularProgressIndicator(),
                           )
                         : Container(
@@ -266,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 authController.signOut();
                                 Navigator.pushAndRemoveUntil(
                                   context,
-                                  new MaterialPageRoute(
+                                  MaterialPageRoute(
                                       builder: (context) => LoginView()),
                                   (Route<dynamic> route) => false,
                                 );
