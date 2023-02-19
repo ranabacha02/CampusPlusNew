@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
-import 'package:page_transition/page_transition.dart';
 import '../controller/card_controller.dart';
 import '../model/card_model.dart';
 import '../utils/app_colors.dart';
-import '../widgets/nav_bar.dart';
 import 'package:get/get.dart';
 
 
@@ -63,48 +61,51 @@ class _ScheduleState extends State<Schedule> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //automaticallyImplyLeading: true,
+        backgroundColor: AppColors.white,
+        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () =>
-              Navigator.push(context,
-                PageTransition(
-                  child: NavBarView(index: 2,),
-                  type: PageTransitionType.leftToRightJoined,
-                  childCurrent: const Schedule(),
-                ),),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: ()=> Navigator.pop(context),
         ),
-        backgroundColor: AppColors.aubRed,
-        title: const Text('My Schedule'),
-      ),
-      body:  SafeArea(
-        child: Calendar(
-          startOnMonday: true,
-          selectedColor: Colors.blue,
-          todayColor: Colors.red,
-          eventColor: Colors.green,
-          eventDoneColor: Colors.amber,
-          bottomBarColor: Colors.deepOrange,
-          onRangeSelected: (range) {
-          },
-          onDateSelected: (date){
-            return _handleData(date);
-          },
-          events: events,
-          isExpanded: true,
-          dayOfWeekStyle: const TextStyle(
-            fontSize: 15,
-            color: Colors.black12,
-            fontWeight: FontWeight.w100,
+        title: Text(
+          "CAMPUS+",
+          style: TextStyle(
+            fontSize: 30,
+            color: AppColors.aubRed,
           ),
-          bottomBarTextStyle: const TextStyle(
-            color: Colors.white,
-          ),
-          hideBottomBar: false,
-          hideArrows: false,
-          weekDays: const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
         ),
       ),
+      body:  Container(
+        color: Colors.white,
+        child: SafeArea(
+          child: Calendar(
+            startOnMonday: true,
+            selectedColor: Colors.blue,
+            todayColor: Colors.red,
+            eventColor: Colors.green,
+            eventDoneColor: Colors.amber,
+            bottomBarColor: Colors.deepOrange,
+            onRangeSelected: (range) {
+            },
+            onDateSelected: (date){
+              return _handleData(date);
+            },
+            events: events,
+            isExpanded: true,
+            dayOfWeekStyle: const TextStyle(
+              fontSize: 15,
+              color: Colors.black12,
+              fontWeight: FontWeight.w100,
+            ),
+            bottomBarTextStyle: const TextStyle(
+              color: Colors.white,
+            ),
+            hideBottomBar: false,
+            hideArrows: false,
+            weekDays: const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+          ),
+      ),
+      )
     );
   }
 }
