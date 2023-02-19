@@ -148,7 +148,8 @@ class CardInfo extends StatelessWidget {
                 imageURL: user.profilePictureURL,
                 caption: "${user.firstName} ${user.lastName}",
                 radius: 20,
-                preview: true,
+                preview: false,
+                userId: user.userId,
               )
           ],
         ),
