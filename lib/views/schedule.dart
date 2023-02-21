@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
+import 'package:intl/intl.dart';
 import '../controller/card_controller.dart';
 import '../model/card_model.dart';
 import '../utils/app_colors.dart';
@@ -19,6 +20,7 @@ class _ScheduleState extends State<Schedule> {
   late List <CleanCalendarEvent> selectedEvent;
   Map<DateTime, List<CleanCalendarEvent>> events ={};
   late CardController cardController;
+
 
 
   void _handleData(date){
@@ -49,12 +51,15 @@ class _ScheduleState extends State<Schedule> {
       }
       events[cleanEventDate]?.add(CleanCalendarEvent(
         card.event,
+
         startTime: cleanEventStartTime,
         endTime: cleanEventEndTime,
         color: Colors.black,
       ));
+
     }
-    setState(() => {});
+    setState(() => {
+    });
   }
 
   @override
@@ -75,37 +80,89 @@ class _ScheduleState extends State<Schedule> {
           ),
         ),
       ),
-      body:  Container(
+      body: Container(
         color: Colors.white,
         child: SafeArea(
-          child: Calendar(
-            startOnMonday: true,
-            selectedColor: Colors.blue,
-            todayColor: Colors.red,
-            eventColor: Colors.green,
-            eventDoneColor: Colors.amber,
-            bottomBarColor: Colors.deepOrange,
-            onRangeSelected: (range) {
-            },
-            onDateSelected: (date){
-              return _handleData(date);
-            },
-            events: events,
-            isExpanded: true,
-            dayOfWeekStyle: const TextStyle(
-              fontSize: 15,
-              color: Colors.black12,
-              fontWeight: FontWeight.w100,
-            ),
-            bottomBarTextStyle: const TextStyle(
-              color: Colors.white,
-            ),
-            hideBottomBar: false,
-            hideArrows: false,
-            weekDays: const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+          child: Column(
+            children: [
+              Expanded(
+                child: Calendar(
+                  startOnMonday: true,
+                  selectedColor: Colors.blue,
+                  todayColor: Colors.red,
+                  eventColor: Colors.green,
+                  eventDoneColor: Colors.amber,
+                  bottomBarColor: AppColors.aubRed,
+
+                  onRangeSelected: (range) {
+                  },
+                  onDateSelected: (date){
+                    return _handleData(date);
+                  },
+                  events: {},
+                  isExpandable: true,
+                  dayOfWeekStyle: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black12,
+                    fontWeight: FontWeight.w100,
+                  ),
+                  bottomBarTextStyle: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  hideBottomBar: false,
+                  hideArrows: false,
+                  weekDays: const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+
+                ),
+              ),
+              _buildEventList()
+            ],
           ),
+        ),
       ),
-      )
     );
   }
+  Widget _buildEventList() {
+    return Expanded(
+      child: ListView.builder(
+        padding: EdgeInsets.all(0.0),
+        itemBuilder: (BuildContext context, int index) {
+          final CleanCalendarEvent event = selectedEvent[index];
+          return ListTile(
+            contentPadding:
+            EdgeInsets.only(left: 2.0, right: 8.0, top: -10.0, bottom: 2.0),
+            leading: Container(
+              width: 10.0,
+              color: event.color,
+            ),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(event.summary),
+                Text(
+                  DateFormat('MMM d, h:mm a').format(event.startTime),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+            subtitle:
+            event.description.isNotEmpty ? Text(event.description) : null,
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+            ),
+            onTap: () {},
+          );
+        },
+        itemCount: selectedEvent.length,
+      ),
+    );
+  }
+
+
+
+
+
 }
