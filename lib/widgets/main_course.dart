@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../model/chat_model.dart';
+import '../model/course_model.dart';
 import '../views/chat_page_screen.dart';
 
 class MainCourse extends StatelessWidget {
@@ -14,12 +15,14 @@ class MainCourse extends StatelessWidget {
     required this.department,
     required this.price,
     required this.user,
+    required this.refreshCourses
   }) : super(key: key);
 
   final String courseName;
   final String department;
   final int price;
   final CleanUser user;
+  final Function refreshCourses;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +86,7 @@ class MainCourse extends StatelessWidget {
                       onPressed: () async {
                         ChatController chatController =
                             Get.put(ChatController());
-
+                        refreshCourses();
                         Chat chat = await chatController.createChat(
                             "${user.firstName} ${user.lastName}",
                             auth.currentUser!.uid,
@@ -94,6 +97,7 @@ class MainCourse extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatPageScreen(
+                                  //refreshCourses: widget.refreshCourses,
                                     chatId: chat.chatId,
                                     chatName:
                                         "${user.firstName} ${user.lastName}",

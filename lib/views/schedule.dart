@@ -73,7 +73,7 @@ class _ScheduleState extends State<Schedule> {
           onPressed: ()=> Navigator.pop(context),
         ),
         title: Text(
-          "CAMPUS+",
+          "",
           style: TextStyle(
             fontSize: 30,
             color: AppColors.aubRed,

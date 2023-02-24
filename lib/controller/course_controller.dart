@@ -17,18 +17,18 @@ class CourseController extends GetxController {
   void createCourse(String courseName, String department, int price) {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyCourse course= MyCourse(
-        createdBy: auth.currentUser!.uid,
-        courseName: courseName,
-        department: department,
-        price: price,
-        user: user,
+      createdBy: auth.currentUser!.uid,
+      courseName: courseName,
+      department: department,
+      price: price,
+      user: user,
     );
     course.createCourse();
   }
 
 
-  Future<bool> removeCourse(String cardId) async {
-    return MyCourse.removeCourse(cardId);
+  Future<bool> removeCourse(String courseId) async {
+    return MyCourse.removeCourse(courseId);
   }
 
   Future getStreamOfCourses() async {
@@ -39,10 +39,17 @@ class CourseController extends GetxController {
     return MyCourse.getAllCourses();
   }
 
+  Future<List<MyCourse>> getAllVisibleCourses() async{
+    return MyCourse.getAllVisibleCourses();
+  }
+
+
+
+
   Future getMyCourses() async{
-    final myCreatedCards = await MyCourse.getMyCreatedCourses(auth.currentUser!.uid);
-    List<MyCourse> myCards = myCreatedCards;
-    return myCards;
+    final myCreatedCourses = await MyCourse.getMyCreatedCourses(auth.currentUser!.uid);
+    List<MyCourse> myCourses = myCreatedCourses;
+    return myCourses;
   }
 }
 

@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/auth_controller.dart';
+import '../controller/course_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/course_model.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
 import '../widgets/main_course.dart';
@@ -21,11 +23,13 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
 
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
-
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   late AuthController authController;
   FirebaseAuth auth = FirebaseAuth.instance;
   late DataController dataController;
+  late CourseController courseController;
   late final MyUser userInfo;
+  late Future<List<MyCourse>> futureCourses;
   late final List<dynamic> coursesList = userInfo.tutoringClasses;
 
 
@@ -36,6 +40,26 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
+    futureCourses = gettingCourses();
+  }
+
+  Future<List<MyCourse>> gettingCourses() async {
+    return await courseController.getAllVisibleCourses();
+  }
+
+  Future<void> refreshCourses() async {
+    final newCourses = gettingCourses();
+    setState(() {
+      futureCourses = newCourses;
+    });
+  }
+
+  Future<void> updatePage() async {
+    final newCourses = gettingCourses();
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() {
+      futureCourses = newCourses;
+    });
   }
 
   @override
@@ -72,29 +96,62 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
         ),
         body: Container(
             color: AppColors.white,
-            child: StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('Courses').where("createdBy", isEqualTo: auth.currentUser!.uid).snapshots(),
-              builder: (
-                  BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot,
-                  ) {
-                if(snapshot.hasError){
-                  return const Text('Something went wrong');
-                }
-                if(snapshot.connectionState == ConnectionState.waiting){
-                  return const Text('Loading');
-
-                }
-                final data = snapshot.requireData;
-                return ListView.builder(
-                  itemCount: data.size,
-                  itemBuilder: (context, index){
-                    return MainCourse(courseName: data.docs[index]['courseName'], department: data.docs[index]['department'], price: data.docs[index]['price'], user: CleanUser.fromFirestore(data.docs[index]['user']));
-                  },
+            child: FutureBuilder(
+              //child: StreamBuilder<QuerySnapshot>(
+              future: futureCourses,
+              //stream: FirebaseFirestore.instance.collection('Courses').where("createdBy", isEqualTo: auth.currentUser!.uid).snapshots(),
+              builder: (context, snapshot) {
+                return RefreshIndicator(
+                    key: _refreshIndicatorKey,
+                    color: Colors.white,
+                    backgroundColor: Colors.blue,
+                    strokeWidth: 4.0,
+                    onRefresh: updatePage,
+                    child: _listView(snapshot, userInfo, refreshCourses)
                 );
               },
             )
         ));
   }
+
+}
+
+Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourses) {
+  if(!snapshot.hasData){
+    return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
+  }
+  if(snapshot.hasError){
+    return const Text('Something went wrong');
+  }
+  final courses = snapshot.data;
+  return
+  Column(
+      children: [
+        const SizedBox(height:20),
+
+        Expanded(child: ListView.builder(
+          itemCount: courses.length,
+          itemBuilder: (context, index){
+            if(courses[index].createdBy == userInfo.userId){
+              return MainCourse(
+                courseName: courses[index]['courseName'],
+                department: courses[index]['department'],
+                price: courses[index]['price'],
+                  user: CleanUser.fromFirestore(courses[index]['user']),
+
+                refreshCourses: refreshCourses,
+              );}
+            else{
+              return MainCourse(
+                courseName: courses[index]['courseName'],
+                department: courses[index]['department'],
+                price: courses[index]['price'],
+                user: CleanUser.fromFirestore(courses[index]['user']),
+                refreshCourses: refreshCourses,
+              );}
+          },
+        )),
+      ]
+  );
 
 }
