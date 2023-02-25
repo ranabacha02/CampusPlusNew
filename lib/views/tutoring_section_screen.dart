@@ -129,7 +129,7 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
                 );
               }
               print("search input "+ searchInput.toLowerCase());
-              print("thing "+ course.user.name.toString());
+              print("thing "+ course.user.toString());
               if (course.user
                   .toString()
                   .toLowerCase()
@@ -139,7 +139,7 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
                   refreshCourses: refreshCourses,
                 );
               }
-              if (course.courseName
+              if (course.user
                   .toString()
                   .toLowerCase()
                   .contains(searchInput.toLowerCase())) {
