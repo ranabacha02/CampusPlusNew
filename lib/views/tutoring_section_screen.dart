@@ -1,5 +1,4 @@
 import 'package:campus_plus/controller/course_controller.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
-import '../model/clean_user_model.dart';
 import '../model/course_model.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
@@ -24,7 +22,6 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
   Size size = WidgetsBinding.instance.window.physicalSize / WidgetsBinding.instance.window.devicePixelRatio;
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
   late AuthController authController;
-  //Stream? courses;
   late DataController dataController;
   FirebaseAuth auth = FirebaseAuth.instance;
   late CourseController courseController;
@@ -128,8 +125,6 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
                   refreshCourses: refreshCourses,
                 );
               }
-              print("search input "+ searchInput.toLowerCase());
-              print("thing "+ course.user.toString());
               if (course.user
                   .toString()
                   .toLowerCase()
@@ -139,7 +134,7 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
                   refreshCourses: refreshCourses,
                 );
               }
-              if (course.user
+              if (course.user.firstName
                   .toString()
                   .toLowerCase()
                   .contains(searchInput.toLowerCase())) {
