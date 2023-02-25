@@ -16,12 +16,13 @@ class CourseController extends GetxController {
 
   void createCourse(String courseName, String department, int price) {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
-    MyCourse course= MyCourse(
+    MyCourse course = MyCourse(
       createdBy: auth.currentUser!.uid,
       courseName: courseName,
       department: department,
       price: price,
       user: user,
+
     );
     course.createCourse();
   }
@@ -39,17 +40,21 @@ class CourseController extends GetxController {
     return MyCourse.getAllCourses();
   }
 
-  Future<List<MyCourse>> getAllVisibleCourses() async{
+  Future<List<MyCourse>> getAllVisibleCourses() async {
     return MyCourse.getAllVisibleCourses();
   }
 
+  Future<List<MyCourse>> getAllStudentsCourses() async {
+    return MyCourse.getAllStudentsCourses();
+  }
 
 
-
-  Future getMyCourses() async{
-    final myCreatedCourses = await MyCourse.getMyCreatedCourses(auth.currentUser!.uid);
+  Future getMyCourses() async {
+    final myCreatedCourses = await MyCourse.getMyCreatedCourses(
+        auth.currentUser!.uid);
     List<MyCourse> myCourses = myCreatedCourses;
     return myCourses;
   }
-}
 
+
+}

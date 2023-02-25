@@ -30,7 +30,8 @@ class MyCourse {
     required this.courseName,
     required this.department,
     required this.price,
-    required this.user
+    required this.user,
+
 
   });
 
@@ -39,7 +40,8 @@ class MyCourse {
         courseName = snapshot['courseName'],
         department = snapshot['department'],
         price = snapshot['price'],
-        user = snapshot['user'];
+        user = CleanUser.fromFirestore(snapshot['user']);
+
 
 
   Map<String, dynamic> toFirestore(){
@@ -92,6 +94,13 @@ class MyCourse {
   static Future<List<MyCourse>> getAllVisibleCourses() async{
     final MyUser user = dataController.getLocalData();
     final snapshots = await courseCollection.where("createdBy", whereIn: [user.userId]).get();
+    List<MyCourse> courses = snapshots.docs.map<MyCourse>((doc) => MyCourse.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return courses;
+  }
+
+  static Future<List<MyCourse>> getAllStudentsCourses() async{
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await courseCollection.get();
     List<MyCourse> courses = snapshots.docs.map<MyCourse>((doc) => MyCourse.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return courses;
   }

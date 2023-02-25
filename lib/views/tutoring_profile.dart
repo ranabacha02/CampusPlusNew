@@ -30,7 +30,7 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
   late CourseController courseController;
   late final MyUser userInfo;
   late Future<List<MyCourse>> futureCourses;
-  late final List<dynamic> coursesList = userInfo.tutoringClasses;
+  late  List<dynamic> coursesList ;
 
 
 
@@ -39,7 +39,9 @@ class _TutoringProfileScreenState extends State<TutoringProfileScreen> {
     super.initState();
     authController = Get.put(AuthController());
     dataController = Get.put(DataController());
+    courseController = Get.put(CourseController());
     userInfo = dataController.getLocalData();
+    coursesList = userInfo.tutoringClasses;
     futureCourses = gettingCourses();
   }
 
@@ -128,25 +130,18 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
   Column(
       children: [
         const SizedBox(height:20),
-
         Expanded(child: ListView.builder(
           itemCount: courses.length,
           itemBuilder: (context, index){
-            if(courses[index].createdBy == userInfo.userId){
+            final course = courses[index];
+            if(course.createdBy == userInfo.userId){
               return MainCourse(
-                courseName: courses[index]['courseName'],
-                department: courses[index]['department'],
-                price: courses[index]['price'],
-                  user: CleanUser.fromFirestore(courses[index]['user']),
-
+                course: course,
                 refreshCourses: refreshCourses,
               );}
             else{
               return MainCourse(
-                courseName: courses[index]['courseName'],
-                department: courses[index]['department'],
-                price: courses[index]['price'],
-                user: CleanUser.fromFirestore(courses[index]['user']),
+                course: course,
                 refreshCourses: refreshCourses,
               );}
           },

@@ -31,7 +31,7 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
   String searchInput="";
   late final MyUser userInfo;
   late Future<List<MyCourse>> futureCourses;
-  late final List<dynamic> coursesList = userInfo.tutoringClasses;
+  late final List<dynamic> coursesList;
   
   @override
   void initState() {
@@ -40,11 +40,12 @@ class _TutoringSectionScreenState extends State<TutoringSectionScreen> {
     dataController = Get.put(DataController());
     courseController = Get.put(CourseController());
     userInfo = dataController.getLocalData();
+    coursesList = userInfo.tutoringClasses;
     futureCourses = gettingCourses();
   }
 
   Future<List<MyCourse>> gettingCourses() async {
-    return await courseController.getAllVisibleCourses();
+    return await courseController.getAllStudentsCourses();
   }
 
   Future<void> refreshCourses() async {
@@ -117,53 +118,42 @@ Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCourse
     Column(
         children: [
           const SizedBox(height:20),
-
           Expanded(child: ListView.builder(
             itemCount: courses.length,
             itemBuilder: (context, index){
-              var data2 = snapshot.data!.docs[index].data() as Map<String, dynamic>;
+              final course = courses[index];
               if (searchInput.isEmpty){
                 return MainCourse(
-                  courseName: snapshot.data!.docs[index]['courseName'],
-                  department: snapshot.data!.docs[index]['department'],
-                  price: snapshot.data!.docs[index]['price'],
-                  user: CleanUser.fromFirestore(courses[index]['user']),
+                  course: course,
                   refreshCourses: refreshCourses,
                 );
               }
-              if (data2['user']
+              print("search input "+ searchInput.toLowerCase());
+              print("thing "+ course.user.name.toString());
+              if (course.user
                   .toString()
                   .toLowerCase()
                   .contains(searchInput.toLowerCase())) {
                 return MainCourse(
-                  courseName: snapshot.data!.docs[index]['courseName'],
-                  department: snapshot.data!.docs[index]['department'],
-                  price: snapshot.data!.docs[index]['price'],
-                  user: CleanUser.fromFirestore(courses[index]['user']),
+                  course: course,
                   refreshCourses: refreshCourses,
                 );
               }
-              if (data2['courseName']
+              if (course.courseName
                   .toString()
                   .toLowerCase()
                   .contains(searchInput.toLowerCase())) {
                 return MainCourse(
-                  courseName: snapshot.data!.docs[index]['courseName'],
-                  department: snapshot.data!.docs[index]['department'],
-                  price: snapshot.data!.docs[index]['price'],
-                  user: CleanUser.fromFirestore(courses[index]['user']),
+                  course: course,
                   refreshCourses: refreshCourses,
                 );
               }
-              if (data2['department']
+              if (course.department
                   .toString()
                   .toLowerCase()
                   .contains(searchInput.toLowerCase())) {
                 return MainCourse(
-                  courseName: snapshot.data!.docs[index]['courseName'],
-                  department: snapshot.data!.docs[index]['department'],
-                  price: snapshot.data!.docs[index]['price'],
-                  user: CleanUser.fromFirestore(courses[index]['user']),
+                  course: course,
                   refreshCourses: refreshCourses,
                 );
               }
