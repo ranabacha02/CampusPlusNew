@@ -7,6 +7,7 @@ import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
@@ -53,10 +54,14 @@ class _ForumWidgetState extends State<ForumWidget> {
       alignment: Alignment.center,
       children: [
         myQuestions.isEmpty ? noQuestionWidget() : questions(),
-        Positioned(
-          child: askQuestionButton(),
-          bottom: 60,
-        ),
+        KeyboardVisibilityBuilder(builder: (context, isKeyboardVisible) {
+          return isKeyboardVisible
+              ? const SizedBox()
+              : Positioned(
+                  child: askQuestionButton(),
+                  bottom: 60,
+                );
+        }),
       ],
     );
   }
@@ -213,10 +218,8 @@ class _ForumWidgetState extends State<ForumWidget> {
           children: [
             question.answers.length > 0
                 ? LayoutBuilder(builder: (context, constraints) {
-                    return Container(
-                        height: constraints.maxHeight > Get.height * 0.05
-                            ? Get.height * 0.25
-                            : constraints.maxHeight,
+                    return LimitedBox(
+                        maxHeight: Get.height * 0.25,
                         child: ListView.builder(
                             reverse: true,
                             itemCount: question.answers.length,

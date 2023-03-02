@@ -170,12 +170,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
                       itemCount: data.size,
                       itemBuilder: (context, index) {
                         if (!usersWithChat
-                            .contains(data.docs[index]['groupName'])) {
+                            .contains(data.docs[index]['chatName'])) {
                           return groupProfile(
-                            data.docs[index]['groupName'],
-                            data.docs[index]['groupIcon'],
+                            data.docs[index]['chatName'],
+                            data.docs[index]['chatIcon'],
                             data.docs[index]['chatId'],
-                            "${userInfo.firstName} ${userInfo.lastName}",
+                            userInfo.email,
                             data.docs[index]['members'],
                           );
                         } else {
@@ -190,10 +190,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   groupProfile(String groupName, String groupIcon, String groupId,
-      String userName, List<String> members) {
+      String userEmail, List<dynamic> members) {
     String memberNames = "";
     for (String s in members) {
-      memberNames += s.split("_")[0];
+      memberNames += s.split("_")[1];
     }
     return Container(
         height: 105,
@@ -223,7 +223,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   text: "Join",
                   onpress: () {
                     //create a new chat between the users and redirect them to the chat page
-                    chatController.joinGroup(groupId, userName, groupName);
+                    chatController.joinGroup(groupId, userEmail, groupName);
                     Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -242,25 +242,18 @@ class _NewChatScreenState extends State<NewChatScreen> {
     return GestureDetector(
         onTap: () async {
           //create a new chat between the users and redirect them to the chat page
-          String userName = userInfo.firstName + " " + userInfo.lastName;
-          Chat chat = await chatController.createChat(
-              userName, auth.currentUser!.uid, uid, userInfo.email);
-          String groupName = "";
-          String temp = chat.chatName.split("_")[0];
-          if (temp == userName) {
-            groupName = chat.chatName.split("_")[1];
-          } else {
-            groupName = temp;
-          }
+          //String userName = "${userInfo.firstName} ${userInfo.lastName}";
+          Chat chat = await chatController.createChat(uid);
+          String chatName = userName;
 
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => ChatPageScreen(
                       chatId: chat.chatId,
-                      chatName: groupName,
-                      privateChat: !chat.isGroup,
-                      imageURL: chat.chatIcon)));
+                      chatName: chatName,
+                      privateChat: true,
+                      imageURL: imageUrl)));
         },
         child: Container(
             height: 88,
@@ -354,9 +347,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                         _isLoading = true;
                       });
                       chatController.createGroup(
-                          userInfo.firstName + " " + userInfo.lastName,
-                          auth.currentUser!.uid,
-                          groupName);
+                          userInfo.email, auth.currentUser!.uid, groupName);
 
                       Navigator.of(context).pop();
                       print("group created successfully");

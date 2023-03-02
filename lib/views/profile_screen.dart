@@ -11,7 +11,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:realm/realm.dart';
 import '../model/user_model.dart';
+import '../localStorage/realm/data_models/realmUser.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
@@ -36,6 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late DataController dataController;
   late final MyUser userInfo;
+  final realm = Realm(Configuration.local([RealmUser.schema]));
 
   Image? displayImage;
 

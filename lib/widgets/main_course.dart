@@ -92,17 +92,13 @@ class MainCourse extends StatelessWidget {
                         ChatController chatController =
                             Get.put(ChatController());
                         refreshCourses();
-                        Chat chat = await chatController.createChat(
-                            "${course.user.firstName} ${course.user.lastName}",
-                            auth.currentUser!.uid,
-                            course.user.userId,
-                            course.user.email);
-
+                        Chat chat =
+                            await chatController.createChat(course.user.userId);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatPageScreen(
-                                  //refreshCourses: widget.refreshCourses,
+                                    //refreshCourses: widget.refreshCourses,
                                     chatId: chat.chatId,
                                     chatName:
                                         "${course.user.firstName} ${course.user.lastName}",

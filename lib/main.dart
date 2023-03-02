@@ -1,3 +1,4 @@
+import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
@@ -19,7 +20,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.remove("email");
+  //prefs.remove("email");
   var email = prefs.getString("email");
   DataController dataController = Get.put(DataController());
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -28,17 +29,23 @@ void main() async {
     print(email);
     print(auth.currentUser);
     // print("email not null");
+    userSyncing(auth.currentUser!.uid).onData((data) {
+      print("on data");
+      chatsSyncing(dataController.getLocalData().chatsId);
+    });
+
     await dataController.getUserInfo();
   }
   runApp(CampusPlus(
     email: email,
   ));
-
 }
 
 class CampusPlus extends StatefulWidget {
   final String? email;
+
   const CampusPlus ({ Key? key, this.email }): super(key: key);
+
   @override
   State<CampusPlus> createState() => _CampusPlusState();
 }
@@ -47,7 +54,7 @@ class _CampusPlusState extends State<CampusPlus>{
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-        title: 'Campus+',
+      title: 'Campus+',
       theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context)
@@ -57,8 +64,8 @@ class _CampusPlusState extends State<CampusPlus>{
       home: widget.email == null
           ? LoginView()
           : NavBarView(
-              index: 2,
-            ),
+        index: 2,
+      ),
     );
   }
 

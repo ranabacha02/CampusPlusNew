@@ -2,8 +2,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import '../localStorage/realm/data_models/realmUser.dart';
 
 final CollectionReference usersCollection = FirebaseFirestore.instance.collection("Users");
+
 class MyUser {
   String firstName;
   String lastName;
@@ -72,6 +74,23 @@ class MyUser {
         profilePictureURL = snapshot['profilePictureURL'],
         userId = snapshot['userId'];
 
+  MyUser.fromRealmUser(RealmUser realmUser)
+      : firstName = realmUser.firstName,
+        lastName = realmUser.lastName,
+        gender = realmUser.gender,
+        department = realmUser.department,
+        email = realmUser.email,
+        major = realmUser.major,
+        graduationYear = realmUser.graduationYear,
+        mobilePhoneNumber = realmUser.mobilePhoneNumber,
+        rentals = List<String>.from(realmUser.rentals),
+        chatsId = List<String>.from(realmUser.chatsId),
+        tutoringClasses = List<String>.from(realmUser.tutoringClasses),
+        description = realmUser.description,
+        lastLogged = realmUser.lastLogged,
+        profilePictureURL = realmUser.profilePictureURL,
+        userId = realmUser.userId;
+
   Map<String, Object?> toFirestore() {
     return {
       'firstName': firstName,
@@ -138,25 +157,31 @@ class MyUser {
     return user;
   }
 
-  Future<String> uploadProfilePic(File image) async {
+  UploadTask uploadProfilePic(File image) {
     final storage = FirebaseStorage.instance;
     var storageRef =
         storage.ref().child("users/profiles/${auth.currentUser!.uid}");
-    var uploadTask = await storageRef.putFile(image);
-    var downloadURL = await uploadTask.ref.getDownloadURL();
-    print("image updated!");
-    auth.currentUser!.updatePhotoURL(downloadURL);
-    users.doc(auth.currentUser!.uid).update({'profilePictureURL': downloadURL});
-    return downloadURL;
+    var uploadTask = storageRef.putFile(image)
+      ..then((p0) {
+        p0.ref.getDownloadURL().then((value) {
+          auth.currentUser!.updatePhotoURL(value);
+          users.doc(auth.currentUser!.uid).update({'profilePictureURL': value});
+        });
+      });
+
+    return uploadTask;
   }
 
-  deleteProfilePicture() async {
+  Future deleteProfilePicture() {
     final storage = FirebaseStorage.instance;
     var storageRef =
         storage.ref().child("users/profiles/${auth.currentUser!.uid}");
-    await storageRef.delete();
-    auth.currentUser!.updatePhotoURL(null);
-    users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
+    var task = storageRef.delete()
+      ..then((value) {
+        auth.currentUser!.updatePhotoURL(null);
+        users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
+      });
+    return task;
   }
 
   deleteChat(String chatId) async {

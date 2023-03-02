@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:core';
 import 'dart:io';
 
 import 'package:campus_plus/controller/edit_profile_controller.dart';
@@ -22,11 +23,10 @@ class EditAccountScreen extends StatefulWidget {
   File? photo;
   Image? displayImage;
 
-  EditAccountScreen(
-      {required this.userInfo,
-      required this.delete,
-      this.photo,
-      this.displayImage});
+  EditAccountScreen({required this.userInfo,
+    required this.delete,
+    this.photo,
+    this.displayImage});
 
   @override
   _EditAccountScreenState createState() => _EditAccountScreenState(
@@ -55,8 +55,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
   bool delete;
 
-  _EditAccountScreenState(
-      {required this.delete, this.photo, this.displayImage});
+  _EditAccountScreenState({required this.delete, this.photo, this.displayImage});
 
   late DataController dataController;
   late MyUser userInfo;
@@ -134,14 +133,15 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   fontSize: 15,
                 ),
               ),
-              onPressed: () async {
-                await dataController.updateProfile(
+              onPressed: () {
+                dataController.updateProfile(
                   firstName: firstNameController.text.trim(),
                   lastName: lastNameController.text.trim(),
                   major: majorController.text.trim(),
                   graduationYear:
                       int.parse(graduationYearController.text.trim()),
-                  mobilePhoneNumber: int.parse(mobileNumberController.text.trim()),
+                  mobilePhoneNumber:
+                      int.parse(mobileNumberController.text.trim()),
                   context: context,
                   photo: photo,
                   delete: false,
@@ -177,49 +177,49 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   height: 35,
                 ),
                 buildTextField("First Name", "", false, firstNameController,
-                    (String input) {}, false),
+                        (String input) {}, false),
                 buildTextField("Last Name", "", false, lastNameController,
-                    (String input) {}, false),
+                        (String input) {}, false),
                 buildTextField("Major", "", false, majorController,
-                    (String input) {}, false),
+                        (String input) {}, false),
                 // To do: check the input and make sure it's one of the options
                 buildTextField(
                     "Graduation Year", "", false, graduationYearController,
-                    (String input) {
-                  print("hello i'm here");
-                  if (int.tryParse(input) == null) {
-                    print("only number");
-                    Get.snackbar('Warning', 'Only numbers allowed',
-                        colorText: Colors.white, backgroundColor: Colors.blue);
-                    return '';
-                  } else {
-                    int gradYear = int.parse(input);
-                    int currentYear = DateTime.now().year;
-                    print(currentYear);
-                    if (gradYear < currentYear) {
-                      Get.snackbar(
-                          'Warning', 'Graduation year cannot be in the past.',
-                          colorText: Colors.white,
-                          backgroundColor: Colors.blue);
-                      return '';
-                    }
-                  }
-                }, false),
+                        (String input) {
+                      print("hello i'm here");
+                      if (int.tryParse(input) == null) {
+                        print("only number");
+                        Get.snackbar('Warning', 'Only numbers allowed',
+                            colorText: Colors.white, backgroundColor: Colors.blue);
+                        return '';
+                      } else {
+                        int gradYear = int.parse(input);
+                        int currentYear = DateTime.now().year;
+                        print(currentYear);
+                        if (gradYear < currentYear) {
+                          Get.snackbar(
+                              'Warning', 'Graduation year cannot be in the past.',
+                              colorText: Colors.white,
+                              backgroundColor: Colors.blue);
+                          return '';
+                        }
+                      }
+                    }, false),
                 buildTextField(
                     "Mobile Number", "", false, mobileNumberController,
-                    (String input) {
-                  if (int.tryParse(input) == null) {
-                    Get.snackbar('Warning', 'Only numbers allowed',
-                        colorText: Colors.white, backgroundColor: Colors.blue);
-                    return '';
-                  }
-                }, false),
+                        (String input) {
+                      if (int.tryParse(input) == null) {
+                        Get.snackbar('Warning', 'Only numbers allowed',
+                            colorText: Colors.white, backgroundColor: Colors.blue);
+                        return '';
+                      }
+                    }, false),
                 buildTextField(
                     "Description",
                     "",
                     false,
                     descriptionController,
-                    (String input) {},
+                        (String input) {},
                     maxLength: 150,
                     true),
                 SizedBox(
@@ -231,8 +231,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         ));
   }
 
-  Widget buildTextField(
-      String labelText,
+  Widget buildTextField(String labelText,
       String placeholder,
       bool isPasswordTextField,
       TextEditingController controller,
@@ -250,16 +249,16 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
         decoration: InputDecoration(
             suffixIcon: isPasswordTextField
                 ? IconButton(
-                    onPressed: () {
-                      setState(() {
-                        showPassword = !showPassword;
-                      });
-                    },
-                    icon: Icon(
-                      Icons.remove_red_eye,
-                      color: Colors.grey,
-                    ),
-                  )
+              onPressed: () {
+                setState(() {
+                  showPassword = !showPassword;
+                });
+              },
+              icon: Icon(
+                Icons.remove_red_eye,
+                color: Colors.grey,
+              ),
+            )
                 : null,
             contentPadding: EdgeInsets.only(bottom: 3),
             labelText: labelText,
