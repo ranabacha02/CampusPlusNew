@@ -28,12 +28,8 @@ void main() async {
     prefs.printInfo();
     print(email);
     print(auth.currentUser);
-    // print("email not null");
-    userSyncing(auth.currentUser!.uid).onData((data) {
-      print("on data");
-      chatsSyncing(dataController.getLocalData().chatsId);
-    });
-
+    userSyncing(auth.currentUser!.uid);
+    chatsSyncing(dataController.getLocalData().chatsId);
     await dataController.getUserInfo();
   }
   runApp(CampusPlus(

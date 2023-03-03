@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:campus_plus/model/user_model.dart';
@@ -51,15 +52,15 @@ class Chat {
 
   Chat.fromFirestore(Map<String, Object?> json)
       : this(
-          chatId: json['chatId'] as String,
-          chatName: json['chatName'] as String,
-          isGroup: json['isGroup'] as bool,
-          members: json['members'] as List<String>?,
-          recentMessage: json['recentMessage'] as String?,
-          recentSender: json['recentSender'] as String?,
-          recentMessageTime: json['recentMessageTime'] as DateTime?,
-          recentMessageType: json['recentMessageType'] as String?,
-        );
+    chatId: json['chatId'] as String,
+    chatName: json['chatName'] as String,
+    isGroup: json['isGroup'] as bool,
+    members: json['members'] as List<String>?,
+    recentMessage: json['recentMessage'] as String?,
+    recentSender: json['recentSender'] as String?,
+    recentMessageTime: json['recentMessageTime'] as DateTime?,
+    recentMessageType: json['recentMessageType'] as String?,
+  );
 
   Map<String, dynamic> toFirestore() {
     return {
@@ -74,8 +75,7 @@ class Chat {
     };
   }
 
-  Future<Chat> createChat(
-      String email, String recipientId, String recipientEmail) async {
+  Future<Chat> createChat(String email, String recipientId, String recipientEmail) async {
     final CollectionReference userCollection = _firestore.collection('Users');
     final CollectionReference chatCollection = _firestore.collection("chats");
 
@@ -130,7 +130,7 @@ class Chat {
 
     //adding the chat id to the list of chats id of the current user
     DocumentReference userDocumentReference =
-        userCollection.doc(auth.currentUser!.uid);
+    userCollection.doc(auth.currentUser!.uid);
     await userDocumentReference.update({
       "chatsId": FieldValue.arrayUnion(
           ["${groupDocumentReference.id}_$recipientEmail"])
@@ -138,7 +138,7 @@ class Chat {
 
     //adding the chat id to the list of chats id for the recipient
     DocumentReference recipientDocumentReference =
-        userCollection.doc(recipientId);
+    userCollection.doc(recipientId);
     await recipientDocumentReference.update({
       "chatsId": FieldValue.arrayUnion(["${groupDocumentReference.id}_$email"])
     });
@@ -150,7 +150,7 @@ class Chat {
 
   Future createGroup() async {
     final CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection("chats");
+    FirebaseFirestore.instance.collection("chats");
     CollectionReference userCollection = _firestore.collection('Users');
     DocumentReference groupDocumentReference = await chatCollection.add({
       "isGroup": true,
@@ -181,7 +181,7 @@ class Chat {
     });
 
     DocumentReference userDocumentReference =
-        userCollection.doc(auth.currentUser!.uid);
+    userCollection.doc(auth.currentUser!.uid);
     chatId = groupDocumentReference.id;
     newChatSyncing(chatId);
     await userDocumentReference.update({
@@ -209,7 +209,7 @@ class Chat {
 
   getChatMessages() {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     return chatCollection
         .doc(chatId)
         .collection("messages")
@@ -219,7 +219,7 @@ class Chat {
 
   sendMessage(Map<String, dynamic> chatMessageData) {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("messages").add(chatMessageData);
     chatCollection.doc(chatId).update({
       "recentMessage": chatMessageData['message'],
@@ -232,7 +232,7 @@ class Chat {
 
   joinGroup(String userName) {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).update({
       "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
     });
@@ -250,7 +250,7 @@ class Chat {
 
   sendImage(Map<String, dynamic> chatMessageData) {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("messages").add({
       "message": chatMessageData["message"],
       "sender": chatMessageData["sender"],
@@ -259,7 +259,7 @@ class Chat {
     }).then((value) {
       final storage = FirebaseStorage.instance;
       var storageRef =
-          storage.ref().child("chats/attachments/${chatId}/${value.id}");
+      storage.ref().child("chats/attachments/${chatId}/${value.id}");
       var uploadTask = storageRef.putFile(chatMessageData['image'])
         ..then((p0) {
           var downloadUrl = p0.ref.getDownloadURL();
@@ -282,7 +282,7 @@ class Chat {
 
   getReadStatus(String userId) {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     return chatCollection
         .doc(chatId)
         .collection("readStatus")
@@ -292,7 +292,7 @@ class Chat {
 
   markRead(String memberId) {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("readStatus").doc(memberId).update({
       "unread": false,
       "unreadNumber": 0,
@@ -301,7 +301,7 @@ class Chat {
 
   markUnread() {
     CollectionReference chatCollection =
-        FirebaseFirestore.instance.collection('chats');
+    FirebaseFirestore.instance.collection('chats');
     var chat = chatCollection.doc(chatId).get().then((chat) {
       for (String member in chat["members"]) {
         String memberId = member.split("_")[0];
@@ -338,5 +338,46 @@ class Chat {
         }
       }
     });
+  }
+
+  updateGroupIcon(File? file) {
+    if (file != null) {
+      final storage = FirebaseStorage.instance;
+      var storageRef =
+          storage.ref().child("chats/profiles/${auth.currentUser!.uid}");
+      var uploadTask = storageRef.putFile(file)
+        ..then((p0) {
+          p0.ref.getDownloadURL().then((value) {
+            CollectionReference chatCollection =
+                FirebaseFirestore.instance.collection('chats');
+            chatCollection.doc(chatId).update({'chatIcon': value});
+          });
+        });
+      return uploadTask;
+    }
+  }
+
+  leaveGroup(String userId) async {
+    CollectionReference chatCollection =
+        FirebaseFirestore.instance.collection('chats');
+    var chatDoc = await chatCollection.doc(chatId).get();
+    var chatData = chatDoc.data() as Map<String, dynamic>;
+    var members = chatData["members"] as List<dynamic>;
+    var membersUpdated = [];
+    members.forEach((element) {
+      if (element.split("_")[0] != userId) {
+        membersUpdated.add(element);
+      }
+    });
+
+    chatCollection.doc(chatId).update({'members': membersUpdated});
+    CollectionReference userCollection =
+        FirebaseFirestore.instance.collection('Users');
+    var user_doc = await userCollection.doc(userId).get();
+    var user_data = user_doc.data() as Map<String, dynamic>;
+    var chatsId = user_data["chatsId"] as List<dynamic>;
+    chatsId.remove("${chatId}_${chatName}");
+
+    userCollection.doc(userId).update({"chatsId": chatsId});
   }
 }

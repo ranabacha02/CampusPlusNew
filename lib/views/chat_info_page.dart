@@ -1,19 +1,21 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/localStorage/realm/data_models/chat.dart';
-import 'package:campus_plus/model/user_model.dart';
+import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:editable_image/editable_image.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:realm/realm.dart';
 
+import '../controller/chat_controller.dart';
 import '../utils/app_colors.dart';
 import 'package:get/get.dart';
-
 
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
@@ -35,16 +37,17 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  late DataController dataController;
+  late ChatController chatController;
 
-  late RealmChat? realmChat;
+  RealmChat? realmChat;
 
   Image? displayImage;
 
   @override
   void initState() {
+    super.initState();
     authController = Get.put(AuthController());
-    dataController = Get.put(DataController());
+    chatController = Get.put(ChatController());
     final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
     final realm = Realm(config);
     realmChat = realm.find<RealmChat>(widget.chatId)!;
@@ -54,8 +57,21 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          title: Text(
+            "Group Info",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.black),
+          ),
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () {
+                Navigator.pop(context);
+              }),
           backgroundColor: AppColors.white,
-          centerTitle: false,
+          centerTitle: true,
           elevation: 0.2,
         ),
         body: Material(
@@ -67,7 +83,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                 padding: EdgeInsets.all(12.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(
                       height: Get.height * 0.01,
@@ -76,15 +92,25 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            // to be changed
-                            backgroundImage:
-                                AssetImage("assets/default_profile.jpg")
-                                    as ImageProvider,
-                            radius: 60,
-                            backgroundColor: AppColors.circle,
-                            foregroundColor: AppColors.white,
+                          EditableImage(
+                            imageDefaultColor: AppColors.grey,
+                            imageDefaultBackgroundColor: AppColors.whitegrey,
+                            onChange: (file) => _updateGroupPicture(file),
+                            image: realmChat!.chatIcon != null &&
+                                    realmChat!.chatIcon != ""
+                                ? Image(
+                                    image: CachedNetworkImageProvider(
+                                        realmChat!.chatIcon))
+                                : null,
                           ),
+                          // CircleAvatar(
+                          //   // to be changed
+                          //   backgroundImage:
+                          //       const AssetImage("assets/default_profile.jpg"),
+                          //   radius: 60,
+                          //   backgroundColor: AppColors.circle,
+                          //   foregroundColor: AppColors.white,
+                          // ),
                           SizedBox(
                             height: Get.height * 0.01,
                           ),
@@ -104,16 +130,59 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
                     SizedBox(
                       height: Get.height * 0.01,
                     ),
-                    Text(
+                    const Text(
                       "Members",
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    ListView.builder(itemBuilder: (context, index) {
-                      return Text(realmChat!.members[index]);
-                    }),
+                    Container(
+                      height: Get.height * 0.4,
+                      child: ListView.builder(
+                          itemCount: realmChat!.members.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemBuilder: (context, index) {
+                            return MemberTile(realmChat!.members[index]);
+                          }),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        chatController.leaveGroup(realmChat!.chatId,
+                            auth.currentUser!.uid, realmChat!.chatName);
+                        Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.leftToRightPop,
+                                child: NavBarView(index: 3),
+                                childCurrent: GroupInfoScreen(
+                                  chatId: widget.chatId,
+                                )));
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 0.1,
+                            ),
+                          ),
+                          child: Container(
+                              padding: EdgeInsets.all(10),
+                              child: Row(children: [
+                                Icon(
+                                  Icons.logout,
+                                  color: Colors.redAccent,
+                                ),
+                                Text(
+                                  "Leave ${realmChat!.chatName}",
+                                  style: TextStyle(
+                                    color: Colors.redAccent,
+                                  ),
+                                ),
+                              ]))),
+                    )
                   ],
                 ),
               ),
@@ -130,5 +199,26 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     file.writeAsBytesSync(response.bodyBytes);
 
     return file;
+  }
+
+  Widget MemberTile(String member) {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(
+          margin: EdgeInsets.all(10),
+          child: Text(
+            member.split("_")[1],
+            style: TextStyle(fontSize: 16),
+          )),
+      const Divider(),
+    ]);
+  }
+
+  _updateGroupPicture(File? file) {
+    if (file != null) {
+      chatController.updateGroupIcon(file, widget.chatId);
+      setState(() {
+        displayImage = Image.file(file);
+      });
+    }
   }
 }

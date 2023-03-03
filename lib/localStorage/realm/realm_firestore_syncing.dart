@@ -35,17 +35,20 @@ RealmUser toRealmUser(Map<String, dynamic> snapshot) {
 RealmChat toRealmChat(Map<String, dynamic> snapshot) {
   return RealmChat(
       snapshot["chatId"],
-      snapshot["chatName"],
-      snapshot["isGroup"],
-      snapshot["recentMessage"],
-      snapshot["recentMessageSender"],
-      snapshot["recentMessageTime"] == ""
-          ? DateTime.now()
-          : snapshot["recentMessageTime"].runtimeType == Timestamp
-              ? snapshot["recentMessageTime"].toDate()
-              : DateTime.fromMillisecondsSinceEpoch(
-                  int.parse(snapshot["recentMessageTime"])),
-      snapshot["chatIcon"]);
+    snapshot["chatName"],
+    snapshot["isGroup"],
+    snapshot["recentMessage"],
+    snapshot["recentMessageSender"],
+    snapshot["recentMessageTime"] == ""
+        ? DateTime.now()
+        : snapshot["recentMessageTime"].runtimeType == Timestamp
+            ? snapshot["recentMessageTime"].toDate()
+            : DateTime.fromMillisecondsSinceEpoch(
+                int.parse(snapshot["recentMessageTime"])),
+    snapshot["chatIcon"],
+    admin: snapshot["isGroup"] ? snapshot["admin"] : null,
+    members: List<String>.from(snapshot['members'] ??= []),
+  );
 }
 
 RealmMessage toRealmMessage(Map<String, dynamic> snapshot) {
@@ -122,6 +125,7 @@ chatsSyncing(List<String> chatsIdAndUserEmail) {
       });
     });
     int n = 0;
+    result = realm.query<RealmChat>('chatId IN $query2');
     for (var realmChat in result.toList()) {
       var chatId = realmChat.chatId;
       print("length of messages of ${realmChat.chatId} " +

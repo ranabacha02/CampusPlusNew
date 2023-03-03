@@ -79,15 +79,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     mobileNumberController.text = userInfo.mobilePhoneNumber.toString();
     descriptionController.text = userInfo.description.toString();
 
-    if (displayImage == null) {
-      displayImage = Image.asset("assets/default_profile.jpg");
-    }
+    displayImage ??= Image.asset("assets/default_profile.jpg");
 
-    // if (auth.currentUser!.photoURL != null) {
-    //   displayImage = Image.network(auth.currentUser!.photoURL!);
-    // } else {
-    //   displayImage = Image.asset("assets/default_profile.jpg");
-    // }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.white,

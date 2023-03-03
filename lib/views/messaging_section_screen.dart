@@ -42,7 +42,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
     gettingChats();
-    chatController.getLocalChatMessagesSizes();
+   // chatController.getLocalChatMessagesSizes();
     getLiveObject();
   }
 

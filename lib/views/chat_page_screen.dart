@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:realm/realm.dart' as Realm;
+import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
@@ -42,6 +43,8 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       WidgetsBinding.instance.window.devicePixelRatio;
 
   TextEditingController messageController = TextEditingController();
+  final GroupedItemScrollController itemScrollController =
+      GroupedItemScrollController();
 
   late ChatController chatController;
   late DataController dataController;
@@ -58,7 +61,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    userName = userInfo.firstName + " " + userInfo.lastName;
+    userName = "${userInfo.firstName} ${userInfo.lastName}";
     realMessages = chatController.getLocalChatMessages(widget.chatId);
   }
 
@@ -72,7 +75,6 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build");
     return DefaultTabController(
         initialIndex: 0,
         length: 2,
@@ -278,235 +280,14 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     });
   }
 
-  // chatMessages(bool privateChat) {
-  //   return StreamBuilder(
-  //     stream: chats,
-  //     builder: (context, AsyncSnapshot snapshot) {
-  //       String previousSender = "";
-  //       return snapshot.hasData
-  //           ? Container(
-  //               height: privateChat
-  //                   ? MediaQuery.of(context).size.height * 0.73
-  //                   : MediaQuery.of(context).size.height * 0.783,
-  //               child: ListView.builder(
-  //                 reverse: true,
-  //                 itemCount: snapshot.data.docs.length,
-  //                 itemBuilder: (context, index) {
-  //                   // print("the message is: " +
-  //                   //     snapshot.data.docs[index]['message']);
-  //                   DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
-  //                       snapshot.data.docs[index]['time']);
-  //                   DateTime dateTime2 = DateTime.now();
-  //                   String time = "";
-  //                   if (dateTime.minute < 10) {
-  //                     time = dateTime.hour.toString() +
-  //                         ":0" +
-  //                         dateTime.minute.toString();
-  //                   } else {
-  //                     time = dateTime.hour.toString() +
-  //                         ":" +
-  //                         dateTime.minute.toString();
-  //                   }
-  //
-  //                   String currentDate = DateFormat.yMMMEd().format(dateTime);
-  //
-  //                   String currentSender = snapshot.data.docs[index]['sender'];
-  //                   String nextSender = "";
-  //                   try {
-  //                     nextSender = snapshot.data.docs[index + 1]['sender'];
-  //                     dateTime2 = new DateTime.fromMillisecondsSinceEpoch(
-  //                         snapshot.data.docs[index + 1]['time']);
-  //                   } catch (e) {
-  //                     nextSender = "";
-  //                   }
-  //                   String nextDate = DateFormat.yMMMEd().format(dateTime2);
-  //
-  //                   if (userName + "_" + userInfo.userId != currentSender) {
-  //                     bool temp = nextSender == currentSender;
-  //                     previousSender = currentSender;
-  //                     if (nextDate != currentDate) {
-  //                       try {
-  //                         if (snapshot.data.docs[index] != null &&
-  //                             snapshot.data.docs[index]['type'] == 'image') {
-  //                           return Column(
-  //                             mainAxisSize: MainAxisSize.min,
-  //                             children: [
-  //                               chatDateTile(currentDate),
-  //                               ReceivedMessageTile(
-  //                                 privateChat: privateChat,
-  //                                 message: snapshot.data.docs[index]['message'],
-  //                                 sender: snapshot.data.docs[index]['sender'],
-  //                                 time: time,
-  //                                 sameSender: temp,
-  //                                 type: "image",
-  //                                 imageUrl: snapshot.data.docs[index]
-  //                                     ['imageUrl'],
-  //                               )
-  //                             ],
-  //                           );
-  //                         } else {
-  //                           return Column(
-  //                             children: [
-  //                               chatDateTile(currentDate),
-  //                               ReceivedMessageTile(
-  //                                 privateChat: privateChat,
-  //                                 message: snapshot.data.docs[index]['message'],
-  //                                 sender: snapshot.data.docs[index]['sender'],
-  //                                 time: time,
-  //                                 sameSender: temp,
-  //                                 type: "text",
-  //                               )
-  //                             ],
-  //                           );
-  //                         }
-  //                       } catch (e) {
-  //                         return Column(
-  //                           children: [
-  //                             chatDateTile(currentDate),
-  //                             ReceivedMessageTile(
-  //                               privateChat: privateChat,
-  //                               message: snapshot.data.docs[index]['message'],
-  //                               sender: snapshot.data.docs[index]['sender'],
-  //                               time: time,
-  //                               sameSender: temp,
-  //                               type: "text",
-  //                             )
-  //                           ],
-  //                         );
-  //                       }
-  //                     }
-  //                     try {
-  //                       if (snapshot.data.docs[index] != null &&
-  //                           snapshot.data.docs[index]['type'] == 'image') {
-  //                         return ReceivedMessageTile(
-  //                           privateChat: privateChat,
-  //                           message: snapshot.data.docs[index]['message'],
-  //                           sender: snapshot.data.docs[index]['sender'],
-  //                           time: time,
-  //                           sameSender: temp,
-  //                           type: "image",
-  //                           imageUrl: snapshot.data.docs[index]['imageUrl'],
-  //                         );
-  //                       } else {
-  //                         return Column(
-  //                           children: [
-  //                             chatDateTile(currentDate),
-  //                             ReceivedMessageTile(
-  //                               privateChat: privateChat,
-  //                               message: snapshot.data.docs[index]['message'],
-  //                               sender: snapshot.data.docs[index]['sender'],
-  //                               time: time,
-  //                               sameSender: temp,
-  //                               type: "text",
-  //                             )
-  //                           ],
-  //                         );
-  //                       }
-  //                     } catch (e) {
-  //                       return ReceivedMessageTile(
-  //                           privateChat: privateChat,
-  //                           message: snapshot.data.docs[index]['message'],
-  //                           sender: snapshot.data.docs[index]['sender'],
-  //                           time: time,
-  //                           sameSender: temp,
-  //                           type: "text");
-  //                     }
-  //                   }
-  //
-  //                   previousSender = currentSender;
-  //                   //print("time:" + time);
-  //                   if (nextDate != currentDate) {
-  //                     //print("snapshot: " + snapshot.data.docs[index].toString());
-  //                     try {
-  //                       if (snapshot.data.docs[index] != null &&
-  //                           snapshot.data.docs[index]['type'] == 'image') {
-  //                         return Column(
-  //                           children: [
-  //                             chatDateTile(currentDate),
-  //                             MessageTile(
-  //                               privateChat: privateChat,
-  //                               message: snapshot.data.docs[index]['message'],
-  //                               sender: snapshot.data.docs[index]['sender'],
-  //                               time: time,
-  //                               type: 'image',
-  //                               imageUrl: snapshot.data.docs[index]['imageUrl'],
-  //                             )
-  //                           ],
-  //                         );
-  //                       } else {
-  //                         return Column(
-  //                           children: [
-  //                             chatDateTile(currentDate),
-  //                             MessageTile(
-  //                               privateChat: privateChat,
-  //                               message: snapshot.data.docs[index]['message'],
-  //                               sender: snapshot.data.docs[index]['sender'],
-  //                               time: time,
-  //                               type: 'message',
-  //                             )
-  //                           ],
-  //                         );
-  //                       }
-  //                     } catch (e) {
-  //                       return Column(
-  //                         children: [
-  //                           chatDateTile(currentDate),
-  //                           MessageTile(
-  //                             privateChat: privateChat,
-  //                             message: snapshot.data.docs[index]['message'],
-  //                             sender: snapshot.data.docs[index]['sender'],
-  //                             time: time,
-  //                             type: 'message',
-  //                           )
-  //                         ],
-  //                       );
-  //                     }
-  //                   }
-  //                   // print("snapshot: " + snapshot.data.docs[index].toString());
-  //                   try {
-  //                     if (snapshot.data.docs[index] != null &&
-  //                         snapshot.data.docs[index]['type'] == 'image') {
-  //                       return MessageTile(
-  //                         privateChat: privateChat,
-  //                         message: snapshot.data.docs[index]['message'],
-  //                         sender: snapshot.data.docs[index]['sender'],
-  //                         time: time,
-  //                         type: 'image',
-  //                         imageUrl: snapshot.data.docs[index]['imageUrl'],
-  //                       );
-  //                     } else {
-  //                       return MessageTile(
-  //                         privateChat: privateChat,
-  //                         message: snapshot.data.docs[index]['message'],
-  //                         sender: snapshot.data.docs[index]['sender'],
-  //                         time: time,
-  //                         type: 'text',
-  //                       );
-  //                     }
-  //                   } catch (e) {
-  //                     return MessageTile(
-  //                       privateChat: privateChat,
-  //                       message: snapshot.data.docs[index]['message'],
-  //                       sender: snapshot.data.docs[index]['sender'],
-  //                       time: time,
-  //                       type: 'text',
-  //                     );
-  //                   }
-  //                 },
-  //               ))
-  //           : Container();
-  //     },
-  //   );
-  // }
-
   chatMessagesUpdate(bool privateChat) {
     final config =
         Realm.Configuration.local([RealmChat.schema, RealmMessage.schema]);
     final realm = Realm.Realm(config);
-    realm.write(() => realm
-        .find<RealmChat>(widget.chatId)
-        ?.messages
-        .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
+    // realm.write(() => realm
+    //     .find<RealmChat>(widget.chatId)
+    //     ?.messages
+    //     .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
     return StreamBuilder(
         stream: realm.find<RealmChat>(widget.chatId)?.changes,
         builder: (context,
@@ -522,6 +303,7 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                   height: privateChat
                       ? MediaQuery.of(context).size.height * 0.73
                       : MediaQuery.of(context).size.height * 0.783,
+              // child: stickyGroupedList(snapshot.requireData.object.messages, privateChat),
                   child: ListView.builder(
                       reverse: true,
                       itemCount: snapshot.requireData.object.messages.length,
@@ -614,4 +396,59 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       });
     }
   }
+
+// stickyGroupedList(Realm.RealmList<RealmMessage> _elements, bool privateChat) {
+//
+//   return StickyGroupedListView<RealmMessage, String>(
+//     floatingHeader: true,
+//     elements: _elements.toList(),
+//     groupBy: (RealmMessage element) =>
+//         DateFormat.yMMMEd().format(element.time),
+//     groupSeparatorBuilder: (RealmMessage element) =>
+//         chatDateTile(DateFormat.yMMMEd().format(element.time)),
+//     itemBuilder: (context, RealmMessage element) {
+//       DateTime dateTime = element.time;
+//       DateTime dateTime2 = DateTime.now();
+//       String time = "";
+//       if (dateTime.minute < 10) {
+//         time = "${dateTime.hour}:0${dateTime.minute}";
+//       } else {
+//         time = "${dateTime.hour}:${dateTime.minute}";
+//       }
+//
+//       String currentSender = element.sender;
+//       String nextSender = "";
+//       try {
+//         nextSender = element.sender;
+//         dateTime2 = element.time;
+//       } catch (e) {
+//         nextSender = "";
+//       }
+//
+//       bool sameSender = currentSender == nextSender;
+//       return currentSender.split("_")[1] == userInfo.userId
+//           ? MessageTile(
+//               message: element.message,
+//               sender: element.sender,
+//               privateChat: privateChat,
+//               time: time,
+//               type: element.type,
+//               imageUrl: element.imageUrl,
+//             )
+//           : ReceivedMessageTile(
+//               message: element.message,
+//               sender: element.sender,
+//               privateChat: privateChat,
+//               sameSender: sameSender,
+//               time: time,
+//               type: element.type,
+//               imageUrl: element.imageUrl,
+//             );
+//     },
+//     itemComparator: (e1, e2) => e1.time.compareTo(e2.time), // optional
+//     itemScrollController: itemScrollController, // optional
+//     order: StickyGroupedListOrder.DESC,
+//     reverse: true,// optional
+//   );
+// }
 }

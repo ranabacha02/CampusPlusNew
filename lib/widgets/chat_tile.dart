@@ -65,7 +65,6 @@ class _GroupTileState extends State<ChatTile> {
       CollectionReference users =
           FirebaseFirestore.instance.collection('Users');
       var data = await users.where("userId", isEqualTo: recipientId).get();
-      //print(recipientId);
       var data2 = data.docs.first.data() as Map<String, dynamic>;
 
       setState(() {
@@ -77,7 +76,7 @@ class _GroupTileState extends State<ChatTile> {
             .snapshots();
         if (chat["isGroup"] as bool) {
           chatName = chat["chatName"];
-          imageURL = null;
+          imageURL = chat["chatIcon"];
         } else {
           chatName = "${data2["firstName"]} ${data2["lastName"]}";
           imageURL = data2["profilePictureURL"];

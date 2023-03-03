@@ -175,7 +175,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                             data.docs[index]['chatName'],
                             data.docs[index]['chatIcon'],
                             data.docs[index]['chatId'],
-                            userInfo.email,
+                            userInfo.firstName + " " + userInfo.lastName,
                             data.docs[index]['members'],
                           );
                         } else {
@@ -190,7 +190,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
   }
 
   groupProfile(String groupName, String groupIcon, String groupId,
-      String userEmail, List<dynamic> members) {
+      String userName, List<dynamic> members) {
     String memberNames = "";
     for (String s in members) {
       memberNames += s.split("_")[1];
@@ -223,7 +223,7 @@ class _NewChatScreenState extends State<NewChatScreen> {
                   text: "Join",
                   onpress: () {
                     //create a new chat between the users and redirect them to the chat page
-                    chatController.joinGroup(groupId, userEmail, groupName);
+                    chatController.joinGroup(groupId, userName, groupName);
                     Navigator.push(
                         context,
                         MaterialPageRoute(

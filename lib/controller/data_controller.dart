@@ -23,8 +23,7 @@ class DataController extends GetxController {
   final storage = FirebaseStorage.instance;
 
   Future getUserInfo() async {
-    DocumentSnapshot snapshot =
-        await await users.doc(auth.currentUser!.uid).get();
+    DocumentSnapshot snapshot = await users.doc(auth.currentUser!.uid).get();
     MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);
     users.doc(auth.currentUser!.uid).update({
       'profilePictureURL': auth!.currentUser!.photoURL,

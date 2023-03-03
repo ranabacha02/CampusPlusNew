@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:campus_plus/controller/data_controller.dart';
@@ -146,5 +147,15 @@ class ChatController {
         ?.messages
         .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
     return realm.find<RealmChat>(chatId)?.changes;
+  }
+
+  updateGroupIcon(File? file, String chatId) {
+    Chat chat = Chat(chatId: chatId);
+    return chat.updateGroupIcon(file);
+  }
+
+  leaveGroup(String chatId, String userId, String chatName) {
+    Chat chat = Chat(chatId: chatId, chatName: chatName);
+    return chat.leaveGroup(userId);
   }
 }
