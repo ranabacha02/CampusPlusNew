@@ -22,9 +22,9 @@ class ChatController {
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
-  Future createGroup(String userEmail, String id, String groupName) async {
-    Chat group = new Chat(
-        chatName: groupName, isGroup: true, admin: id + "_" + userEmail);
+  Future createGroup(String userName, String id, String groupName) async {
+    Chat group =
+        Chat(chatName: groupName, isGroup: true, admin: id + "_" + userName);
     group.createGroup();
   }
 
