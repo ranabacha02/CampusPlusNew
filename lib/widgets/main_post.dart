@@ -36,9 +36,6 @@ class MainPost extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   InkWell(
-                    onDoubleTap: () => print('Like post'),
-                    onTap: () {
-                    },
                     child: Container(
                       margin: EdgeInsets.all(10.0),
                       width: double.infinity,
