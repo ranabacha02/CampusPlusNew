@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controller/post_controller.dart';
+import 'package:flip_card/flip_card.dart';
 
 
 class MainPost extends StatelessWidget {
@@ -36,7 +37,9 @@ class MainPost extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   InkWell(
-                    child: Container(
+                    child:FlipCard(
+                      direction: FlipDirection.HORIZONTAL,
+                    front: Container(
                       margin: EdgeInsets.all(10.0),
                       width: double.infinity,
                       height: 400.0,
@@ -54,23 +57,25 @@ class MainPost extends StatelessWidget {
                           fit: BoxFit.fitWidth,
                         ),
                       ),
+                    ), back: Container(
+                      child: Text(
+                        post.event,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 3,
+                        style: const TextStyle(
+                          color: Color.fromRGBO(50, 50, 50, 1),
+                          fontFamily: 'Roboto',
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
+                  )
                   ),
                   ListTile(
                     leading: Container(
                       width: 50.0,
                       height: 50.0,
-                    ),
-                    title: Text(
-                      post.event,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 3,
-                      style: const TextStyle(
-                        color: Color.fromRGBO(50, 50, 50, 1),
-                        fontFamily: 'Roboto',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
                     ),
                     trailing: IconButton(
                       icon:  ToggleMenu(refreshPosts: refreshPosts, postId: post.id),
