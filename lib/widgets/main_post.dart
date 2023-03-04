@@ -1,13 +1,9 @@
 import 'package:campus_plus/model/post_model.dart';
-import 'package:campus_plus/widgets/post_info.dart';
-import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:like_button/like_button.dart';
 import '../controller/post_controller.dart';
-import '../utils/app_colors.dart';
+
 
 class MainPost extends StatelessWidget {
   MainPost({
@@ -24,68 +20,83 @@ class MainPost extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool joined = post.users.where((user)=> (user.userId.contains(auth.currentUser!.uid))).isNotEmpty;
-    DateTime now = DateTime.now();
-    return Container(
-        height: 130,
-        margin: const EdgeInsets.only(top: 10),
-        child: Stack(alignment: AlignmentDirectional.center, children: <Widget>[
-          Positioned(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(25)),
-              child: Material(
-                color: const Color.fromRGBO(242, 242, 242, 1.0),
-                child: InkWell(
-                  splashColor: Colors.white,
-                  enableFeedback: true,
-                  child: Container(
-                    width: (MediaQuery.of(context).size.width) > 500 ? 500 * 0.92 : (MediaQuery.of(context).size.width) * 0.92,
-                    height: 80,
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                    child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-
-                          const SizedBox(height: 10, width: 7,),
-                          Expanded(
-                            flex: 5,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                //The Name of the postCreator
-                                Expanded(
-                                  child: Text(
-                                    post.event,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 3,
-                                    style: const TextStyle(
-                                      color: Color.fromRGBO(50, 50, 50, 1),
-                                      fontFamily: 'Roboto',
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-
-                                ), //The event description
-                              ],
-                            ),
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      child: Container(
+        width: double.infinity,
+        height: 560.0,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25.0),
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: 10.0),
+              child: Column(
+                children: <Widget>[
+                  InkWell(
+                    onDoubleTap: () => print('Like post'),
+                    onTap: () {
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10.0),
+                      width: double.infinity,
+                      height: 400.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black45,
+                            offset: Offset(0, 5),
+                            blurRadius: 8.0,
                           ),
-
-
-                        ]),
+                        ],
+                        image: DecorationImage(
+                          image: AssetImage("posts[index].imageUrl"),
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                  ListTile(
+                    leading: Container(
+                      width: 50.0,
+                      height: 50.0,
+                    ),
+                    title: Text(
+                      post.event,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      style: const TextStyle(
+                        color: Color.fromRGBO(50, 50, 50, 1),
+                        fontFamily: 'Roboto',
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    trailing: IconButton(
+                      icon:  ToggleMenu(refreshPosts: refreshPosts, postId: post.id),
+                      color: Colors.black,
+                      onPressed: () => (''),
+                    ),
+
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ), //The Post itself
-          personal ? Positioned(
-            top: 15,
-            right: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2 + 20) : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8 + 15),
-            child:  ToggleMenu(refreshPosts: refreshPosts, postId: post.id),
-          ): const SizedBox(), //The Toggle Button
-
-        ]));
+          ],
+        ),
+      ),
+    );;
   }
+
 }
 
 

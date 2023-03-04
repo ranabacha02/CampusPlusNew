@@ -18,6 +18,7 @@ class MyPost {
   List<CleanUser> users;
   List<String> userIds;
   FirebaseAuth auth = FirebaseAuth.instance;
+  String imageUrl;
 
   MyPost({
     required this.createdBy,
@@ -26,6 +27,7 @@ class MyPost {
     required this.tags,
     required this.users,
     required this.userIds,
+    required this.imageUrl,
   });
 
   MyPost.fromFirestore(Map<String, dynamic> snapshot):
@@ -35,7 +37,8 @@ class MyPost {
         dateCreated = snapshot['dateCreated'].toDate(),
         tags = List<String>.from(snapshot['tags']),
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
-        userIds =  List<String>.from(snapshot['userIds']);
+        userIds =  List<String>.from(snapshot['userIds']),
+        imageUrl = 'assets/images/post0.jpg';
 
   Map<String, dynamic> toFirestore(){
     return {
@@ -44,7 +47,8 @@ class MyPost {
       'dateCreated' : dateCreated,
       'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
-      'userIds' : userIds
+      'userIds' : userIds,
+      'imageUrl': 'assets/images/post0.jpg',
     };
   }
 
@@ -59,7 +63,8 @@ class MyPost {
       'dateCreated' : dateCreated,
       'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
-      'userIds' : userIds
+      'userIds' : userIds,
+      'imageUrl': 'assets/images/post0.jpg',
     };
     final complete = newPostRef.set(postData).then((doc)=> true, onError: (r)=> false);
     return complete;

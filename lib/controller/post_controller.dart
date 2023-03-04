@@ -19,7 +19,8 @@ class PostController{
         dateCreated: dateCreated,
         tags: tags,
         users: [user],
-        userIds: []
+        userIds: [],
+        imageUrl: 'assets/images/post0.jpg',
     );
     return post.createPost();
   }

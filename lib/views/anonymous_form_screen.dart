@@ -114,6 +114,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 buildTagFilterChip(),
               ],
             ),
+
             Expanded(
                 child: Align(
                   alignment: Alignment.bottomCenter,
@@ -123,7 +124,10 @@ class _MyCustomFormState extends State<MyCustomForm> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(side: const BorderSide(width: 1, color: Colors.blue, style: BorderStyle.solid)),
+                          style: OutlinedButton.styleFrom(
+                              side: const BorderSide(width: 1, color: Color(0xFF550000),
+                                style: BorderStyle.solid),
+                          ),
                           onPressed: () {
 
                               postController.createPost(event: _eventController.text, dateCreated: DateTime.now(), tags: _tags);
