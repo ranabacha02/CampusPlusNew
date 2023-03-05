@@ -107,7 +107,7 @@ class MyCard {
     return complete;
   }
 
-  static Stream<QuerySnapshot<Object?>> getStreamOfCards(){
+  static Stream<QuerySnapshot<Object?>> getStreamOfCards() {
     return cardCollection.orderBy('eventStart').snapshots();
   }
 
@@ -117,7 +117,7 @@ class MyCard {
     return cards;
   }
 
-  static Future<List<MyCard>> getAllVisibleCards() async{
+  static Future<List<MyCard>> getAllVisibleCards() async {
     String gender = dataController.getLocalData().gender;
     String department = dataController.getLocalData().department;
     final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).orderBy("eventStart").get();
@@ -125,7 +125,15 @@ class MyCard {
     return cards;
   }
 
-  static Future<List<MyCard>> getTaggedCards(String tag) async{
+  static Future<List<MyCard>> getNextCards(MyCard lastCard, int limit) async {
+    String gender = dataController.getLocalData().gender;
+    String department = dataController.getLocalData().department;
+    final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).orderBy("eventStart").startAfter([lastCard.eventStart]).limit(limit).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future<List<MyCard>> getTaggedCards(String tag) async {
     String gender = dataController.getLocalData().gender;
     String department = dataController.getLocalData().department;
     final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).where("tags", arrayContains: tag).orderBy("eventStart").get();
@@ -133,14 +141,14 @@ class MyCard {
     return cards;
   }
 
-  static Future getMyCreatedCards() async{
+  static Future getMyCreatedCards() async {
     final MyUser user = dataController.getLocalData();
     final snapshots = await cardCollection.where("createdBy", isEqualTo: user.userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }
 
-  static Future getMyJoinedCards() async{
+  static Future getMyJoinedCards() async {
     final MyUser user = dataController.getLocalData();
     final snapshots = await cardCollection.where("userIds", arrayContains: user.userId).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
