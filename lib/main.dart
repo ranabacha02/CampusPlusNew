@@ -1,5 +1,7 @@
 import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:campus_plus/views/home_screen.dart';
+import 'package:campus_plus/views/notifications.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -7,13 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'controller/data_controller.dart';
+import 'controller/notification_controller.dart';
 import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
 
 void main() async {
+  await NotificationController.initializeLocalNotifications();
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp(
@@ -28,8 +34,7 @@ void main() async {
     prefs.printInfo();
     print(email);
     print(auth.currentUser);
-    userSyncing(auth.currentUser!.uid);
-    chatsSyncing(dataController.getLocalData().chatsId);
+    realmSyncing(auth.currentUser!.uid);
     await dataController.getUserInfo();
   }
   runApp(CampusPlus(
@@ -38,30 +43,81 @@ void main() async {
 }
 
 class CampusPlus extends StatefulWidget {
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
   final String? email;
 
-  const CampusPlus ({ Key? key, this.email }): super(key: key);
+  const CampusPlus({Key? key, this.email}) : super(key: key);
 
   @override
   State<CampusPlus> createState() => _CampusPlusState();
 }
 
-class _CampusPlusState extends State<CampusPlus>{
+class _CampusPlusState extends State<CampusPlus> {
+  static const String routeHome = '/', routeNotification = '/notification-page';
+
+  @override
+  void initState() {
+    NotificationController.startListeningNotificationEvents();
+    super.initState();
+  }
+
+  List<Route<dynamic>> onGenerateInitialRoutes(String initialRouteName) {
+    List<Route<dynamic>> pageStack = [];
+    pageStack.add(MaterialPageRoute(
+        builder: (_) => widget.email == null
+            ? LoginView()
+            : NavBarView(
+                index: 2,
+              )));
+    if (initialRouteName == routeNotification &&
+        NotificationController.initialAction != null) {
+      pageStack.add(MaterialPageRoute(
+          builder: (_) => NavBarView(
+                index: 3,
+              )));
+    }
+    return pageStack;
+  }
+
+  Route<dynamic>? onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case routeHome:
+        return MaterialPageRoute(
+            builder: (_) => widget.email == null
+                ? LoginView()
+                : NavBarView(
+                    index: 2,
+                  ));
+
+      case routeNotification:
+        ReceivedAction receivedAction = settings.arguments as ReceivedAction;
+        return MaterialPageRoute(
+            builder: (_) => NavBarView(
+                  index: 3,
+                ));
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Campus+',
+      navigatorKey: CampusPlus.navigatorKey,
+      onGenerateInitialRoutes: onGenerateInitialRoutes,
+      onGenerateRoute: onGenerateRoute,
       theme: ThemeData(
         textTheme: GoogleFonts.latoTextTheme(
           Theme.of(context)
               .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
         ),
       ),
-      home: widget.email == null
-          ? LoginView()
-          : NavBarView(
-        index: 2,
-      ),
+      // home: widget.email == null
+      //     ? LoginView()
+      //     : NavBarView(
+      //   index: 2,
+      // ),
     );
   }
 

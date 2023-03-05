@@ -3,6 +3,7 @@ import 'package:campus_plus/utils/app_colors.dart';
 import 'package:get/get.dart';
 import '../controller/card_controller.dart';
 import '../controller/data_controller.dart';
+import '../controller/notification_controller.dart';
 import '../model/card_model.dart';
 import '../model/user_model.dart';
 import '../widgets/main_card.dart';
@@ -87,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("date: " + DateTime.now().millisecondsSinceEpoch.toString());
     return Scaffold(
         appBar: AppBar(
             backgroundColor: AppColors.white,
@@ -121,29 +123,32 @@ class _HomeScreenState extends State<HomeScreen> {
                   )},
                   icon: Image.asset('assets/calendarIcon.png')),
               IconButton(
-                  onPressed: () => { Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return Notifications();
-                      })
-                  )},
+                  onPressed: () => {
+                        NotificationController.createNewNotification(),
+                        //   Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(builder: (context){
+                        //       return NotificationPage(receivedAction: );
+                        //     })
+                        // )
+                      },
                   icon: Image.asset('assets/notificationIcon.png')),
             ]),
         body: Container(
-          color: Colors.white,
-          child: FutureBuilder(
-            future: futureCards,
-            builder: (context, snapshot){
-              return RefreshIndicator(
-                  key: _refreshIndicatorKey,
-                  color: Colors.white,
-                  backgroundColor: Colors.blue,
-                  strokeWidth: 4.0,
-                  onRefresh: updatePage,
-                  child: _listView(snapshot, userInfo, refreshCards, buildTagFilterChip)
-              );
-            },
-          )
+            color: Colors.white,
+            child: FutureBuilder(
+              future: futureCards,
+              builder: (context, snapshot){
+                return RefreshIndicator(
+                    key: _refreshIndicatorKey,
+                    color: Colors.white,
+                    backgroundColor: Colors.blue,
+                    strokeWidth: 4.0,
+                    onRefresh: updatePage,
+                    child: _listView(snapshot, userInfo, refreshCards, buildTagFilterChip)
+                );
+              },
+            )
         )
     );
   }

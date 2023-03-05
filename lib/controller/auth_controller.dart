@@ -34,9 +34,7 @@ class AuthController extends GetxController {
             'E-mail is not verified.\nPlease verify your email before proceeding.',
             colorText: Colors.white, backgroundColor: Colors.blue);
       } else {
-        userSyncing(auth.currentUser!.uid);
-        chatsSyncing(dataController.getLocalData().chatsId);
-
+        realmSyncing(auth.currentUser!.uid);
         pref.setString("email", email);
         Navigator.pushAndRemoveUntil(
           context,
@@ -136,15 +134,19 @@ class AuthController extends GetxController {
     isLoading(true);
     SharedPreferences pref = await SharedPreferences.getInstance();
 
-    // final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-    // final realm = Realm(config);
-    // realm.write(() {
-    //   realm.deleteAll<RealmChat>();
-    //   realm.deleteAll<RealmMessage>();
-    // });
-    //
-    // print(realm.all<RealmChat>());
-    // print(realm.all<RealmMessage>());
+    cancelStreams();
+
+    //DO NOT UNCOMMENT UNLESS YOU WANT TO DELETE ALL THE CHATS IN THE REALM DATABASE
+
+    final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
+    final realm = Realm(config);
+    realm.write(() {
+      realm.deleteAll<RealmChat>();
+      realm.deleteAll<RealmMessage>();
+    });
+
+    print(realm.all<RealmChat>());
+    print(realm.all<RealmMessage>());
 
     auth.signOut().then((value) {
       isLoading(false);

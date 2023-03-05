@@ -178,7 +178,7 @@ class MyUser {
         storage.ref().child("users/profiles/${auth.currentUser!.uid}");
     var task = storageRef.delete()
       ..then((value) {
-        auth.currentUser!.updatePhotoURL(null);
+        auth.currentUser!.updatePhotoURL("");
         users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
       });
     return task;

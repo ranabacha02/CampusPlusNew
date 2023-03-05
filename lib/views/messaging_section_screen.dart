@@ -129,7 +129,7 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
           // make some checks
           if (snapshot.hasData) {
             if (snapshot.requireData.object.chatsId != null) {
-              if (snapshot.requireData.object.chatsId.length != 0) {
+              if (snapshot.requireData.object.chatsId.isNotEmpty) {
                 return Expanded(
                     child: ListView.builder(
                   itemCount: snapshot.requireData.object.chatsId.length,

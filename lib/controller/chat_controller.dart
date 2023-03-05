@@ -86,9 +86,9 @@ class ChatController {
     });
   }
 
-  sendImage(String groupId, Map<String, dynamic> chatMessageData) {
+  sendImage(String groupId, Map<String, dynamic> chatMessageData) async {
     Chat chat = Chat(chatId: groupId);
-    chat.sendImage(chatMessageData);
+    await chat.sendImage(chatMessageData);
   }
 
   getReadStatus(String groupId) {
@@ -129,9 +129,6 @@ class ChatController {
 
     var realmChat = realm.find<RealmChat>(chatId);
     if (realmChat != null) {
-      realmChat.messages.forEach((element) {
-        print(element.message);
-      });
       return realmChat.messages.toList();
     } else {
       return List<RealmMessage>.empty(growable: true);

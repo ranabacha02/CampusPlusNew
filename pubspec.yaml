@@ -70,6 +70,7 @@ dependencies:
   sticky_grouped_list: ^3.1.0
   animation_search_bar: ^0.0.10
   quickalert: ^1.0.1
+  awesome_notifications: ^0.7.4+1
 
 dev_dependencies:
   flutter_test:

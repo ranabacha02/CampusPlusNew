@@ -38,8 +38,7 @@ class Chat {
     String? chatId,
     String? admin,
     String? recentMessageType,
-  })
-      : members = members ?? [],
+  })  : members = members ?? [],
         recentMessage = recentMessage ?? "",
         recentSender = recentSender ?? "",
         recentMessageTime = recentMessageTime ?? DateTime.now(),
@@ -52,15 +51,15 @@ class Chat {
 
   Chat.fromFirestore(Map<String, Object?> json)
       : this(
-    chatId: json['chatId'] as String,
-    chatName: json['chatName'] as String,
-    isGroup: json['isGroup'] as bool,
-    members: json['members'] as List<String>?,
-    recentMessage: json['recentMessage'] as String?,
-    recentSender: json['recentSender'] as String?,
-    recentMessageTime: json['recentMessageTime'] as DateTime?,
-    recentMessageType: json['recentMessageType'] as String?,
-  );
+          chatId: json['chatId'] as String,
+          chatName: json['chatName'] as String,
+          isGroup: json['isGroup'] as bool,
+          members: json['members'] as List<String>?,
+          recentMessage: json['recentMessage'] as String?,
+          recentSender: json['recentSender'] as String?,
+          recentMessageTime: json['recentMessageTime'] as DateTime?,
+          recentMessageType: json['recentMessageType'] as String?,
+        );
 
   Map<String, dynamic> toFirestore() {
     return {
@@ -75,7 +74,8 @@ class Chat {
     };
   }
 
-  Future<Chat> createChat(String email, String recipientId, String recipientEmail) async {
+  Future<Chat> createChat(
+      String email, String recipientId, String recipientEmail) async {
     final CollectionReference userCollection = _firestore.collection('Users');
     final CollectionReference chatCollection = _firestore.collection("chats");
 
@@ -130,7 +130,7 @@ class Chat {
 
     //adding the chat id to the list of chats id of the current user
     DocumentReference userDocumentReference =
-    userCollection.doc(auth.currentUser!.uid);
+        userCollection.doc(auth.currentUser!.uid);
     await userDocumentReference.update({
       "chatsId": FieldValue.arrayUnion(
           ["${groupDocumentReference.id}_$recipientEmail"])
@@ -138,7 +138,7 @@ class Chat {
 
     //adding the chat id to the list of chats id for the recipient
     DocumentReference recipientDocumentReference =
-    userCollection.doc(recipientId);
+        userCollection.doc(recipientId);
     await recipientDocumentReference.update({
       "chatsId": FieldValue.arrayUnion(["${groupDocumentReference.id}_$email"])
     });
@@ -150,7 +150,7 @@ class Chat {
 
   Future createGroup() async {
     final CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection("chats");
+        FirebaseFirestore.instance.collection("chats");
     CollectionReference userCollection = _firestore.collection('Users');
     DocumentReference groupDocumentReference = await chatCollection.add({
       "isGroup": true,
@@ -181,7 +181,7 @@ class Chat {
     });
 
     DocumentReference userDocumentReference =
-    userCollection.doc(auth.currentUser!.uid);
+        userCollection.doc(auth.currentUser!.uid);
     chatId = groupDocumentReference.id;
     newChatSyncing(chatId);
     await userDocumentReference.update({
@@ -209,7 +209,7 @@ class Chat {
 
   getChatMessages() {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     return chatCollection
         .doc(chatId)
         .collection("messages")
@@ -219,7 +219,7 @@ class Chat {
 
   sendMessage(Map<String, dynamic> chatMessageData) {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("messages").add(chatMessageData);
     chatCollection.doc(chatId).update({
       "recentMessage": chatMessageData['message'],
@@ -232,7 +232,7 @@ class Chat {
 
   joinGroup(String userName) {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).update({
       "members": FieldValue.arrayUnion(["${auth.currentUser!.uid}_$userName"]),
     });
@@ -248,27 +248,23 @@ class Chat {
     });
   }
 
-  sendImage(Map<String, dynamic> chatMessageData) {
+  sendImage(Map<String, dynamic> chatMessageData) async {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
-    chatCollection.doc(chatId).collection("messages").add({
+        FirebaseFirestore.instance.collection('chats');
+    var docId = chatCollection.doc(chatId).collection("messages").doc().id;
+    final storage = FirebaseStorage.instance;
+    var storageRef = storage.ref().child("chats/attachments/$chatId/$docId");
+    var uploadTask = await storageRef.putFile(chatMessageData['image']);
+    var downloadUrl = await uploadTask.ref.getDownloadURL();
+    chatCollection.doc(chatId).collection("messages").doc(docId).set({
       "message": chatMessageData["message"],
       "sender": chatMessageData["sender"],
       "time": chatMessageData["time"],
       "type": "image",
-    }).then((value) {
-      final storage = FirebaseStorage.instance;
-      var storageRef =
-      storage.ref().child("chats/attachments/${chatId}/${value.id}");
-      var uploadTask = storageRef.putFile(chatMessageData['image'])
-        ..then((p0) {
-          var downloadUrl = p0.ref.getDownloadURL();
-          value.update({
-            "imageUrl": downloadUrl,
-          });
-          print("image uploaded");
-        });
+      "imageURL": downloadUrl,
     });
+
+    print("image uploaded");
     chatCollection.doc(chatId).update({
       "recentMessage": chatMessageData["message"],
       "recentMessageSender": chatMessageData['sender'],
@@ -282,7 +278,7 @@ class Chat {
 
   getReadStatus(String userId) {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     return chatCollection
         .doc(chatId)
         .collection("readStatus")
@@ -292,7 +288,7 @@ class Chat {
 
   markRead(String memberId) {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     chatCollection.doc(chatId).collection("readStatus").doc(memberId).update({
       "unread": false,
       "unreadNumber": 0,
@@ -301,7 +297,7 @@ class Chat {
 
   markUnread() {
     CollectionReference chatCollection =
-    FirebaseFirestore.instance.collection('chats');
+        FirebaseFirestore.instance.collection('chats');
     var chat = chatCollection.doc(chatId).get().then((chat) {
       for (String member in chat["members"]) {
         String memberId = member.split("_")[0];

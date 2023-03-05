@@ -284,10 +284,10 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     final config =
         Realm.Configuration.local([RealmChat.schema, RealmMessage.schema]);
     final realm = Realm.Realm(config);
-    // realm.write(() => realm
-    //     .find<RealmChat>(widget.chatId)
-    //     ?.messages
-    //     .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
+    realm.write(() => realm
+        .find<RealmChat>(widget.chatId)
+        ?.messages
+        .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
     return StreamBuilder(
         stream: realm.find<RealmChat>(widget.chatId)?.changes,
         builder: (context,
@@ -340,6 +340,11 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                         bool sameDate = currentDate == nextDate;
 
                         if (currentSender.split("_")[1] == userInfo.userId) {
+                          // if (snapshot
+                          //     .requireData.object.messages[index].type == "image" ) {
+                          //   print("IMAGE URL "+ snapshot
+                          //     .requireData.object.messages[index].imageUrl.toString());
+                          // }
                           return Column(children: [
                             sameDate ? Container() : chatDateTile(currentDate),
                             MessageTile(
@@ -356,6 +361,8 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                             )
                           ]);
                         } else {
+                          // print(snapshot
+                          //     .requireData.object.messages[index].imageUrl);
                           return Column(children: [
                             sameDate ? Container() : chatDateTile(currentDate),
                             ReceivedMessageTile(
