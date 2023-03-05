@@ -52,8 +52,12 @@ class CardController{
     return MyCard.getAllCards();
   }
 
-  Future<List<MyCard>> getAllVisibleCards() async{
+  Future<List<MyCard>> getAllVisibleCards() async {
     return MyCard.getAllVisibleCards();
+  }
+
+  Future<List<MyCard>> getNextCards(MyCard lastCard, int limit) async {
+    return MyCard.getNextCards(lastCard, limit);
   }
 
   Future<List<MyCard>> getTaggedCards(List<String> tags) async {
@@ -64,7 +68,7 @@ class CardController{
     return taggedCards;
   }
 
-  Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async{
+  Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async {
     Set<MyCard> taggedCards ={};
     if(tags.isNotEmpty){
       for(String tag in tags){
@@ -78,7 +82,7 @@ class CardController{
   }
 
 
-  Future<List<MyCard>> getMyCards() async{
+  Future<List<MyCard>> getMyCards() async {
     final myCreatedCards = await MyCard.getMyCreatedCards();
     final myJoinedCards = await MyCard.getMyJoinedCards();
     List<MyCard> myCards = myCreatedCards + myJoinedCards;
