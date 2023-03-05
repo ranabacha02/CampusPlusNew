@@ -52,10 +52,10 @@ class MainPost extends StatelessWidget {
                             blurRadius: 8.0,
                           ),
                         ],
-                        image: DecorationImage(
-                          image: AssetImage("posts[index].imageUrl"),
-                          fit: BoxFit.fitWidth,
-                        ),
+                        image: post.imageUrl != null ? DecorationImage(
+                          image: AssetImage(post.imageUrl),
+                          fit: BoxFit.fitHeight,
+                        ) : null,
                       ),
                     ), back: Container(
                       child: Text(

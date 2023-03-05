@@ -2,11 +2,16 @@ import 'package:campus_plus/controller/data_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../controller/post_controller.dart';
 import '../model/user_model.dart';
 import '../utils/app_colors.dart';
+import '../widgets/image_file_picker.dart';
+import 'edit_account_screen.dart';
+
 
 class MainPostForm extends StatefulWidget {
   const MainPostForm({Key? key}) : super(key: key);
@@ -59,15 +64,17 @@ class _MyCustomFormState extends State<MyCustomForm> {
   late PostController postController;
   late DataController dataController;
   late final MyUser userInfo;
-
   final filter = ProfanityFilter();
   final List<String> _tags = <String>[];
+  final ImagePicker _picker = ImagePicker();
+  late String _selectedImage;
 
 
   @override
   void dispose(){
     //not sure if others have to be disposed
     _eventController.dispose();
+    _selectedImage = "";
     super.dispose();
   }
 
@@ -78,6 +85,83 @@ class _MyCustomFormState extends State<MyCustomForm> {
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
   }
+
+  Future<XFile?> getImageFromGallery() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
+    return pickedFile;
+  }
+
+  Future<XFile?> getImageFromCamera() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 800,
+      maxHeight: 800,
+    );
+    return pickedFile;
+  }
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Container(
+              child: Wrap(
+                children: <Widget>[
+                  ListTile(
+                      leading: new Icon(Icons.photo_library),
+                      title: new Text('Gallery'),
+                      onTap: () async {
+                        XFile? photo = await getImageFromGallery();
+                        if (photo != null) {
+                          setState(() {
+                            _selectedImage = photo.path;
+                          });
+                        }
+                        Navigator.of(context).pop();
+                      }),
+                  ListTile(
+                    leading: new Icon(Icons.photo_camera),
+                    title: new Text('Camera'),
+                    onTap: () async {
+                      XFile? photo = await getImageFromCamera();
+                      if (photo != null) {
+                        setState(() {
+                          _selectedImage = photo.path;
+                        });
+                      }
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.delete_forever, color: Colors.red),
+                    title: Text(
+                      'Delete',
+                      style: TextStyle(
+                        color: Colors.red,
+                      ),
+                    ),
+                    onTap: () {
+                      dataController.deleteProfilePicture();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditAccountScreen(
+                                userInfo: dataController.getLocalData(),
+                                delete: true,
+                              )));
+                    },
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +191,16 @@ class _MyCustomFormState extends State<MyCustomForm> {
             const SizedBox(
               height: 20,
             ),
+            IconButton(
+              icon: Icon(Icons.photo_camera),
+              color: Colors.black,
+              onPressed: () {
+                _showPicker(context);
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
             Row(
               children: [
                 const Text("Tags"),
@@ -114,6 +208,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                 buildTagFilterChip(),
               ],
             ),
+
+
 
             Expanded(
                 child: Align(
@@ -130,7 +226,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                           ),
                           onPressed: () {
 
-                              postController.createPost(event: _eventController.text, dateCreated: DateTime.now(), tags: _tags);
+                              postController.createPost(event: _eventController.text, dateCreated: DateTime.now(), tags: _tags, imageUrl: _selectedImage);
                               Navigator.pop(context);
 
                           },
@@ -145,7 +241,6 @@ class _MyCustomFormState extends State<MyCustomForm> {
         )
     );
   }
-
 
 
 

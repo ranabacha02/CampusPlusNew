@@ -38,7 +38,7 @@ class MyPost {
         tags = List<String>.from(snapshot['tags']),
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
         userIds =  List<String>.from(snapshot['userIds']),
-        imageUrl = 'assets/images/post0.jpg';
+        imageUrl = snapshot['imageUrl'];
 
   Map<String, dynamic> toFirestore(){
     return {
@@ -48,7 +48,7 @@ class MyPost {
       'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds,
-      'imageUrl': 'assets/images/post0.jpg',
+      'imageUrl': imageUrl,
     };
   }
 
@@ -64,7 +64,7 @@ class MyPost {
       'tags' : tags,
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds,
-      'imageUrl': 'assets/images/post0.jpg',
+      'imageUrl': imageUrl,
     };
     final complete = newPostRef.set(postData).then((doc)=> true, onError: (r)=> false);
     return complete;

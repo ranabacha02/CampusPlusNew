@@ -11,7 +11,8 @@ class PostController{
   Future<bool> createPost(
       {required String event,
         required DateTime dateCreated,
-        required List<String> tags}) async {
+        required List<String> tags,
+      required String imageUrl}) async {
     CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
     MyPost post= MyPost(
         createdBy: auth.currentUser!.uid,
@@ -20,7 +21,7 @@ class PostController{
         tags: tags,
         users: [user],
         userIds: [],
-        imageUrl: 'assets/images/post0.jpg',
+        imageUrl: imageUrl,
     );
     return post.createPost();
   }
