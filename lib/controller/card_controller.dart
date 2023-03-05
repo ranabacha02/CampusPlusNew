@@ -65,12 +65,14 @@ class CardController{
   }
 
   Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async{
-    List<MyCard> taggedCards =[];
+    Set<MyCard> taggedCards ={};
     if(tags.isNotEmpty){
       for(String tag in tags){
-        taggedCards.addAll(cards.where((card)=> card.tags.contains(tag)).toList());
+        taggedCards.addAll(cards.where((card)=> card.tags.contains(tag)));
       }
-      return taggedCards;
+      List<MyCard> cardsList = taggedCards.toList();
+      cardsList.sort((a,b) => a.eventStart.compareTo(b.eventStart));
+      return cardsList;
     }
     return cards;
   }
