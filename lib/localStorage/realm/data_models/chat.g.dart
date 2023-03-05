@@ -15,6 +15,7 @@ class RealmChat extends _RealmChat
     String recentMessage,
     String recentSender,
     DateTime recentMessageTime,
+    String recentMessageType,
     String chatIcon, {
     String? admin,
     Iterable<String> members = const [],
@@ -26,6 +27,7 @@ class RealmChat extends _RealmChat
     RealmObjectBase.set(this, 'recentMessage', recentMessage);
     RealmObjectBase.set(this, 'recentSender', recentSender);
     RealmObjectBase.set(this, 'recentMessageTime', recentMessageTime);
+    RealmObjectBase.set(this, 'recentMessageType', recentMessageType);
     RealmObjectBase.set(this, 'chatIcon', chatIcon);
     RealmObjectBase.set(this, 'admin', admin);
     RealmObjectBase.set<RealmList<String>>(
@@ -38,27 +40,23 @@ class RealmChat extends _RealmChat
 
   @override
   String get chatId => RealmObjectBase.get<String>(this, 'chatId') as String;
-
   @override
   set chatId(String value) => RealmObjectBase.set(this, 'chatId', value);
 
   @override
   String get chatName =>
       RealmObjectBase.get<String>(this, 'chatName') as String;
-
   @override
   set chatName(String value) => RealmObjectBase.set(this, 'chatName', value);
 
   @override
   bool get isGroup => RealmObjectBase.get<bool>(this, 'isGroup') as bool;
-
   @override
   set isGroup(bool value) => RealmObjectBase.set(this, 'isGroup', value);
 
   @override
   RealmList<String> get members =>
       RealmObjectBase.get<String>(this, 'members') as RealmList<String>;
-
   @override
   set members(covariant RealmList<String> value) =>
       throw RealmUnsupportedSetError();
@@ -66,7 +64,6 @@ class RealmChat extends _RealmChat
   @override
   String get recentMessage =>
       RealmObjectBase.get<String>(this, 'recentMessage') as String;
-
   @override
   set recentMessage(String value) =>
       RealmObjectBase.set(this, 'recentMessage', value);
@@ -74,7 +71,6 @@ class RealmChat extends _RealmChat
   @override
   String get recentSender =>
       RealmObjectBase.get<String>(this, 'recentSender') as String;
-
   @override
   set recentSender(String value) =>
       RealmObjectBase.set(this, 'recentSender', value);
@@ -86,6 +82,14 @@ class RealmChat extends _RealmChat
   @override
   set recentMessageTime(DateTime value) =>
       RealmObjectBase.set(this, 'recentMessageTime', value);
+
+  @override
+  String get recentMessageType =>
+      RealmObjectBase.get<String>(this, 'recentMessageType') as String;
+
+  @override
+  set recentMessageType(String value) =>
+      RealmObjectBase.set(this, 'recentMessageType', value);
 
   @override
   String get chatIcon =>
@@ -104,7 +108,6 @@ class RealmChat extends _RealmChat
   RealmList<RealmMessage> get messages =>
       RealmObjectBase.get<RealmMessage>(this, 'messages')
           as RealmList<RealmMessage>;
-
   @override
   set messages(covariant RealmList<RealmMessage> value) =>
       throw RealmUnsupportedSetError();
@@ -118,7 +121,6 @@ class RealmChat extends _RealmChat
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
-
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(RealmChat._);
     return const SchemaObject(ObjectType.realmObject, RealmChat, 'RealmChat', [
@@ -130,6 +132,7 @@ class RealmChat extends _RealmChat
       SchemaProperty('recentMessage', RealmPropertyType.string),
       SchemaProperty('recentSender', RealmPropertyType.string),
       SchemaProperty('recentMessageTime', RealmPropertyType.timestamp),
+      SchemaProperty('recentMessageType', RealmPropertyType.string),
       SchemaProperty('chatIcon', RealmPropertyType.string),
       SchemaProperty('admin', RealmPropertyType.string, optional: true),
       SchemaProperty('messages', RealmPropertyType.object,
@@ -158,32 +161,27 @@ class RealmMessage extends _RealmMessage
 
   @override
   String get message => RealmObjectBase.get<String>(this, 'message') as String;
-
   @override
   set message(String value) => RealmObjectBase.set(this, 'message', value);
 
   @override
   String get sender => RealmObjectBase.get<String>(this, 'sender') as String;
-
   @override
   set sender(String value) => RealmObjectBase.set(this, 'sender', value);
 
   @override
   DateTime get time => RealmObjectBase.get<DateTime>(this, 'time') as DateTime;
-
   @override
   set time(DateTime value) => RealmObjectBase.set(this, 'time', value);
 
   @override
   String get type => RealmObjectBase.get<String>(this, 'type') as String;
-
   @override
   set type(String value) => RealmObjectBase.set(this, 'type', value);
 
   @override
   String? get imageUrl =>
       RealmObjectBase.get<String>(this, 'imageUrl') as String?;
-
   @override
   set imageUrl(String? value) => RealmObjectBase.set(this, 'imageUrl', value);
 
@@ -196,7 +194,6 @@ class RealmMessage extends _RealmMessage
 
   static SchemaObject get schema => _schema ??= _initSchema();
   static SchemaObject? _schema;
-
   static SchemaObject _initSchema() {
     RealmObjectBase.registerFactory(RealmMessage._);
     return const SchemaObject(

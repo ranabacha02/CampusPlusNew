@@ -84,6 +84,9 @@ class ChatController {
     userCollection.doc(auth.currentUser!.uid).update({
       "chatsId": FieldValue.arrayUnion(["${groupId}_$groupName"])
     });
+    if (getChatRealmObject(groupId) == null) {
+      newChatSyncing(groupId);
+    }
   }
 
   sendImage(String groupId, Map<String, dynamic> chatMessageData) async {
@@ -106,28 +109,8 @@ class ChatController {
     return chat.getCachedChatMessages();
   }
 
-  getLocalChatMessagesSizes() {
-    var realmUser = dataController.getLocalData();
-    for (var temp in realmUser.chatsId) {
-      var chatId = temp.split("_")[0];
-      final config =
-          Configuration.local([RealmChat.schema, RealmMessage.schema]);
-      final realm = Realm(config);
-      var realmChat = realm.find<RealmChat>(chatId);
-      if (realmChat != null) {
-        print(
-            "the number of messages stored locally for ${realmChat.chatId} is ${realmChat.messages.length}");
-      } else {
-        print("this chat id: $chatId does not have a realmChat");
-      }
-    }
-  }
-
   List<RealmMessage> getLocalChatMessages(String chatId) {
-    final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-    final realm = Realm(config);
-
-    var realmChat = realm.find<RealmChat>(chatId);
+    var realmChat = getChatRealmObject(chatId);
     if (realmChat != null) {
       return realmChat.messages.toList();
     } else {
@@ -135,15 +118,8 @@ class ChatController {
     }
   }
 
-  Future<Stream<RealmObjectChanges<RealmChat>>?> getLiveChatObject(
-      String chatId) async {
-    final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-    final realm = await Realm.open(config);
-    realm.write(() => realm
-        .find<RealmChat>(chatId)
-        ?.messages
-        .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
-    return realm.find<RealmChat>(chatId)?.changes;
+  Stream<RealmObjectChanges<RealmChat>> getLiveChatObject(String chatId) {
+    return getLiveChatObject(chatId);
   }
 
   updateGroupIcon(File? file, String chatId) {

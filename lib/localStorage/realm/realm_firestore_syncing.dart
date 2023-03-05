@@ -12,12 +12,16 @@ import 'data_models/chat.dart';
 StreamSubscription? userStream;
 StreamSubscription? chatsStream;
 List<StreamSubscription?> messagesStream = [];
+final config = Configuration.local(
+    [RealmChat.schema, RealmMessage.schema, RealmUser.schema],
+    shouldDeleteIfMigrationNeeded: true);
+final realm = Realm(config);
 
 cancelStreams() {
   print("Streams canceled");
   userStream?.cancel();
   chatsStream?.cancel();
-  messagesStream?.forEach((element) {
+  messagesStream.forEach((element) {
     element?.cancel();
   });
 }
@@ -55,6 +59,7 @@ RealmChat toRealmChat(Map<String, dynamic> snapshot) {
             ? snapshot["recentMessageTime"].toDate()
             : DateTime.fromMillisecondsSinceEpoch(
                 int.parse(snapshot["recentMessageTime"])),
+    snapshot['recentMessageType'],
     snapshot["chatIcon"],
     admin: snapshot["isGroup"] ? snapshot["admin"] : null,
     members: List<String>.from(snapshot['members'] ??= []),
@@ -83,8 +88,6 @@ userSyncing(String userId) {
       .doc(userId)
       .snapshots()
       .listen((event) {
-    final config = Configuration.local([RealmUser.schema]);
-    final realm = Realm(config);
     if (event.data() != null) {
       final myUser = toRealmUser(event.data()!);
       print("syncing user!");
@@ -98,8 +101,6 @@ userSyncing(String userId) {
 initialUserSyncing(String userId) async {
   var userData =
       await FirebaseFirestore.instance.collection("Users").doc(userId).get();
-  final config = Configuration.local([RealmUser.schema]);
-  final realm = Realm(config);
   if (userData.data() != null) {
     final myUser = toRealmUser(userData.data()!);
     print("INITIAL user syncing");
@@ -111,9 +112,6 @@ initialUserSyncing(String userId) async {
 
 chatsSyncing(String userId) {
   print("LISTENING TO CHATS");
-  final config = Configuration.local(
-      [RealmChat.schema, RealmMessage.schema, RealmUser.schema]);
-  final realm = Realm(config);
   var currentRealmUser = realm.find<RealmUser>(userId)!;
   var chatsIdAndEmails = currentRealmUser.chatsId;
   var chatsId = [];
@@ -216,9 +214,6 @@ chatsSyncing(String userId) {
 
 initialChatSyncing(String userId) async {
   print("initial Chats Syncing");
-  final config = Configuration.local(
-      [RealmChat.schema, RealmMessage.schema, RealmUser.schema]);
-  final realm = Realm(config);
   var currentUser = realm.find<RealmUser>(userId);
 
   if (currentUser!.chatsId.isNotEmpty) {
@@ -268,12 +263,10 @@ initialChatSyncing(String userId) async {
 }
 
 newChatSyncing(String chatId) {
-  final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-  final realm = Realm(config);
 
   CollectionReference chatCollection =
       FirebaseFirestore.instance.collection('chats');
-  chatCollection
+  messagesStream.add(chatCollection
       .where('chatId', isEqualTo: chatId)
       .orderBy('recentMessageTime')
       .snapshots()
@@ -303,7 +296,7 @@ newChatSyncing(String chatId) {
         }
       }
     });
-  });
+  }));
 
   DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -371,4 +364,35 @@ initialMessageSyncing(Realm realm, CollectionReference chatCollection,
       }
     }
   }
+}
+
+addingUserToRealm(Map<String, dynamic> userData) {
+  final myUser = toRealmUser(userData);
+  realm.write(() {
+    realm.add(myUser, update: true);
+  });
+}
+
+gettingRealmUser(String userId) {
+  return realm.find<RealmUser>(userId);
+}
+
+getLiveUserRealmObject(String userId) {
+  return realm.find<RealmUser>(userId)?.changes;
+}
+
+Realm getRealmObject() {
+  return realm;
+}
+
+RealmChat? getChatRealmObject(String chatId) {
+  return realm.find<RealmChat>(chatId);
+}
+
+getLiveRealmChatObject(String chatId) {
+  realm.write(() => realm
+      .find<RealmChat>(chatId)
+      ?.messages
+      .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
+  return realm.find<RealmChat>(chatId)?.changes;
 }

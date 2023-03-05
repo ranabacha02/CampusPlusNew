@@ -14,6 +14,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:realm/realm.dart';
 
 import '../controller/chat_controller.dart';
+import '../localStorage/realm/realm_firestore_syncing.dart';
 import '../utils/app_colors.dart';
 import 'package:get/get.dart';
 
@@ -48,9 +49,7 @@ class _GroupInfoScreenState extends State<GroupInfoScreen> {
     super.initState();
     authController = Get.put(AuthController());
     chatController = Get.put(ChatController());
-    final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-    final realm = Realm(config);
-    realmChat = realm.find<RealmChat>(widget.chatId)!;
+    realmChat = getChatRealmObject(widget.chatId)!;
   }
 
   @override

@@ -200,11 +200,10 @@ class _NewChatScreenState extends State<NewChatScreen> {
     String memberNames = "";
     if (members.length > 3) {
       memberNames =
-          "${members[0].split("_")[1]}, ${members[1].split("_")[1]} and ${members.length - 2} others";
+          "${members[0].split("_")[1]}, ${members[1].split("_")[1]} + ${members.length - 2} others";
     } else if (members.length == 3) {
       memberNames =
-          "${members[0].split("_")[1]}, ${members[1].split("_")[1]} and ${members[2].split("_")[1]}";
-    } else if (members.length == 2) {
+          "${members[0].split("_")[1]}, ${members[1].split("_")[1]} + 1 other";
       memberNames =
           "${members[0].split("_")[1]} and ${members[1].split("_")[1]} ";
     } else if (members.length == 1) {

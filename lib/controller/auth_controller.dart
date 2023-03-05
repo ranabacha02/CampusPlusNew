@@ -138,12 +138,12 @@ class AuthController extends GetxController {
 
     //DO NOT UNCOMMENT UNLESS YOU WANT TO DELETE ALL THE CHATS IN THE REALM DATABASE
 
-    final config = Configuration.local([RealmChat.schema, RealmMessage.schema]);
-    final realm = Realm(config);
-    realm.write(() {
-      realm.deleteAll<RealmChat>();
-      realm.deleteAll<RealmMessage>();
-    });
+// final realm =getRealmObject();
+//
+//     realm.write(() {
+//       realm.deleteAll<RealmChat>();
+//       realm.deleteAll<RealmMessage>();
+//     });
 
     print(realm.all<RealmChat>());
     print(realm.all<RealmMessage>());

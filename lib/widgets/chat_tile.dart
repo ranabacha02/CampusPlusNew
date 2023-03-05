@@ -11,12 +11,12 @@ import '../controller/data_controller.dart';
 
 class ChatTile extends StatefulWidget {
   //final String userName;
-  final String groupId;
+  final String chatId;
   final String expected;
 
   //final String groupName;
 
-  const ChatTile({Key? key, required this.groupId, required this.expected
+  const ChatTile({Key? key, required this.chatId, required this.expected
       // required this.groupName,
       })
       : super(key: key);
@@ -46,7 +46,7 @@ class _GroupTileState extends State<ChatTile> {
     super.initState();
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
-    initializing(widget.groupId);
+    initializing(widget.chatId);
   }
 
   initializing(String chatId) async {
@@ -106,7 +106,7 @@ class _GroupTileState extends State<ChatTile> {
             return StreamBuilder(
                 stream: message,
                 builder: (context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasData & snapshot1.hasData) {
                     try {
                       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
                           int.parse(snapshot.data["recentMessageTime"]));
@@ -121,14 +121,14 @@ class _GroupTileState extends State<ChatTile> {
 
                     return GestureDetector(
                       onTap: () {
-                        chatController.markRead(widget.groupId);
+                        chatController.markRead(widget.chatId);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatPageScreen(
-                                  imageURL: imageURL,
+                                      imageURL: imageURL,
                                       privateChat: snapshot.data["isGroup"],
-                                      chatId: widget.groupId,
+                                      chatId: widget.chatId,
                                       chatName: chatName!,
                                     )));
                       },

@@ -13,6 +13,7 @@ class _RealmChat {
   late String recentMessage;
   late String recentSender;
   late DateTime recentMessageTime;
+  late String recentMessageType;
   late String chatIcon;
   late String? admin;
   late List<_RealmMessage> messages;

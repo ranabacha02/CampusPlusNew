@@ -26,15 +26,11 @@ class DataController extends GetxController {
     DocumentSnapshot snapshot = await users.doc(auth.currentUser!.uid).get();
     MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);
     users.doc(auth.currentUser!.uid).update({
-      'profilePictureURL': auth!.currentUser!.photoURL,
+      'profilePictureURL': auth.currentUser!.photoURL,
     });
 
-    final config = Configuration.local([RealmUser.schema]);
-    final realm = Realm(config);
-    final myUser = toRealmUser(snapshot.data() as Map<String, dynamic>);
-    realm.write(() {
-      realm.add(myUser, update: true);
-    });
+    addingUserToRealm(snapshot.data() as Map<String, dynamic>);
+
     storedData = user;
     return storedData;
   }
@@ -117,9 +113,7 @@ class DataController extends GetxController {
   }
 
   MyUser getLocalData() {
-    final config = Configuration.local([RealmUser.schema]);
-    final realm = Realm(config);
-    var result = realm.find<RealmUser>(auth.currentUser!.uid);
+    var result = gettingRealmUser(auth.currentUser!.uid);
     if (result == null) {
       getUserInfo();
     }
@@ -157,10 +151,7 @@ class DataController extends GetxController {
     user.deleteProfilePicture();
   }
 
-  Future<Stream<RealmObjectChanges<RealmUser>>?>
-      getLiveRealmUserObject() async {
-    final config = Configuration.local([RealmUser.schema]);
-    final realm = await Realm.open(config);
-    return realm.find<RealmUser>(auth.currentUser!.uid)?.changes;
+  Stream<RealmObjectChanges<RealmUser>> getLiveRealmUserObject() {
+    return getLiveUserRealmObject(auth.currentUser!.uid);
   }
 }
