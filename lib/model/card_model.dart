@@ -84,6 +84,16 @@ class MyCard {
     final complete = newCardRef.set(cardData).then((doc)=> true, onError: (r)=> false);
     return complete;
   }
+
+  static Future<MyCard?> getCardById(String cardId) async{
+    final DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
+    if(snapshot.exists){
+      final MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
+      return card;
+    }
+    else {return null;}
+  }
+
   static Future<bool> joinCard(String cardId) async {
     final MyUser user = dataController.getLocalData();
     final CleanUser cleanUser = CleanUser.fromMyUser(user);
@@ -91,6 +101,7 @@ class MyCard {
         .then((doc)=> true, onError: (e)=>false);
     return complete;
   }
+
   static Future<bool> leaveCard(String cardId) async {
     final DocumentSnapshot snapshot = await cardCollection.doc(cardId).get();
     final MyCard card = MyCard.fromFirestore(snapshot.data() as Map<String, dynamic>);
@@ -117,10 +128,10 @@ class MyCard {
     return cards;
   }
 
-  static Future<List<MyCard>> getAllVisibleCards() async {
+  static Future<List<MyCard>> getInitialCards(int limit) async {
     String gender = dataController.getLocalData().gender;
     String department = dataController.getLocalData().department;
-    final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).orderBy("eventStart").get();
+    final snapshots = await cardCollection.where("audience", whereIn: ["Everyone", gender, department]).orderBy("eventStart").limit(limit).get();
     List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return cards;
   }

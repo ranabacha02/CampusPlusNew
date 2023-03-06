@@ -32,6 +32,10 @@ class CardController{
     return card.createCard();
   }
 
+  Future<MyCard?> getCardById(String cardId) async {
+    return MyCard.getCardById(cardId);
+  }
+
   Future<bool> joinCard(String cardId) async {
     return MyCard.joinCard(cardId);
   }
@@ -52,8 +56,8 @@ class CardController{
     return MyCard.getAllCards();
   }
 
-  Future<List<MyCard>> getAllVisibleCards() async {
-    return MyCard.getAllVisibleCards();
+  Future<List<MyCard>> getInitialCards(int limit) async {
+    return MyCard.getInitialCards(limit);
   }
 
   Future<List<MyCard>> getNextCards(MyCard lastCard, int limit) async {
