@@ -1,5 +1,6 @@
 import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/notifications.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
@@ -93,9 +94,12 @@ class _CampusPlusState extends State<CampusPlus> {
       case routeNotification:
         ReceivedAction receivedAction = settings.arguments as ReceivedAction;
         return MaterialPageRoute(
-            builder: (_) => NavBarView(
-                  index: 3,
-                ));
+            builder: (_) => ChatPageScreen(
+                //refreshCourses: widget.refreshCourses,
+                chatId: receivedAction.payload!["chatId"]!,
+                chatName: receivedAction.payload!["sender"]!,
+                privateChat: receivedAction.payload!["isGroup"]! == "true",
+                imageURL: receivedAction.payload!["chatIcon"]!));
     }
     return null;
   }

@@ -43,7 +43,6 @@ class _NavBarViewState extends State<NavBarView> {
   late DataController dataController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // Get.put(DataController(),permanent: true);
     // FirebaseMessaging.instance.getInitialMessage();

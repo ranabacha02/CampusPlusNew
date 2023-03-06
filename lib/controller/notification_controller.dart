@@ -19,16 +19,17 @@ class NotificationController {
         null, //'resource://drawable/res_app_icon',//
         [
           NotificationChannel(
-              channelKey: 'alerts',
-              channelName: 'Alerts',
-              channelDescription: 'Notification tests as alerts',
-              playSound: true,
-              onlyAlertOnce: true,
-              groupAlertBehavior: GroupAlertBehavior.Children,
-              importance: NotificationImportance.High,
-              defaultPrivacy: NotificationPrivacy.Private,
-              defaultColor: Colors.deepPurple,
-              ledColor: Colors.deepPurple),
+            channelKey: 'alerts',
+            channelName: 'Alerts',
+            channelDescription: 'Notification tests as alerts',
+            playSound: true,
+            onlyAlertOnce: true,
+            groupAlertBehavior: GroupAlertBehavior.Children,
+            importance: NotificationImportance.High,
+            defaultPrivacy: NotificationPrivacy.Private,
+            defaultColor: Colors.deepPurple,
+            ledColor: Colors.deepPurple,
+          ),
           NotificationChannel(
               channelKey: 'chats',
               channelName: 'Chats',
@@ -71,7 +72,7 @@ class NotificationController {
           "message": receivedAction.buttonKeyInput,
           "sender":
               "${DataController().getLocalData().firstName} ${DataController().getLocalData().lastName}_${DataController().getLocalData().userId}",
-          "time": DateTime.now(),
+          "time": DateTime.now().millisecondsSinceEpoch,
           "type": "text",
           "imageUrl": "",
         };
@@ -184,13 +185,12 @@ class NotificationController {
             id: -1,
             // -1 is replaced by a random number
             channelKey: 'alerts',
-            title: 'Huston! The eagle has landed!',
-            body:
-                "A small step for a man, but a giant leap to Flutter's community!",
-            bigPicture: 'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
-            largeIcon: 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
+            title: 'Notifications are working!',
+            body: "A small step for a man, but a giant leap to Campus Plus!",
+            largeIcon:
+                'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
             //'asset://assets/images/balloons-in-sky.jpg',
-            notificationLayout: NotificationLayout.BigPicture,
+            notificationLayout: NotificationLayout.MessagingGroup,
             payload: {'notificationId': '1234567890'}),
         actionButtons: [
           NotificationActionButton(key: 'REDIRECT', label: 'Redirect'),
@@ -208,10 +208,11 @@ class NotificationController {
   }
 
   static Future<void> createNewMessageNotification(
-      Map<String, String> chatMessageData, String? imageUrl) async {
+      Map<String, String?> chatMessageData, String? imageUrl) async {
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) isAllowed = await displayNotificationRationale();
     if (!isAllowed) return;
+    print(chatMessageData);
 
     await AwesomeNotifications().createNotification(
         content: NotificationContent(
@@ -220,11 +221,9 @@ class NotificationController {
             channelKey: 'chats',
             title: chatMessageData['sender'],
             body: chatMessageData['message'],
-            bigPicture:
-                'https://storage.googleapis.com/cms-storage-bucket/d406c736e7c4c57f5f61.png',
             largeIcon:
                 'https://storage.googleapis.com/cms-storage-bucket/0dbfcc7a59cd1cf16282.png',
-            notificationLayout: NotificationLayout.BigPicture,
+            notificationLayout: NotificationLayout.Messaging,
             payload: chatMessageData),
         actionButtons: [
           NotificationActionButton(

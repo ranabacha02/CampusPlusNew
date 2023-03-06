@@ -204,6 +204,11 @@ chatsSyncing(String userId) {
               'sender': realmMessage.sender.split("_")[0],
               'message': realmMessage.message,
               'chatId': chatId,
+              'imageUrl': realmMessage.imageUrl,
+              'type': realmMessage.type,
+              'isGroup': realmChat.isGroup.toString(),
+              'chatName': realmChat.chatName,
+              'chatIcon': realmChat.chatIcon,
             }, realmMessage.imageUrl);
           }
         }
