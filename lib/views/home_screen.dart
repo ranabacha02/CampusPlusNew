@@ -5,6 +5,7 @@ import 'package:campus_plus/utils/app_colors.dart';
 import 'package:campus_plus/views/schedule.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'card_form_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);

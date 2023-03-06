@@ -8,6 +8,8 @@ import '../utils/app_colors.dart';
 import '../widgets/main_card.dart';
 import 'package:get/get.dart';
 
+import '../widgets/shimmer_cards.dart';
+
 class TaggedCardsTab extends StatefulWidget {
   const TaggedCardsTab({Key? key, required this.tag}) : super(key: key);
   final String tag;
@@ -119,7 +121,7 @@ class _TaggedCardsTabState extends State<TaggedCardsTab> {
 
 Widget _listView(ScrollController scrollController, bool isLoadingMoreCards, AsyncSnapshot snapshot, MyUser userInfo, Function updateCard) {
   if(!snapshot.hasData){
-    return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
+    return const ShimmerCards();
   }
   if(snapshot.hasError){
     return const Text('Something went wrong');

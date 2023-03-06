@@ -1,3 +1,4 @@
+import 'package:campus_plus/widgets/shimmer_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import '../controller/card_controller.dart';
@@ -119,7 +120,7 @@ class _AllCardsTabState extends State<AllCardsTab> {
 
 Widget _listView(ScrollController scrollController, bool isLoadingMoreCards, AsyncSnapshot snapshot, MyUser userInfo, Function updateCard) {
   if(!snapshot.hasData){
-    return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
+    return const ShimmerCards();
   }
   if(snapshot.hasError){
     return const Text('Something went wrong');
