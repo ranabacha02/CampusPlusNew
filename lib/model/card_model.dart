@@ -166,5 +166,33 @@ class MyCard {
     return cards;
   }
 
+  static Future getMyInitialCreatedCards(int limit) async {
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("createdBy", isEqualTo: user.userId).orderBy("eventStart").limit(limit).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future<List<MyCard>> getMyNextCreatedCards(MyCard lastCard, int limit) async {
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("createdBy", isEqualTo: user.userId).orderBy("eventStart").startAfter([lastCard.eventStart]).limit(limit).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future getMyInitialJoinedCards(int limit) async {
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("userIds", arrayContains: user.userId).orderBy("eventStart").limit(limit).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
+  static Future<List<MyCard>> getMyNextJoinedCards(MyCard lastCard, int limit) async {
+    final MyUser user = dataController.getLocalData();
+    final snapshots = await cardCollection.where("userIds", arrayContains: user.userId).orderBy("eventStart").startAfter([lastCard.eventStart]).limit(limit).get();
+    List<MyCard> cards = snapshots.docs.map<MyCard>((doc) => MyCard.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
+    return cards;
+  }
+
 
 }

@@ -93,6 +93,22 @@ class CardController{
     return myCards;
   }
 
+  Future<List<MyCard>> getMyInitialCreatedCards(int limit) async{
+    return await MyCard.getMyInitialCreatedCards(limit);
+  }
+
+  Future<List<MyCard>> getMyNextCreatedCards(MyCard lastCard, int limit) async{
+    return await MyCard.getMyNextCreatedCards(lastCard, limit);
+  }
+
+
+  Future<List<MyCard>> getMyInitialJoinedCards(int limit) async{
+    return await MyCard.getMyInitialJoinedCards(limit);
+  }
+
+  Future<List<MyCard>> getMyNextJoinedCards(MyCard lastCard, int limit) async{
+    return await MyCard.getMyNextJoinedCards(lastCard, limit);
+  }
 
 }
 
