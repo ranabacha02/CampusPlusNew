@@ -14,11 +14,11 @@ class MainCard extends StatelessWidget {
     Key? key,
     required this.card,
     required this.personal,
-    required this.refreshCards
+    required this.updateCard
   }) : super(key: key);
   final MyCard card;
   final bool personal;
-  final Function refreshCards;
+  final Function updateCard;
   final CardController cardController = Get.put(CardController());
   final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -129,7 +129,7 @@ class MainCard extends StatelessWidget {
                           !personal ? Expanded(
                             flex: 1,
                             child: Center(
-                              child: JoinButton(refreshCards: refreshCards, joined: joined, cardId: card.id),
+                              child: JoinButton(updateCard: updateCard, joined: joined, cardId: card.id),
                             ),
                           ):  const Expanded(flex:1, child: SizedBox(),),
                         ]),
@@ -141,7 +141,7 @@ class MainCard extends StatelessWidget {
           personal ? Positioned(
             top: 15,
             right: (MediaQuery.of(context).size.width) > 500 ? ((MediaQuery.of(context).size.width - (500 * 0.92 + 8 + 8)) / 2 + 20) : ((MediaQuery.of(context).size.width) * 0.08 - 8 - 8 + 15),
-            child:  ToggleMenu(refreshCards: refreshCards, cardId: card.id),
+            child:  ToggleMenu(updateCard: updateCard, cardId: card.id),
           ): const SizedBox(), //The Toggle Button
           Positioned(
               top: 92,
@@ -207,11 +207,11 @@ class MainCard extends StatelessWidget {
 class JoinButton extends StatelessWidget {
    JoinButton({
     Key? key,
-    required this.refreshCards,
+    required this.updateCard,
     required this.joined,
     required this.cardId,
   }) : super(key: key);
-  final Function refreshCards;
+  final Function updateCard;
   final bool joined;
   final String cardId;
   final CardController cardController = Get.put(CardController());
@@ -223,12 +223,12 @@ class JoinButton extends StatelessWidget {
       onTap: (isLiked) async {
         if(!isLiked){
           final bool success = await cardController.joinCard(cardId);
-          if(success) {refreshCards(); return !isLiked;}
+          if(success) {updateCard(cardId); return !isLiked;}
           else {return isLiked;}
         }
         else {
           final bool success = await cardController.leaveCard(cardId);
-          if (success) {refreshCards(); return !isLiked;}
+          if (success) {updateCard(cardId); return !isLiked;}
           else {return isLiked;}
         }
       },
@@ -246,11 +246,11 @@ class JoinButton extends StatelessWidget {
 class ToggleMenu extends StatefulWidget {
   const ToggleMenu({
     Key? key,
-    required this.refreshCards,
+    required this.updateCard,
     required this.cardId
   }) : super(key: key);
   final String cardId;
-  final Function refreshCards;
+  final Function updateCard;
   @override
   State<ToggleMenu> createState() => _ToggleMenuState();
 }
@@ -269,7 +269,7 @@ class _ToggleMenuState extends State<ToggleMenu> {
           showDialog(
               context: context,
               builder: (BuildContext context) =>
-                DeleteDialog(refreshCards: widget.refreshCards, cardId: widget.cardId,)
+                DeleteDialog(updateCard: widget.updateCard, cardId: widget.cardId,)
           );
           }
         },
@@ -290,11 +290,11 @@ class _ToggleMenuState extends State<ToggleMenu> {
 
 class DeleteDialog extends StatelessWidget {
   DeleteDialog({
-    required this.refreshCards,
+    required this.updateCard,
     required this.cardId,
     Key? key,
   }) : super(key: key);
-  final Function refreshCards;
+  final Function updateCard;
   final String cardId;
   final CardController cardController = Get.put(CardController());
 
@@ -334,7 +334,7 @@ class DeleteDialog extends StatelessWidget {
                 TextButton(
                     onPressed: () {
                       cardController.removeCard(cardId);
-                      refreshCards();
+                      updateCard(cardId);
                       Navigator.pop(context);
                     },
                     child: const Text('Delete', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
