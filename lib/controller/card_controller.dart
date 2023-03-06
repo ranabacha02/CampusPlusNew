@@ -64,12 +64,12 @@ class CardController{
     return MyCard.getNextCards(lastCard, limit);
   }
 
-  Future<List<MyCard>> getTaggedCards(List<String> tags) async {
-    List<MyCard> taggedCards=[];
-    for(String t in tags){
-      taggedCards.addAll(await MyCard.getTaggedCards(t));
-    }
-    return taggedCards;
+  Future<List<MyCard>> getInitialTaggedCards(int limit, String tag) async {
+    return MyCard.getInitialTaggedCards(limit, tag);
+  }
+
+  Future<List<MyCard>> getNextTaggedCards(MyCard lastCard, int limit, String tag) async {
+    return MyCard.getNextTaggedCards(lastCard, limit, tag);
   }
 
   Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async {
