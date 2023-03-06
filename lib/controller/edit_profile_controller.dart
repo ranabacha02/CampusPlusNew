@@ -11,7 +11,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:realm/realm.dart';
 
+import '../localStorage/realm/data_models/realmUser.dart';
 import '../views/edit_account_screen.dart';
 
 class EditProfileController extends GetxController {
@@ -39,7 +41,6 @@ class EditProfileController extends GetxController {
       'userId': auth.currentUser!.uid,
       'chatsId': userInfo.chatsId,
     }).then((value) async {
-      print("user updated");
 
       userInfo.firstName = firstName ?? userInfo.firstName;
       userInfo.lastName = lastName ?? userInfo.lastName;
@@ -50,10 +51,7 @@ class EditProfileController extends GetxController {
       if (delete) {
         await dataController.deleteProfilePicture();
       }
-      print("delete = " + delete.toString());
-      print(photo);
       if (!delete && photo != null) {
-        print("will upload the picture");
         await dataController
             .uploadProfilePic(photo)
             .whenComplete(() => print("image uploaded"))

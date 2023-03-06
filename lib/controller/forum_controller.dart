@@ -11,7 +11,7 @@ class ForumController extends GetxController {
         question: question,
         timePosted: DateTime.now(),
         user: user,
-        answers: List<MyAnswer>.empty());
+        answers: List<MyAnswer>.empty(growable: true));
     return myQuestion.postQuestion(chatId);
   }
 

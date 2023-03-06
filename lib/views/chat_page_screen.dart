@@ -1,21 +1,23 @@
+import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:campus_plus/model/user_model.dart';
 import 'package:campus_plus/utils/app_colors.dart';
+import 'package:campus_plus/views/chat_info_page.dart';
 import 'package:campus_plus/widgets/chat_date_tile.dart';
 import 'package:campus_plus/widgets/chat_file_picker.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:campus_plus/widgets/received_message_tile.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:path/path.dart';
+import 'package:realm/realm.dart' as Realm;
+import 'package:sticky_grouped_list/sticky_grouped_list.dart';
 
 import '../controller/chat_controller.dart';
 import '../controller/data_controller.dart';
+import '../model/message_model.dart';
+import '../localStorage/realm/data_models/chat.dart';
 import '../widgets/app_widgets.dart';
 import '../widgets/forum_widget.dart';
 import '../widgets/message_tile.dart';
@@ -26,12 +28,11 @@ class ChatPageScreen extends StatefulWidget {
   bool privateChat;
   String? imageURL;
 
-  ChatPageScreen(
-      {super.key,
-      required this.chatId,
-      required this.chatName,
-      required this.privateChat,
-      required this.imageURL});
+  ChatPageScreen({super.key,
+    required this.chatId,
+    required this.chatName,
+    required this.privateChat,
+    required this.imageURL});
 
   @override
   _ChatPageScreenState createState() => _ChatPageScreenState();
@@ -42,13 +43,17 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       WidgetsBinding.instance.window.devicePixelRatio;
 
   TextEditingController messageController = TextEditingController();
+  final GroupedItemScrollController itemScrollController =
+  GroupedItemScrollController();
 
   late ChatController chatController;
   late DataController dataController;
   late final MyUser userInfo;
   late final userName;
+  List<Message> cachedMessages = [];
   Stream? chats;
   bool isChat = true;
+  late List<RealmMessage> realMessages;
 
   @override
   void initState() {
@@ -56,12 +61,12 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
     userInfo = dataController.getLocalData();
-    userName = userInfo.firstName + " " + userInfo.lastName;
-    getChat();
+    userName = "${userInfo.firstName} ${userInfo.lastName}";
+    realMessages = chatController.getLocalChatMessages(widget.chatId);
   }
 
   getChat() {
-    chatController.getChats(widget.chatId).then((val) {
+    chatController.getChatMessages(widget.chatId).then((val) {
       setState(() {
         chats = val;
       });
@@ -90,7 +95,6 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                         chatController.markRead(widget.chatId);
                         Navigator.push(
                             context,
-                            //MaterialPageRoute(builder: (context) => NavBarView(index: 3))),
                             PageTransition(
                                 type: PageTransitionType.leftToRightPop,
                                 child: NavBarView(index: 3),
@@ -109,16 +113,32 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                         caption: widget.chatName,
                         radius: 25,
                       )
-                          : CircleAvatar(
+                          : const CircleAvatar(
                         backgroundImage:
                         AssetImage("assets/default_profile.jpg"),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 20,
                       ),
-                      Text(
-                        widget.chatName,
-                        style: TextStyle(color: AppColors.aubRed, fontSize: 24),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.leftToRightPop,
+                                  child: GroupInfoScreen(chatId: widget.chatId),
+                                  childCurrent: ChatPageScreen(
+                                    imageURL: widget.imageURL,
+                                    privateChat: widget.privateChat,
+                                    chatId: widget.chatId,
+                                    chatName: widget.chatName,
+                                  )));
+                        },
+                        child: Text(
+                          widget.chatName,
+                          style:
+                          TextStyle(color: AppColors.aubRed, fontSize: 24),
+                        ),
                       ),
                     ],
                   ),
@@ -157,15 +177,15 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
                     ),
                     Flexible(
                       fit: FlexFit.loose,
-                            child: TabBarView(
-                              children: [
-                                chatWidget(context),
-                                ForumWidget(
-                                  chatId: widget.chatId,
-                                ),
-                              ],
-                            ),
-                          )
+                      child: TabBarView(
+                        children: [
+                          chatWidget(context),
+                          ForumWidget(
+                            chatId: widget.chatId,
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 )
                     : chatWidget(context))));
@@ -174,311 +194,195 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
   Widget chatWidget(BuildContext context) {
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
-      return SingleChildScrollView(
-        //physics: NeverScrollableScrollPhysics(),
-        child: Column(
-          children: <Widget>[
-            // chat messages here
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: viewportConstraints.maxHeight - 100,
-              ),
-              child: chatMessages(widget.privateChat),
-            ),
-            //type bar
-            Container(
-              alignment: Alignment.bottomCenter,
-              width: MediaQuery.of(context).size.width,
-              child: Container(
-                height: 80,
-                padding: const EdgeInsets.only(
-                    left: 20, top: 12, right: 20, bottom: 20),
-                width: MediaQuery.of(context).size.width,
-                color: Colors.grey[700],
-                child: Row(children: [
-                  Expanded(
-                    child: Container(
-                        padding: const EdgeInsets.only(
-                          left: 20,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.circular(35.0),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: messageController,
-                                style: const TextStyle(color: Colors.white),
-                                maxLines: 5,
-                                minLines: 1,
-                                decoration: const InputDecoration(
-                                  hintText: "Send a message...",
-                                  hintStyle: TextStyle(
-                                      color: Colors.white, fontSize: 16),
-                                  border: InputBorder.none,
+          return SingleChildScrollView(
+            //physics: NeverScrollableScrollPhysics(),
+            child: Column(
+              children: <Widget>[
+                // chat messages here
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: viewportConstraints.maxHeight - 80,
+                  ),
+                  child: chatMessagesUpdate(widget.privateChat),
+                ),
+                //type bar
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  width: MediaQuery.of(context).size.width,
+                  child: Container(
+                    height: 80,
+                    padding: const EdgeInsets.only(
+                        left: 20, top: 12, right: 20, bottom: 20),
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.grey[700],
+                    child: Row(children: [
+                      Expanded(
+                        child: Container(
+                            padding: const EdgeInsets.only(
+                              left: 20,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              borderRadius: BorderRadius.circular(35.0),
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    controller: messageController,
+                                    style: const TextStyle(color: Colors.white),
+                                    maxLines: 5,
+                                    minLines: 1,
+                                    decoration: const InputDecoration(
+                                      hintText: "Send a message...",
+                                      hintStyle: TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                      border: InputBorder.none,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            ChatFileUploads(
-                              imageUrl: widget.imageURL,
-                              chatName: widget.chatName,
-                              chatId: widget.chatId,
-                              privateChat: widget.privateChat,
-                            ),
-                          ],
-                        )),
-                  ),
-                  const SizedBox(
-                    width: 12,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      sendMessage();
-                    },
-                    child: Container(
-                      height: 50,
-                      width: 50,
-                      decoration: BoxDecoration(
-                        color: AppColors.blueChat,
-                        borderRadius: BorderRadius.circular(30),
+                                ChatFileUploads(
+                                  imageUrl: widget.imageURL,
+                                  chatName: widget.chatName,
+                                  chatId: widget.chatId,
+                                  privateChat: widget.privateChat,
+                                ),
+                              ],
+                            )),
                       ),
-                      child: const Center(
-                          child: Icon(
-                            Icons.send,
-                            color: Colors.white,
-                          )),
-                    ),
-                  )
-                ]),
-              ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          sendMessage();
+                        },
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            color: AppColors.blueChat,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: const Center(
+                              child: Icon(
+                                Icons.send,
+                                color: Colors.white,
+                              )),
+                        ),
+                      )
+                    ]),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    });
+          );
+        });
   }
 
-  chatMessages(bool privateChat) {
+  chatMessagesUpdate(bool privateChat) {
+    final realm = getRealmObject();
+    realm.write(() => realm
+        .find<RealmChat>(widget.chatId)
+        ?.messages
+        .sort((RealmMessage b, RealmMessage a) => a.time.compareTo(b.time)));
     return StreamBuilder(
-      stream: chats,
-      builder: (context, AsyncSnapshot snapshot) {
-        String previousSender = "";
-        return snapshot.hasData
-            ? Container(
-                height: privateChat
-                    ? MediaQuery.of(context).size.height * 0.73
-                    : MediaQuery.of(context).size.height * 0.783,
-                child: ListView.builder(
+        stream: realm.find<RealmChat>(widget.chatId)?.changes,
+        builder: (context,
+            AsyncSnapshot<Realm.RealmObjectChanges<RealmChat>> snapshot) {
+          String previousSender = "";
+          if (snapshot.hasError) {
+            return Center(
+              child: Text("There was an error: ${snapshot.error}"),
+            );
+          }
+          return snapshot.hasData
+              ? Container(
+              height: privateChat
+                  ? MediaQuery.of(context).size.height * 0.73
+                  : MediaQuery.of(context).size.height * 0.783,
+              // child: stickyGroupedList(snapshot.requireData.object.messages, privateChat),
+              child: ListView.builder(
                   reverse: true,
-                  itemCount: snapshot.data.docs.length,
+                  itemCount: snapshot.requireData.object.messages.length,
                   itemBuilder: (context, index) {
-                    // print("the message is: " +
-                    //     snapshot.data.docs[index]['message']);
-                    DateTime dateTime = new DateTime.fromMillisecondsSinceEpoch(
-                        snapshot.data.docs[index]['time']);
+                    DateTime dateTime =
+                        snapshot.requireData.object.messages[index].time;
                     DateTime dateTime2 = DateTime.now();
                     String time = "";
                     if (dateTime.minute < 10) {
-                      time = dateTime.hour.toString() +
-                          ":0" +
-                          dateTime.minute.toString();
+                      time = "${dateTime.hour}:0${dateTime.minute}";
                     } else {
                       time = dateTime.hour.toString() +
                           ":" +
                           dateTime.minute.toString();
                     }
 
-                    String currentDate = DateFormat.yMMMEd().format(dateTime);
+                    String currentDate =
+                    DateFormat.yMMMEd().format(dateTime);
 
-                    String currentSender = snapshot.data.docs[index]['sender'];
+                    String currentSender =
+                        snapshot.requireData.object.messages[index].sender;
                     String nextSender = "";
                     try {
-                      nextSender = snapshot.data.docs[index + 1]['sender'];
-                      dateTime2 = new DateTime.fromMillisecondsSinceEpoch(
-                          snapshot.data.docs[index + 1]['time']);
+                      nextSender = snapshot
+                          .requireData.object.messages[index + 1].sender;
+                      dateTime2 = snapshot
+                          .requireData.object.messages[index + 1].time;
                     } catch (e) {
                       nextSender = "";
                     }
                     String nextDate = DateFormat.yMMMEd().format(dateTime2);
 
-                    if (userName + "_" + userInfo.userId != currentSender) {
-                      bool temp = nextSender == currentSender;
-                      previousSender = currentSender;
-                      if (nextDate != currentDate) {
-                        try {
-                          if (snapshot.data.docs[index] != null &&
-                              snapshot.data.docs[index]['type'] == 'image') {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                chatDateTile(currentDate),
-                                ReceivedMessageTile(
-                                  privateChat: privateChat,
-                                  message: snapshot.data.docs[index]['message'],
-                                  sender: snapshot.data.docs[index]['sender'],
-                                  time: time,
-                                  sameSender: temp,
-                                  type: "image",
-                                  imageUrl: snapshot.data.docs[index]
-                                      ['imageUrl'],
-                                )
-                              ],
-                            );
-                          } else {
-                            return Column(
-                              children: [
-                                chatDateTile(currentDate),
-                                ReceivedMessageTile(
-                                  privateChat: privateChat,
-                                  message: snapshot.data.docs[index]['message'],
-                                  sender: snapshot.data.docs[index]['sender'],
-                                  time: time,
-                                  sameSender: temp,
-                                  type: "text",
-                                )
-                              ],
-                            );
-                          }
-                        } catch (e) {
-                          return Column(
-                            children: [
-                              chatDateTile(currentDate),
-                              ReceivedMessageTile(
-                                privateChat: privateChat,
-                                message: snapshot.data.docs[index]['message'],
-                                sender: snapshot.data.docs[index]['sender'],
-                                time: time,
-                                sameSender: temp,
-                                type: "text",
-                              )
-                            ],
-                          );
-                        }
-                      }
-                      try {
-                        if (snapshot.data.docs[index] != null &&
-                            snapshot.data.docs[index]['type'] == 'image') {
-                          return ReceivedMessageTile(
-                            privateChat: privateChat,
-                            message: snapshot.data.docs[index]['message'],
-                            sender: snapshot.data.docs[index]['sender'],
-                            time: time,
-                            sameSender: temp,
-                            type: "image",
-                            imageUrl: snapshot.data.docs[index]['imageUrl'],
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              chatDateTile(currentDate),
-                              ReceivedMessageTile(
-                                privateChat: privateChat,
-                                message: snapshot.data.docs[index]['message'],
-                                sender: snapshot.data.docs[index]['sender'],
-                                time: time,
-                                sameSender: temp,
-                                type: "text",
-                              )
-                            ],
-                          );
-                        }
-                      } catch (e) {
-                        return ReceivedMessageTile(
-                            privateChat: privateChat,
-                            message: snapshot.data.docs[index]['message'],
-                            sender: snapshot.data.docs[index]['sender'],
-                            time: time,
-                            sameSender: temp,
-                            type: "text");
-                      }
-                    }
+                    bool sameSender = currentSender == nextSender;
+                    bool sameDate = currentDate == nextDate;
 
-                    previousSender = currentSender;
-                    //print("time:" + time);
-                    if (nextDate != currentDate) {
-                      //print("snapshot: " + snapshot.data.docs[index].toString());
-                      try {
-                        if (snapshot.data.docs[index] != null &&
-                            snapshot.data.docs[index]['type'] == 'image') {
-                          return Column(
-                            children: [
-                              chatDateTile(currentDate),
-                              MessageTile(
-                                privateChat: privateChat,
-                                message: snapshot.data.docs[index]['message'],
-                                sender: snapshot.data.docs[index]['sender'],
-                                time: time,
-                                type: 'image',
-                                imageUrl: snapshot.data.docs[index]['imageUrl'],
-                              )
-                            ],
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              chatDateTile(currentDate),
-                              MessageTile(
-                                privateChat: privateChat,
-                                message: snapshot.data.docs[index]['message'],
-                                sender: snapshot.data.docs[index]['sender'],
-                                time: time,
-                                type: 'message',
-                              )
-                            ],
-                          );
-                        }
-                      } catch (e) {
-                        return Column(
-                          children: [
-                            chatDateTile(currentDate),
-                            MessageTile(
-                              privateChat: privateChat,
-                              message: snapshot.data.docs[index]['message'],
-                              sender: snapshot.data.docs[index]['sender'],
-                              time: time,
-                              type: 'message',
-                            )
-                          ],
-                        );
-                      }
-                    }
-                    // print("snapshot: " + snapshot.data.docs[index].toString());
-                    try {
-                      if (snapshot.data.docs[index] != null &&
-                          snapshot.data.docs[index]['type'] == 'image') {
-                        return MessageTile(
+                    if (currentSender.split("_")[1] == userInfo.userId) {
+                      // if (snapshot
+                      //     .requireData.object.messages[index].type == "image" ) {
+                      //   print("IMAGE URL "+ snapshot
+                      //     .requireData.object.messages[index].imageUrl.toString());
+                      // }
+                      return Column(children: [
+                        sameDate ? Container() : chatDateTile(currentDate),
+                        MessageTile(
+                          message: snapshot
+                              .requireData.object.messages[index].message,
+                          sender: snapshot
+                              .requireData.object.messages[index].sender,
                           privateChat: privateChat,
-                          message: snapshot.data.docs[index]['message'],
-                          sender: snapshot.data.docs[index]['sender'],
                           time: time,
-                          type: 'image',
-                          imageUrl: snapshot.data.docs[index]['imageUrl'],
-                        );
-                      } else {
-                        return MessageTile(
+                          type: snapshot
+                              .requireData.object.messages[index].type,
+                          imageUrl: snapshot
+                              .requireData.object.messages[index].imageUrl,
+                        )
+                      ]);
+                    } else {
+                      // print(snapshot
+                      //     .requireData.object.messages[index].imageUrl);
+                      return Column(children: [
+                        sameDate ? Container() : chatDateTile(currentDate),
+                        ReceivedMessageTile(
+                          message: snapshot
+                              .requireData.object.messages[index].message,
+                          sender: snapshot
+                              .requireData.object.messages[index].sender,
                           privateChat: privateChat,
-                          message: snapshot.data.docs[index]['message'],
-                          sender: snapshot.data.docs[index]['sender'],
+                          sameSender: sameSender,
                           time: time,
-                          type: 'text',
-                        );
-                      }
-                    } catch (e) {
-                      return MessageTile(
-                        privateChat: privateChat,
-                        message: snapshot.data.docs[index]['message'],
-                        sender: snapshot.data.docs[index]['sender'],
-                        time: time,
-                        type: 'text',
-                      );
+                          type: snapshot
+                              .requireData.object.messages[index].type,
+                          imageUrl: snapshot
+                              .requireData.object.messages[index].imageUrl,
+                        )
+                      ]);
                     }
-                  },
-                ))
-            : Container();
-      },
-    );
+                  }))
+              : const Center(
+            child: Text("data not loaded yet"),
+          );
+        });
   }
 
   sendMessage() {
@@ -487,6 +391,8 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
         "message": messageController.text,
         "sender": userName + "_" + userInfo.userId,
         "time": DateTime.now().millisecondsSinceEpoch,
+        "type": "text",
+        "imageURL": "",
       };
 
       chatController.sendMessage(widget.chatId, chatMessageMap);
@@ -495,4 +401,59 @@ class _ChatPageScreenState extends State<ChatPageScreen> {
       });
     }
   }
+
+// stickyGroupedList(Realm.RealmList<RealmMessage> _elements, bool privateChat) {
+//
+//   return StickyGroupedListView<RealmMessage, String>(
+//     floatingHeader: true,
+//     elements: _elements.toList(),
+//     groupBy: (RealmMessage element) =>
+//         DateFormat.yMMMEd().format(element.time),
+//     groupSeparatorBuilder: (RealmMessage element) =>
+//         chatDateTile(DateFormat.yMMMEd().format(element.time)),
+//     itemBuilder: (context, RealmMessage element) {
+//       DateTime dateTime = element.time;
+//       DateTime dateTime2 = DateTime.now();
+//       String time = "";
+//       if (dateTime.minute < 10) {
+//         time = "${dateTime.hour}:0${dateTime.minute}";
+//       } else {
+//         time = "${dateTime.hour}:${dateTime.minute}";
+//       }
+//
+//       String currentSender = element.sender;
+//       String nextSender = "";
+//       try {
+//         nextSender = element.sender;
+//         dateTime2 = element.time;
+//       } catch (e) {
+//         nextSender = "";
+//       }
+//
+//       bool sameSender = currentSender == nextSender;
+//       return currentSender.split("_")[1] == userInfo.userId
+//           ? MessageTile(
+//               message: element.message,
+//               sender: element.sender,
+//               privateChat: privateChat,
+//               time: time,
+//               type: element.type,
+//               imageUrl: element.imageUrl,
+//             )
+//           : ReceivedMessageTile(
+//               message: element.message,
+//               sender: element.sender,
+//               privateChat: privateChat,
+//               sameSender: sameSender,
+//               time: time,
+//               type: element.type,
+//               imageUrl: element.imageUrl,
+//             );
+//     },
+//     itemComparator: (e1, e2) => e1.time.compareTo(e2.time), // optional
+//     itemScrollController: itemScrollController, // optional
+//     order: StickyGroupedListOrder.DESC,
+//     reverse: true,// optional
+//   );
+// }
 }
