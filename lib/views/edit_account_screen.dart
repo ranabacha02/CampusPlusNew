@@ -1,5 +1,4 @@
 import 'dart:core';
-import 'dart:core';
 import 'dart:io';
 
 import 'package:campus_plus/controller/edit_profile_controller.dart';
@@ -34,6 +33,8 @@ class EditAccountScreen extends StatefulWidget {
 }
 
 class _EditAccountScreenState extends State<EditAccountScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   Size size = WidgetsBinding.instance.window.physicalSize /
       WidgetsBinding.instance.window.devicePixelRatio;
 
@@ -106,7 +107,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                       childCurrent: EditAccountScreen(
                         userInfo: userInfo,
                         delete: false,
-                        displayImage: photo.isNull ? null : Image.file(photo!),
+                        displayImage: photo == null ? null : Image.file(photo!),
                       )))
             },
           ),
@@ -127,19 +128,21 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 ),
               ),
               onPressed: () {
-                dataController.updateProfile(
-                  firstName: firstNameController.text.trim(),
-                  lastName: lastNameController.text.trim(),
-                  major: majorController.text.trim(),
-                  graduationYear:
-                      int.parse(graduationYearController.text.trim()),
-                  mobilePhoneNumber:
-                      int.parse(mobileNumberController.text.trim()),
-                  context: context,
-                  photo: photo,
-                  delete: false,
-                  description: descriptionController.text.trim(),
-                );
+                if (_formKey.currentState!.validate()) {
+                  dataController.updateProfile(
+                    firstName: firstNameController.text.trim(),
+                    lastName: lastNameController.text.trim(),
+                    major: majorController.text.trim(),
+                    graduationYear:
+                        int.parse(graduationYearController.text.trim()),
+                    mobilePhoneNumber:
+                        int.parse(mobileNumberController.text.trim()),
+                    context: context,
+                    photo: photo,
+                    delete: false,
+                    description: descriptionController.text.trim(),
+                  );
+                }
               },
             )
           ],
@@ -152,11 +155,11 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             },
             child: ListView(
               children: [
-                Text(
+                const Text(
                   "Edit Profile",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 15,
                 ),
                 Center(
@@ -166,56 +169,85 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 35,
                 ),
-                buildTextField("First Name", "", false, firstNameController,
-                        (String input) {}, false),
-                buildTextField("Last Name", "", false, lastNameController,
-                        (String input) {}, false),
-                buildTextField("Major", "", false, majorController,
-                        (String input) {}, false),
-                // To do: check the input and make sure it's one of the options
-                buildTextField(
-                    "Graduation Year", "", false, graduationYearController,
-                        (String input) {
-                      print("hello i'm here");
-                      if (int.tryParse(input) == null) {
-                        print("only number");
-                        Get.snackbar('Warning', 'Only numbers allowed',
-                            colorText: Colors.white, backgroundColor: Colors.blue);
-                        return '';
-                      } else {
-                        int gradYear = int.parse(input);
-                        int currentYear = DateTime.now().year;
-                        print(currentYear);
-                        if (gradYear < currentYear) {
-                          Get.snackbar(
-                              'Warning', 'Graduation year cannot be in the past.',
-                              colorText: Colors.white,
-                              backgroundColor: Colors.blue);
-                          return '';
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildTextField(
+                          "First Name", "", false, firstNameController,
+                          (String input) {
+                        if (input.removeAllWhitespace == "") {
+                          return "First name cannot be empty";
                         }
-                      }
-                    }, false),
-                buildTextField(
-                    "Mobile Number", "", false, mobileNumberController,
-                        (String input) {
-                      if (int.tryParse(input) == null) {
-                        Get.snackbar('Warning', 'Only numbers allowed',
-                            colorText: Colors.white, backgroundColor: Colors.blue);
-                        return '';
-                      }
-                    }, false),
-                buildTextField(
-                    "Description",
-                    "",
-                    false,
-                    descriptionController,
-                        (String input) {},
-                    maxLength: 150,
-                    true),
-                SizedBox(
+                        if (!input.isAlphabetOnly) {
+                          return 'First name can only contains letters';
+                        }
+                        return null;
+                      }, false),
+                      buildTextField("Last Name", "", false, lastNameController,
+                          (String input) {
+                        if (input.removeAllWhitespace == "") {
+                          return "Last name cannot be empty";
+                        }
+                        if (!input.isAlphabetOnly) {
+                          return 'Last name can only contains letters';
+                        }
+                        return null;
+                      }, false),
+                      buildTextField("Major", "", false, majorController,
+                          (String input) {
+                        if (input.removeAllWhitespace == "") {
+                          return "Major cannot be empty";
+                        }
+                        if (!input.isAlphabetOnly) {
+                          return 'Major can only contains letters';
+                        }
+                        return null;
+                      }, false),
+                      // To do: check the input and make sure it's one of the options
+                      buildTextField("Graduation Year", "", false,
+                          graduationYearController, (String input) {
+                        if (input.removeAllWhitespace == "") {
+                          return "Graduation year cannot be empty";
+                        }
+                        if (int.tryParse(input) == null) {
+                          return 'Invalid format. Please enter only numbers';
+                        } else {
+                          int gradYear = int.parse(input);
+                          int currentYear = DateTime.now().year;
+                          if (gradYear < currentYear) {
+                            return 'Graduation year cannot be in the past.';
+                          }
+                          return null;
+                        }
+                      }, false),
+                      buildTextField(
+                          "Mobile Number", "", false, mobileNumberController,
+                          (String input) {
+                        if (input.removeAllWhitespace == "") {
+                          return "Mobile phone number cannot be empty";
+                        }
+                        if (int.tryParse(input) == null) {
+                          return 'Invalid format. Please enter only numbers';
+                        }
+                        return null;
+                      }, false),
+                      buildTextField(
+                          "Description",
+                          "",
+                          false,
+                          descriptionController,
+                          (String input) {},
+                          maxLength: 150,
+                          true),
+                    ],
+                  ),
+                ),
+                const SizedBox(
                   height: 35,
                 ),
               ],

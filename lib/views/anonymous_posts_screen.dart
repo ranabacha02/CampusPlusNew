@@ -7,7 +7,6 @@ import '../model/post_model.dart';
 import '../model/user_model.dart';
 import '../widgets/main_post.dart';
 import 'anonymous_form_screen.dart';
-import 'package:campus_plus/views/notifications.dart';
 import 'package:campus_plus/views/schedule.dart';
 
 
@@ -113,21 +112,21 @@ class _AnonymousPostsScreenState extends State<AnonymousPostsScreen> {
                   },
                   icon: Image.asset('assets/postIcon.png')),
               IconButton(
-                  onPressed: () => {Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return const Schedule();
-                      })
-                  )},
+                  onPressed: () => {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const Schedule();
+                        }))
+                      },
                   icon: Image.asset('assets/calendarIcon.png')),
-              IconButton(
-                  onPressed: () => { Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return Notifications();
-                      })
-                  )},
-                  icon: Image.asset('assets/notificationIcon.png')),
+              // IconButton(
+              //     onPressed: () => { Navigator.push(
+              //         context,
+              //         MaterialPageRoute(builder: (context){
+              //           return Notifications();
+              //         })
+              //     )},
+              //     icon: Image.asset('assets/notificationIcon.png')),
             ]),
         body: Container(
             color: Colors.white,
