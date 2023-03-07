@@ -5,7 +5,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:realm/realm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../localStorage/realm/data_models/chat.dart';
+import '../localStorage/realm/realm_firestore_syncing.dart';
 import '../views/signIn_signUp_screen.dart';
 
 class AuthController extends GetxController {
@@ -31,10 +34,11 @@ class AuthController extends GetxController {
             'E-mail is not verified.\nPlease verify your email before proceeding.',
             colorText: Colors.white, backgroundColor: Colors.blue);
       } else {
+        realmSyncing(auth.currentUser!.uid);
         pref.setString("email", email);
         Navigator.pushAndRemoveUntil(
           context,
-           MaterialPageRoute(
+          MaterialPageRoute(
             builder: (context) => NavBarView(
               index: 2,
             ),
@@ -44,7 +48,9 @@ class AuthController extends GetxController {
       }
     }).catchError((e) {
       isLoading(false);
-      Get.snackbar('Error', "$e");
+      //Get.snackbar('Error', "$e");
+      throw (e);
+
       ///Error occurred
     });
   }
@@ -128,6 +134,20 @@ class AuthController extends GetxController {
     isLoading(true);
     SharedPreferences pref = await SharedPreferences.getInstance();
 
+    cancelStreams();
+
+    //DO NOT UNCOMMENT UNLESS YOU WANT TO DELETE ALL THE CHATS IN THE REALM DATABASE
+
+// final realm =getRealmObject();
+//
+//     realm.write(() {
+//       realm.deleteAll<RealmChat>();
+//       realm.deleteAll<RealmMessage>();
+//     });
+
+    print(realm.all<RealmChat>());
+    print(realm.all<RealmMessage>());
+
     auth.signOut().then((value) {
       isLoading(false);
       pref.remove("email");
@@ -136,7 +156,6 @@ class AuthController extends GetxController {
     }).catchError((e) {
       Get.snackbar('Error', "$e");
     });
-    ;
   }
 }
 

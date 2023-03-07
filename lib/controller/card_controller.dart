@@ -32,6 +32,10 @@ class CardController{
     return card.createCard();
   }
 
+  Future<MyCard?> getCardById(String cardId) async {
+    return MyCard.getCardById(cardId);
+  }
+
   Future<bool> joinCard(String cardId) async {
     return MyCard.joinCard(cardId);
   }
@@ -52,37 +56,59 @@ class CardController{
     return MyCard.getAllCards();
   }
 
-  Future<List<MyCard>> getAllVisibleCards() async{
-    return MyCard.getAllVisibleCards();
+  Future<List<MyCard>> getInitialCards(int limit) async {
+    return MyCard.getInitialCards(limit);
   }
 
-  Future<List<MyCard>> getTaggedCards(List<String> tags) async {
-    List<MyCard> taggedCards=[];
-    for(String t in tags){
-      taggedCards.addAll(await MyCard.getTaggedCards(t));
-    }
-    return taggedCards;
+  Future<List<MyCard>> getNextCards(MyCard lastCard, int limit) async {
+    return MyCard.getNextCards(lastCard, limit);
   }
 
-  Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async{
-    List<MyCard> taggedCards =[];
+  Future<List<MyCard>> getInitialTaggedCards(int limit, String tag) async {
+    return MyCard.getInitialTaggedCards(limit, tag);
+  }
+
+  Future<List<MyCard>> getNextTaggedCards(MyCard lastCard, int limit, String tag) async {
+    return MyCard.getNextTaggedCards(lastCard, limit, tag);
+  }
+
+  Future<List<MyCard>> filterCards(List<MyCard> cards, List<String> tags) async {
+    Set<MyCard> taggedCards ={};
     if(tags.isNotEmpty){
       for(String tag in tags){
-        taggedCards.addAll(cards.where((card)=> card.tags.contains(tag)).toList());
+        taggedCards.addAll(cards.where((card)=> card.tags.contains(tag)));
       }
-      return taggedCards;
+      List<MyCard> cardsList = taggedCards.toList();
+      cardsList.sort((a,b) => a.eventStart.compareTo(b.eventStart));
+      return cardsList;
     }
     return cards;
   }
 
 
-  Future<List<MyCard>> getMyCards() async{
+  Future<List<MyCard>> getMyCards() async {
     final myCreatedCards = await MyCard.getMyCreatedCards();
     final myJoinedCards = await MyCard.getMyJoinedCards();
     List<MyCard> myCards = myCreatedCards + myJoinedCards;
     return myCards;
   }
 
+  Future<List<MyCard>> getMyInitialCreatedCards(int limit) async{
+    return await MyCard.getMyInitialCreatedCards(limit);
+  }
+
+  Future<List<MyCard>> getMyNextCreatedCards(MyCard lastCard, int limit) async{
+    return await MyCard.getMyNextCreatedCards(lastCard, limit);
+  }
+
+
+  Future<List<MyCard>> getMyInitialJoinedCards(int limit) async{
+    return await MyCard.getMyInitialJoinedCards(limit);
+  }
+
+  Future<List<MyCard>> getMyNextJoinedCards(MyCard lastCard, int limit) async{
+    return await MyCard.getMyNextJoinedCards(lastCard, limit);
+  }
 
 }
 

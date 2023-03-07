@@ -59,8 +59,8 @@ class MyCustomForm extends StatefulWidget {
 class _MyCustomFormState extends State<MyCustomForm> {
   final _formKey = GlobalKey<FormState>();
   final _eventController = TextEditingController();
-  DateTime eventStart = DateTime.now();
-  DateTime eventEnd = DateTime.now().add(const Duration(hours:1));
+  DateTime eventStart = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute);
+  DateTime eventEnd = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day, DateTime.now().hour, DateTime.now().minute).add(const Duration(hours:1));
   late CardController cardController;
   late DataController dataController;
   late final MyUser userInfo;

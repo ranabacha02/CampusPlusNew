@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
+import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:campus_plus/views/recent_activity_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
 import 'package:campus_plus/views/account_settings_screen.dart';
@@ -11,7 +12,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:realm/realm.dart';
 import '../model/user_model.dart';
+import '../localStorage/realm/data_models/realmUser.dart';
 import '../utils/app_colors.dart';
 import '../widgets/app_widgets.dart';
 import 'package:get/get.dart';
@@ -36,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late DataController dataController;
   late final MyUser userInfo;
+  final realm = getRealmObject();
 
   Image? displayImage;
 

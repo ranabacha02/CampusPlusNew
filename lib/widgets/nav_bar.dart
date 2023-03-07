@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 
 import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/tutoring_section_screen.dart';
-import 'package:campus_plus/views/rental_section_screen.dart';
+import 'package:campus_plus/views/anonymous_posts_screen.dart';
 import 'package:campus_plus/views/messaging_section_screen.dart';
 import 'package:campus_plus/views/profile_screen.dart';
 
@@ -34,7 +34,7 @@ class _NavBarViewState extends State<NavBarView> {
   }
 
   List<Widget> widgetOption = [
-    RentalSectionScreen(),
+    AnonymousPostsScreen(),
     TutoringSectionScreen(),
     HomeScreen(),
     MessagingSectionScreen(),
@@ -43,7 +43,6 @@ class _NavBarViewState extends State<NavBarView> {
   late DataController dataController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // Get.put(DataController(),permanent: true);
     // FirebaseMessaging.instance.getInitialMessage();

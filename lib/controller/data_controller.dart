@@ -9,8 +9,11 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:realm/realm.dart';
 
 import '../model/clean_user_model.dart';
+import '../localStorage/realm/data_models/realmUser.dart';
+import '../localStorage/realm/realm_firestore_syncing.dart';
 import '../views/edit_account_screen.dart';
 import '../widgets/nav_bar.dart';
 
@@ -19,13 +22,14 @@ class DataController extends GetxController {
   FirebaseAuth auth = FirebaseAuth.instance;
   final storage = FirebaseStorage.instance;
 
-
   Future getUserInfo() async {
-    DocumentSnapshot snapshot = await await users.doc(auth.currentUser!.uid).get();
+    DocumentSnapshot snapshot = await users.doc(auth.currentUser!.uid).get();
     MyUser user = MyUser.fromFirestore(snapshot.data() as Map<String, dynamic>);
     users.doc(auth.currentUser!.uid).update({
-      'profilePictureURL': auth!.currentUser!.photoURL,
+      'profilePictureURL': auth.currentUser!.photoURL,
     });
+
+    addingUserToRealm(snapshot.data() as Map<String, dynamic>);
 
     storedData = user;
     return storedData;
@@ -109,10 +113,11 @@ class DataController extends GetxController {
   }
 
   MyUser getLocalData() {
-    if (storedData.description == null) {
-      storedData.description = "";
+    var result = gettingRealmUser(auth.currentUser!.uid);
+    if (result == null) {
+      getUserInfo();
     }
-    return storedData;
+    return MyUser.fromRealmUser(result!);
   }
 
   updateLocalData({
@@ -127,15 +132,16 @@ class DataController extends GetxController {
     storedData.lastName = lastName ?? storedData.lastName;
     storedData.major = major ?? storedData.major;
     storedData.graduationYear = graduationYear ?? storedData.graduationYear;
-    storedData.mobilePhoneNumber = mobilePhoneNumber ?? storedData.mobilePhoneNumber;
+    storedData.mobilePhoneNumber =
+        mobilePhoneNumber ?? storedData.mobilePhoneNumber;
     storedData.description = description ?? storedData.description;
   }
 
   clearLocalData() {
-    storedData= MyUser();
+    storedData = MyUser();
   }
 
-  Future<String> uploadProfilePic(File image) async {
+  UploadTask uploadProfilePic(File image) {
     MyUser user = MyUser();
     return user.uploadProfilePic(image);
   }
@@ -143,5 +149,9 @@ class DataController extends GetxController {
   deleteProfilePicture() async {
     MyUser user = MyUser();
     user.deleteProfilePicture();
+  }
+
+  Stream<RealmObjectChanges<RealmUser>> getLiveRealmUserObject() {
+    return getLiveUserRealmObject(auth.currentUser!.uid);
   }
 }

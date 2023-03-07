@@ -1,186 +1,92 @@
+import 'package:campus_plus/tabs/all_cards_tab.dart';
+import 'package:campus_plus/tabs/tagged_cards_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:campus_plus/utils/app_colors.dart';
-import 'package:get/get.dart';
-import '../controller/card_controller.dart';
-import '../controller/data_controller.dart';
-import '../model/card_model.dart';
-import '../model/user_model.dart';
-import '../widgets/main_card.dart';
-import 'card_form_screen.dart';
-import 'package:campus_plus/views/notifications.dart';
 import 'package:campus_plus/views/schedule.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'card_form_screen.dart';
+import 'package:shimmer/shimmer.dart';
 
-
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-enum TagsFilter { study, food, fun, sports}
-
-class _HomeScreenState extends State<HomeScreen> {
-  Size size = WidgetsBinding.instance.window.physicalSize /
-      WidgetsBinding.instance.window.devicePixelRatio;
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey = GlobalKey<RefreshIndicatorState>();
-  late DataController dataController;
-  late CardController cardController;
-  late final MyUser userInfo;
-  late Future<List<MyCard>> futureCards;
-  final List<String> _tags = <String>[];
-
-  @override
-  void initState() {
-    super.initState();
-    dataController = Get.put(DataController());
-    cardController = Get.put(CardController());
-    userInfo = dataController.getLocalData();
-    futureCards = gettingCards();
-  }
-
-  Future<List<MyCard>> gettingCards() async {
-    return await cardController.getAllVisibleCards();
-  }
-
-  Future<void> refreshCards() async {
-    final newCards = gettingCards();
-    final filteredCards = cardController.filterCards(await newCards, _tags);
-    setState(() {
-      futureCards = filteredCards;
-    });
-  }
-
-  Future<void> updatePage() async {
-    final newCards = gettingCards();
-    final filteredCards = cardController.filterCards(await newCards, _tags);
-    await Future.delayed(const Duration(milliseconds: 300));
-    setState(() {
-      futureCards = filteredCards;
-    });
-  }
-
-  Wrap buildTagFilterChip() {
-    return Wrap(
-      spacing: 5.0,
-      children: TagsFilter.values.map((TagsFilter tag){
-        return FilterChip(
-            label: Text(tag.name),
-            selected: _tags.contains(tag.name),
-            onSelected: (bool value){
-              setState(() {
-                if (value) {
-                  if (!_tags.contains(tag.name)) {
-                    _tags.add(tag.name);
-                  }
-                } else {
-                  _tags.removeWhere((String name) {
-                    return name == tag.name;
-                  });
-                }
-              });
-            }
-            );
-      }).toList(),
-    );
-  }
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(
+      initialIndex: 0,
+      length: 5,
+      child: Scaffold(
         appBar: AppBar(
-            backgroundColor: AppColors.white,
-            automaticallyImplyLeading: false,
-            centerTitle: false,
-            title: Text(
-              "CAMPUS+",
-              style: TextStyle(
-                fontSize: 30,
-                color: AppColors.aubRed,
-              ),
+          backgroundColor: AppColors.white,
+          automaticallyImplyLeading: false,
+          centerTitle: false,
+          title: Text(
+            "CAMPUS+",
+            style: TextStyle(
+              fontSize: 30,
+              color: AppColors.aubRed,
             ),
-            elevation: 0,
-            actions: <Widget>[
-              IconButton(
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return const MainCardForm();
-                      }),
-                    );
-                    refreshCards();
-                  },
-                  icon: Image.asset('assets/postIcon.png')),
-              IconButton(
-                  onPressed: () => {Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return const Schedule();
-                      })
-                  )},
-                  icon: Image.asset('assets/calendarIcon.png')),
-              IconButton(
-                  onPressed: () => { Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context){
-                        return Notifications();
-                      })
-                  )},
-                  icon: Image.asset('assets/notificationIcon.png')),
-            ]),
-        body: Container(
-          color: Colors.white,
-          child: FutureBuilder(
-            future: futureCards,
-            builder: (context, snapshot){
-              return RefreshIndicator(
-                  key: _refreshIndicatorKey,
-                  color: Colors.white,
-                  backgroundColor: Colors.blue,
-                  strokeWidth: 4.0,
-                  onRefresh: updatePage,
-                  child: _listView(snapshot, userInfo, refreshCards, buildTagFilterChip)
-              );
-            },
-          )
-        )
+          ),
+          elevation: 0,
+          actions: <Widget>[
+            IconButton(
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context){
+                      return const MainCardForm();
+                    }),
+                  );
+                  //TODO refresh page after adding card
+                },
+                icon: Image.asset('assets/postIcon.png')),
+            IconButton(
+                onPressed: () => {Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context){
+                      return const Schedule();
+                    })
+                )},
+                icon: Image.asset('assets/calendarIcon.png')),
+          ],
+          bottom: TabBar(
+            indicator: UnderlineTabIndicator(
+              borderSide: BorderSide(width: 3.0, color: AppColors.aubRed),
+              insets: const EdgeInsets.symmetric(horizontal: 20.0),
+            ),
+            tabs: <Widget>[
+              Tab(
+                  icon: FaIcon(FontAwesomeIcons.house, color: AppColors.aubRed, size:20.0)
+              ),
+              Tab(
+                  icon: Icon(Icons.celebration ,color: AppColors.aubRed,)
+              ),
+              Tab(
+                  icon: FaIcon(FontAwesomeIcons.bookOpen, color: AppColors.aubRed, size:20.0)
+              ),
+              Tab(
+                  icon: FaIcon(FontAwesomeIcons.pizzaSlice, color: AppColors.aubRed, size:20.0)
+              ),
+              Tab(
+                icon: FaIcon(FontAwesomeIcons.futbol, color: AppColors.aubRed, size:20.0)
+              ),
+            ],
+          ),
+        ),
+        body: const TabBarView(
+          children: <Widget>[
+            AllCardsTab(),
+            TaggedCardsTab(tag: 'fun'),
+            TaggedCardsTab(tag: 'study'),
+            TaggedCardsTab(tag: 'food'),
+            TaggedCardsTab(tag: 'sports'),
+          ],
+        ),
+      ),
     );
   }
 }
 
-Widget _listView(AsyncSnapshot snapshot, MyUser userInfo, Function refreshCards, Function buildTagFilterChip) {
-  if(!snapshot.hasData){
-    return Center(child: CircularProgressIndicator(color: AppColors.aubRed));
-  }
-  if(snapshot.hasError){
-    return const Text('Something went wrong');
-  }
-  final cards = snapshot.data;
-  return
-     Column(
-        children: [
-          const SizedBox(height:20),
-          buildTagFilterChip(),
-          Expanded(child: ListView.builder(
-            itemCount: cards.length,
-            itemBuilder: (context, index){
-              if(cards[index].createdBy == userInfo.userId){
-                return MainCard(
-                  card: cards[index],
-                  personal: true,
-                  refreshCards: refreshCards,
-                );}
-              else{
-                return MainCard(
-                  card: cards[index],
-                  personal: false,
-                  refreshCards: refreshCards,
-                );}
-            },
-          )),
-        ]
-      );
-}
+
 
 
