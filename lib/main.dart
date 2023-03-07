@@ -4,6 +4,7 @@ import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/notifications.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
+import 'package:campus_plus/views/signIn_signUp_screen_updated.dart';
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

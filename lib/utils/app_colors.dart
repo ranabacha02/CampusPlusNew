@@ -16,4 +16,5 @@ class AppColors {
   static Color red = Colors.red;
   static Color green = Color(0xff4bb17b);
   static Color blueChat = Color(0xff4591a5);
+  static Color beige = Color(0xfffaf6e8);
 }

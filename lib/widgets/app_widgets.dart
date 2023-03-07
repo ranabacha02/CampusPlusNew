@@ -71,6 +71,37 @@ Widget myTextField(
   );
 }
 
+Widget buildTextField(
+    String labelText,
+    String placeholder,
+    bool isPasswordTextField,
+    TextEditingController controller,
+    Function? validator,
+    bool expandable,
+    {int? maxLength}) {
+  return Padding(
+    padding: const EdgeInsets.only(bottom: 30.0),
+    child: TextFormField(
+      validator: (input) => validator!(input),
+      controller: controller,
+      maxLength: maxLength,
+      maxLines: expandable ? null : 1,
+      obscureText: isPasswordTextField,
+      decoration: InputDecoration(
+          contentPadding: EdgeInsets.only(bottom: 3),
+          labelText: labelText,
+          labelStyle: TextStyle(fontSize: 18, fontFamily: 'Roboto'),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          hintText: placeholder,
+          hintStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          )),
+    ),
+  );
+}
+
 Widget socialAppsIcons({text, Function? onPressed}) {
   return InkWell(
     onTap: () => onPressed!(),
