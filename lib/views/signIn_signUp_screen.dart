@@ -2,12 +2,15 @@ import 'dart:ui';
 
 import 'package:campus_plus/widgets/nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:campus_plus/controller/auth_controller.dart';
 
 import 'package:campus_plus/widgets/app_widgets.dart';
 import 'package:campus_plus/utils/app_colors.dart';
 import 'package:quickalert/quickalert.dart';
+
+import '../model/app_enums.dart';
 
 class LoginView extends StatefulWidget {
   LoginView({Key? key}) : super(key: key);
@@ -33,6 +36,8 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController majorController = TextEditingController();
   TextEditingController gradYearController = TextEditingController();
+  Gender? selectedGender = null;
+  Faculty? selectedDepartment = null;
 
   String dropdownValue = 'Computer and Communication Engineering';
 
@@ -69,7 +74,7 @@ class _LoginViewState extends State<LoginView> {
       child: Scaffold(
         backgroundColor: AppColors.white,
         body: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
+          //physics: NeverScrollableScrollPhysics(),
           child: Column(
             children: [
               SizedBox(
@@ -123,14 +128,14 @@ class _LoginViewState extends State<LoginView> {
                         tabs: [
                           myText(
                             text: 'Login',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           myText(
                             text: 'Sign Up',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 22,
                               fontWeight: FontWeight.w500,
                             ),
@@ -227,32 +232,6 @@ class _LoginViewState extends State<LoginView> {
                           .forgetPassword(forgetEmailController.text.trim());
                     },
                   );
-                  // Get.defaultDialog(
-                  //     title: 'Forget Password?',
-                  //     content: Container(
-                  //       width: Get.width,
-                  //       child: Column(
-                  //         children: [
-                  //           myTextField(
-                  //               bool: false,
-                  //               icon: 'assets/passwordIcon.png',
-                  //               text: 'Enter your email...',
-                  //               controller: forgetEmailController),
-                  //           SizedBox(
-                  //             height: 10,
-                  //           ),
-                  //           MaterialButton(
-                  //             color: Colors.blue,
-                  //             onPressed: () {
-                  //               authController.forgetPassword(
-                  //                   forgetEmailController.text.trim());
-                  //             },
-                  //             child: Text("Sent"),
-                  //             minWidth: double.infinity,
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ));
                 },
                 child: Container(
                   padding: EdgeInsets.all(15),
@@ -270,8 +249,8 @@ class _LoginViewState extends State<LoginView> {
           ),
           Obx(() => authController.isLoading.value
               ? Center(
-            child: CircularProgressIndicator(),
-          )
+                  child: CircularProgressIndicator(),
+                )
               : Container(
             height: Get.width * 0.1,
                   margin: EdgeInsets.symmetric(vertical: Get.height * 0.04),
@@ -311,6 +290,7 @@ class _LoginViewState extends State<LoginView> {
 
   Widget SignUpWidget() {
     return SingleChildScrollView(
+        physics: ScrollPhysics(),
         child: Form(
             key: _formKey,
             child: Column(
@@ -372,8 +352,10 @@ class _LoginViewState extends State<LoginView> {
                   }
                   return null;
                 }, false),
+                genderDropDownMenu(),
+                facultiesDropDownMenu(),
                 buildTextField(
-                    'Mobile Phone Number', '', false, majorController,
+                    'Mobile Phone Number', '', false, mobileNumberController,
                     (String input) {
                   if (input.removeAllWhitespace.isEmpty) {
                     return 'Mobile Phone Number is required';
@@ -427,17 +409,35 @@ class _LoginViewState extends State<LoginView> {
                               return '';
                             }
                             if (_formKey.currentState!.validate()) {
-                              authController.signUp(
-                                email: emailController.text.trim(),
-                                password: passwordController.text.trim(),
-                                firstName: firstNameController.text.trim(),
-                                lastName: lastNameController.text.trim(),
-                                mobileNumber: int.parse(
-                                    mobileNumberController.text.trim()),
-                                major: majorController.text.trim(),
-                                graduationYear:
-                                    int.parse(gradYearController.text.trim()),
-                              );
+                              if (selectedGender != null) {
+                                if (selectedDepartment != null) {
+                                  authController.signUp(
+                                    email: emailController.text.trim(),
+                                    password: passwordController.text.trim(),
+                                    firstName: firstNameController.text.trim(),
+                                    lastName: lastNameController.text.trim(),
+                                    mobileNumber: int.parse(
+                                        mobileNumberController.text.trim()),
+                                    major: majorController.text.trim(),
+                                    graduationYear: int.parse(
+                                        gradYearController.text.trim()),
+                                    gender: selectedGender!.gender,
+                                    department:
+                                        selectedDepartment!.departmentName,
+                                  );
+                                } else {
+                                  QuickAlert.show(
+                                      context: context,
+                                      type: QuickAlertType.error,
+                                      text: "Please select your department.",
+                                      confirmBtnColor: Colors.black38);
+                                }
+                              } else {
+                                QuickAlert.show(
+                                    context: context,
+                                    type: QuickAlertType.error,
+                                    text: "Please select your gender.");
+                              }
                             }
                           },
                         ),
@@ -462,5 +462,98 @@ class _LoginViewState extends State<LoginView> {
                     )),
               ],
             )));
+  }
+
+  Widget genderDropDownMenu() {
+    final List<DropdownMenuItem<Gender>> genderEntries =
+        <DropdownMenuItem<Gender>>[];
+    for (final Gender gender in Gender.values) {
+      genderEntries.add(DropdownMenuItem<Gender>(
+        value: gender,
+        child: Text(gender.gender),
+      ));
+    }
+    return SizedBox(
+        height: 75,
+        width: Get.width,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text(
+            "Gender",
+            style: TextStyle(
+                fontSize: 14, fontFamily: 'Roboto', color: Colors.black54),
+            textAlign: TextAlign.start,
+          ),
+          DropdownButton<Gender>(
+            underline: const Divider(
+              thickness: 0.7,
+              color: Colors.black54,
+              height: 5,
+            ),
+            // Initial Value
+            value: selectedGender,
+            style: const TextStyle(
+                fontSize: 14, fontFamily: 'Roboto', color: Colors.black54),
+            isExpanded: true,
+            // Down Arrow Icon
+            icon: const Icon(Icons.keyboard_arrow_down),
+
+            // Array list of items
+            items: genderEntries,
+            // After selecting the desired option,it will
+            // change button value to selected value
+            onChanged: (Gender? newValue) {
+              setState(() {
+                selectedGender = newValue!;
+              });
+            },
+          ),
+        ]));
+  }
+
+  Widget facultiesDropDownMenu() {
+    final List<DropdownMenuItem<Faculty>> facultyEntries =
+        <DropdownMenuItem<Faculty>>[];
+    for (final Faculty faculty in Faculty.values) {
+      facultyEntries.add(DropdownMenuItem<Faculty>(
+        value: faculty,
+        child: Text(faculty.departmentName),
+      ));
+    }
+    return Container(
+        margin: const EdgeInsets.only(top: 10, bottom: 10),
+        height: 90,
+        width: Get.width,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text(
+            "Department",
+            style: TextStyle(
+                fontSize: 14, fontFamily: 'Roboto', color: Colors.black54),
+            textAlign: TextAlign.start,
+          ),
+          DropdownButton<Faculty>(
+            underline: const Divider(
+              thickness: 0.7,
+              color: Colors.black54,
+              height: 5,
+            ),
+            // Initial Value
+            value: selectedDepartment,
+            style: const TextStyle(
+                fontSize: 14, fontFamily: 'Roboto', color: Colors.black54),
+            isExpanded: true,
+            // Down Arrow Icon
+            icon: const Icon(Icons.keyboard_arrow_down),
+
+            // Array list of items
+            items: facultyEntries,
+            // After selecting the desired option,it will
+            // change button value to selected value
+            onChanged: (Faculty? newValue) {
+              setState(() {
+                selectedDepartment = newValue!;
+              });
+            },
+          ),
+        ]));
   }
 }

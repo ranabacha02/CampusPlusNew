@@ -88,9 +88,9 @@ Widget buildTextField(
       maxLines: expandable ? null : 1,
       obscureText: isPasswordTextField,
       decoration: InputDecoration(
-          contentPadding: EdgeInsets.only(bottom: 3),
+          contentPadding: const EdgeInsets.only(bottom: 3),
           labelText: labelText,
-          labelStyle: TextStyle(fontSize: 18, fontFamily: 'Roboto'),
+          labelStyle: const TextStyle(fontSize: 18, fontFamily: 'Roboto'),
           floatingLabelBehavior: FloatingLabelBehavior.always,
           hintText: placeholder,
           hintStyle: const TextStyle(
@@ -523,5 +523,3 @@ Widget completeCommunityWidget({
     ],
   );
 }
-
-

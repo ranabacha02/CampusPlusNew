@@ -1,5 +1,6 @@
 import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:campus_plus/utils/app_colors.dart';
 import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/views/home_screen.dart';
 import 'package:campus_plus/views/notifications.dart';
@@ -110,6 +111,7 @@ class _CampusPlusState extends State<CampusPlus> {
     return GetMaterialApp(
       title: 'Campus+',
       navigatorKey: CampusPlus.navigatorKey,
+
       onGenerateInitialRoutes: onGenerateInitialRoutes,
       onGenerateRoute: onGenerateRoute,
       theme: ThemeData(
@@ -117,6 +119,8 @@ class _CampusPlusState extends State<CampusPlus> {
           Theme.of(context)
               .textTheme, // If this is not set, then ThemeData.light().textTheme is used.
         ),
+        focusColor: AppColors.aubRed,
+        colorScheme: ColorScheme.light(primary: AppColors.aubRed),
       ),
       // home: widget.email == null
       //     ? LoginView()
