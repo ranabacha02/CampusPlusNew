@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../utils/app_colors.dart';
 import '../views/user_info_screen.dart';
+import 'package:http/http.dart' as http;
 
 class UserProfilePicture extends StatefulWidget {
   final String? imageURL;
@@ -28,9 +29,23 @@ class UserProfilePicture extends StatefulWidget {
 }
 
 class _UserProfilePictureState extends State<UserProfilePicture> {
+  bool doesImageExist = false;
+
+  @override
+  void initState() {
+    if (widget.imageURL == null || widget.imageURL == "") {
+      setState(() {
+        doesImageExist = false;
+      });
+    } else {
+      //checkIfImageExists(widget.imageURL!);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     FirebaseAuth auth = FirebaseAuth.instance;
+
     return GestureDetector(
       onTap: () {
         if (widget.preview && widget.imageURL != null) {
@@ -49,14 +64,27 @@ class _UserProfilePictureState extends State<UserProfilePicture> {
         }
       },
       child: CircleAvatar(
-        // to be changed
         backgroundImage: widget.imageURL != null && widget.imageURL != ""
             ? CachedNetworkImageProvider(widget.imageURL!)
             : const AssetImage("assets/default_profile.jpg") as ImageProvider,
         radius: widget.radius,
         backgroundColor: AppColors.circle,
         foregroundColor: AppColors.white,
+        onBackgroundImageError: (event, stackTrace) {},
       ),
     );
+  }
+
+  checkIfImageExists(String imageUrl) async {
+    final response = await http.head(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      setState(() {
+        doesImageExist = true;
+      });
+    } else if (response.statusCode == 404) {
+      setState(() {
+        doesImageExist = false;
+      });
+    }
   }
 }

@@ -64,6 +64,19 @@ dependencies:
     git:
       url: https://github.com/azy99/like_button.git
   profanity_filter: ^2.0.0
+  loading_animation_widget: ^1.2.0+4
+  font_awesome_flutter: ^10.4.0
+  shimmer: ^2.0.0
+  firestore_cache: ^2.3.0+1
+  realm: ^1.0.1
+  flutter_keyboard_visibility: ^5.4.0
+  flutter_slidable: ^2.0.0
+  editable_image: ^1.1.0
+  sticky_grouped_list: ^3.1.0
+  animation_search_bar: ^0.0.10
+  quickalert: ^1.0.1
+  awesome_notifications: ^0.7.4+1
+  searchbar_animation: ^0.0.4
 
 dev_dependencies:
   flutter_test:

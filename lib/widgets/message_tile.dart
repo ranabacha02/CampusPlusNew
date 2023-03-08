@@ -58,7 +58,9 @@ class _MessageTileState extends State<MessageTile> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      widget.type == "image"
+                      widget.type == "image" &&
+                              widget.imageUrl != null &&
+                              widget.imageUrl != ""
                           ? GestureDetector(
                               child: Image(
                                   image: CachedNetworkImageProvider(

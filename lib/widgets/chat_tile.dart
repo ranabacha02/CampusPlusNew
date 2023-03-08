@@ -3,7 +3,6 @@ import 'package:campus_plus/views/chat_page_screen.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -12,12 +11,12 @@ import '../controller/data_controller.dart';
 
 class ChatTile extends StatefulWidget {
   //final String userName;
-  final String groupId;
+  final String chatId;
   final String expected;
 
   //final String groupName;
 
-  ChatTile({Key? key, required this.groupId, required this.expected
+  const ChatTile({Key? key, required this.chatId, required this.expected
       // required this.groupName,
       })
       : super(key: key);
@@ -37,7 +36,7 @@ class _GroupTileState extends State<ChatTile> {
   Stream? message;
   Stream? user;
   Stream? readStatus;
-  String? groupName;
+  String? chatName;
 
   late ChatController chatController;
   late DataController dataController;
@@ -47,38 +46,27 @@ class _GroupTileState extends State<ChatTile> {
     super.initState();
     chatController = Get.put(ChatController());
     dataController = Get.put(DataController());
-    initializing(widget.groupId);
+    initializing(widget.chatId);
   }
 
   initializing(String chatId) async {
     CollectionReference chatCollection =
         FirebaseFirestore.instance.collection('chats');
-    var value = await chatCollection.doc(chatId).get();
+    var chat = await chatCollection.doc(chatId).get();
     String recipientId = "";
-    for (String member in value["members"]) {
-      if (member.split("_")[0] != auth!.currentUser!.uid) {
+    for (String member in chat["members"]) {
+      if (member.split("_")[0] != auth.currentUser!.uid) {
         recipientId = member.split("_")[0];
         break;
       }
     }
-    var user = dataController.getLocalData();
-    if (!value["isGroup"]) {
-      if (value["chatName"].split("_")[0] ==
-          user.firstName + " " + user.lastName) {
-        groupName = value["chatName"].split("_")[1];
-      } else {
-        groupName = value["chatName"].split("_")[0];
-      }
-    } else {
-      groupName = value["groupName"];
-    }
 
-    if (recipientId != null && recipientId != "") {
+    if (recipientId != "") {
       CollectionReference users =
           FirebaseFirestore.instance.collection('Users');
       var data = await users.where("userId", isEqualTo: recipientId).get();
-      //print(recipientId);
       var data2 = data.docs.first.data() as Map<String, dynamic>;
+
       setState(() {
         message = chatCollection.doc(chatId).snapshots();
         readStatus = chatCollection
@@ -86,13 +74,16 @@ class _GroupTileState extends State<ChatTile> {
             .collection("readStatus")
             .doc(auth.currentUser!.uid)
             .snapshots();
-        if (value["isGroup"] as bool) {
-          imageURL = null;
+        if (chat["isGroup"] as bool) {
+          chatName = chat["chatName"];
+          imageURL = chat["chatIcon"];
         } else {
+          chatName = "${data2["firstName"]} ${data2["lastName"]}";
           imageURL = data2["profilePictureURL"];
         }
       });
     } else {
+      chatName = chat["chatName"];
       setState(() {
         message = chatCollection.doc(chatId).snapshots();
         readStatus = chatCollection
@@ -107,29 +98,22 @@ class _GroupTileState extends State<ChatTile> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.expected == null ||
-        widget.expected == "" ||
-        groupName!.toLowerCase().contains(widget.expected.toLowerCase())) {
+    if (widget.expected == "" ||
+        chatName!.toLowerCase().contains(widget.expected.toLowerCase())) {
       return StreamBuilder(
           stream: readStatus,
           builder: (context, AsyncSnapshot snapshot1) {
             return StreamBuilder(
                 stream: message,
                 builder: (context, AsyncSnapshot snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasData & snapshot1.hasData) {
                     try {
-                      DateTime dateTime =
-                          new DateTime.fromMillisecondsSinceEpoch(
-                              int.parse(snapshot.data["recentMessageTime"]));
-                      String time = "";
+                      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+                          int.parse(snapshot.data["recentMessageTime"]));
                       if (dateTime.minute < 10) {
-                        time = dateTime.hour.toString() +
-                            ":0" +
-                            dateTime.minute.toString();
+                        time = "${dateTime.hour}:0${dateTime.minute}";
                       } else {
-                        time = dateTime.hour.toString() +
-                            ":" +
-                            dateTime.minute.toString();
+                        time = "${dateTime.hour}:${dateTime.minute}";
                       }
                     } catch (e) {
                       time = "";
@@ -137,15 +121,15 @@ class _GroupTileState extends State<ChatTile> {
 
                     return GestureDetector(
                       onTap: () {
-                        chatController.markRead(widget.groupId);
+                        chatController.markRead(widget.chatId);
                         Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => ChatPageScreen(
                                       imageURL: imageURL,
                                       privateChat: snapshot.data["isGroup"],
-                                      chatId: widget.groupId,
-                                      chatName: groupName!,
+                                      chatId: widget.chatId,
+                                      chatName: chatName!,
                                     )));
                       },
                       onLongPress: () {
@@ -153,19 +137,18 @@ class _GroupTileState extends State<ChatTile> {
                             context: context,
                             builder: (context) {
                               return SafeArea(
-                                  child: Container(
-                                      child: new Wrap(children: <Widget>[
-                                new ListTile(
-                                    leading: new Icon(
+                                  child: Wrap(children: <Widget>[
+                                ListTile(
+                                    leading: const Icon(
                                       Icons.delete,
                                       color: Colors.red,
                                     ),
-                                    title: new Text(
-                                      'Delete \'' + groupName! + "\'",
-                                      style: TextStyle(color: Colors.red),
+                                    title: Text(
+                                      'Delete "$chatName"',
+                                      style: const TextStyle(color: Colors.red),
                                     ),
                                     onTap: () async {})
-                              ])));
+                              ]));
                             });
                       },
                       child: Container(
@@ -187,12 +170,12 @@ class _GroupTileState extends State<ChatTile> {
                         child: ListTile(
                           leading: UserProfilePicture(
                             imageURL: imageURL,
-                            caption: groupName!,
+                            caption: chatName!,
                             radius: 25,
                             preview: false,
                           ),
                           title: Text(
-                            groupName!,
+                            chatName!,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
@@ -202,15 +185,15 @@ class _GroupTileState extends State<ChatTile> {
                           ),
                           trailing: snapshot1.data["unreadNumber"] == 0
                               ? time == null
-                                  ? Text("")
+                                  ? const Text("")
                                   : Text(time!)
                               : Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    time == null ? Text("") : Text(time!),
+                                    time == null ? const Text("") : Text(time!),
                                     Container(
-                                        padding: EdgeInsets.only(top: 5),
+                                        padding: const EdgeInsets.only(top: 5),
                                         child: CircleAvatar(
                                           backgroundColor: AppColors.aubRed,
                                           radius: 10,
@@ -228,7 +211,7 @@ class _GroupTileState extends State<ChatTile> {
                       ),
                     );
                   } else {
-                    return SizedBox(width: 0);
+                    return const SizedBox(width: 0);
                   }
                 });
           });
@@ -241,15 +224,13 @@ class _GroupTileState extends State<ChatTile> {
     String result = "";
 
     String recentMessageSender = snapshot.data["recentMessageSender"];
-    if (recentMessageSender != null && !recentMessageSender.isEmpty) {
+    if (recentMessageSender.isNotEmpty) {
       if (snapshot.data["recentMessageType"] == "image") {
-        result = recentMessageSender.split("_")[0] +
-            ": 📷 " +
-            snapshot.data["recentMessage"];
+        result =
+            "${recentMessageSender.split("_")[0]}: 📷 ${snapshot.data["recentMessage"]}";
       } else {
-        result = recentMessageSender.split("_")[0] +
-            ": " +
-            snapshot.data["recentMessage"];
+        result =
+            "${recentMessageSender.split("_")[0]}: ${snapshot.data["recentMessage"]}";
       }
     }
     return result;

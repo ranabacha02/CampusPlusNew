@@ -122,7 +122,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          sendImage();
+                           sendImage();
                         },
                         child: Container(
                           height: 50,
@@ -147,7 +147,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
         ));
   }
 
-  sendImage() {
+  sendImage() async {
     // if (messageController.text.isNotEmpty) {
     Map<String, dynamic> chatMessageMap = {
       "image": widget.image,
@@ -156,7 +156,7 @@ class _ChatImagePreviewState extends State<ChatImagePreview> {
       "time": DateTime.now().millisecondsSinceEpoch,
     };
 
-    chatController.sendImage(widget.chatId, chatMessageMap);
+    await chatController.sendImage(widget.chatId, chatMessageMap);
     setState(() {
       messageController.clear();
       Navigator.push(
