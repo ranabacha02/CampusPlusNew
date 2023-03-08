@@ -1,13 +1,18 @@
 import 'dart:core';
+import 'dart:io';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:campus_plus/model/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 final CollectionReference postCollection = FirebaseFirestore.instance.collection("Posts");
 DataController dataController = Get.put(DataController());
+
+
 
 class MyPost {
   String id = "";
@@ -17,18 +22,30 @@ class MyPost {
   List<String> tags;
   List<CleanUser> users;
   List<String> userIds;
-  FirebaseAuth auth = FirebaseAuth.instance;
   String imageUrl;
+  FirebaseAuth auth = FirebaseAuth.instance;
+  String postId;
 
   MyPost({
-    required this.createdBy,
-    required this.event,
-    required this.dateCreated,
-    required this.tags,
-    required this.users,
-    required this.userIds,
-    required this.imageUrl,
-  });
+    String? createdBy,
+    String? event,
+    DateTime? dateCreated,
+    List<String>? tags,
+    List<CleanUser>? users,
+    List<String>? userIds,
+    String? imageUrl,
+    String? postId
+  }): createdBy= createdBy ?? "",
+        event= event ?? "",
+        postId = postId ?? "",
+        dateCreated= dateCreated ?? DateTime.now(),
+        tags = tags ?? [],
+        users = users ?? [],
+        userIds = userIds ?? [],
+        imageUrl = imageUrl ?? ""
+
+
+  ;
 
   MyPost.fromFirestore(Map<String, dynamic> snapshot):
         id = snapshot['id'],
@@ -38,7 +55,8 @@ class MyPost {
         tags = List<String>.from(snapshot['tags']),
         users = snapshot['users'].map<CleanUser>((user)=>CleanUser.fromFirestore(user)).toList(),
         userIds =  List<String>.from(snapshot['userIds']),
-        imageUrl = snapshot['imageUrl'];
+        imageUrl = snapshot['imageUrl'],
+        postId = snapshot['postId'];
 
   Map<String, dynamic> toFirestore(){
     return {
@@ -49,6 +67,7 @@ class MyPost {
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds,
       'imageUrl': imageUrl,
+      'postId' : postId
     };
   }
 
@@ -65,6 +84,7 @@ class MyPost {
       'users' : users.map<Map<String, dynamic>>((user)=>user.toFirestore()).toList(),
       'userIds' : userIds,
       'imageUrl': imageUrl,
+      'postId' : postId
     };
     final complete = newPostRef.set(postData).then((doc)=> true, onError: (r)=> false);
     return complete;
@@ -130,6 +150,43 @@ class MyPost {
     final snapshots = await postCollection.where("userIds", arrayContains: user.userId).get();
     List<MyPost> posts = snapshots.docs.map<MyPost>((doc) => MyPost.fromFirestore(doc.data() as Map<String, dynamic>)).toList();
     return posts;
+  }
+
+  Future<String> uploadPostPic(XFile image) async {
+    CollectionReference postCollection =
+    FirebaseFirestore.instance.collection('posts');
+    final storage = FirebaseStorage.instance;
+
+    // Generate a new timestamp to use in the storage path
+    final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+    DocumentReference documentReference =
+    await postCollection.doc(postId).collection("posts").add({
+      "imageUrl": image.path,
+    });
+    // Update the storage path to include the timestamp
+    var storageRef = storage
+        .ref()
+        .child("users/posts/${postId}/${documentReference.id}");
+    var uploadTask = await storageRef.putFile(File(image.path));
+    var downloadURL = await uploadTask.ref.getDownloadURL();
+
+    documentReference.update({
+      "imageUrl": downloadURL,
+    });
+
+
+    return downloadURL;
+  }
+
+  deletePostPicture() async {
+    final storage = FirebaseStorage.instance;
+    final MyUser user = dataController.getLocalData();
+    var storageRef =
+    storage.ref().child("users/posts/${auth.currentUser!.uid}");
+    await storageRef.delete();
+    auth.currentUser!.updatePhotoURL(null);
+    postCollection.doc(auth.currentUser!.uid).update({'imageUrl': null});
+
   }
 
 

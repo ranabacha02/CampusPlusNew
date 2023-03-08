@@ -67,14 +67,14 @@ class _MyCustomFormState extends State<MyCustomForm> {
   final filter = ProfanityFilter();
   final List<String> _tags = <String>[];
   final ImagePicker _picker = ImagePicker();
-  late String _selectedImage;
+  late XFile? _selectedImage;
 
 
   @override
   void dispose(){
     //not sure if others have to be disposed
     _eventController.dispose();
-    _selectedImage = "";
+    _selectedImage = null;
     super.dispose();
   }
 
@@ -118,7 +118,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
                         XFile? photo = await getImageFromGallery();
                         if (photo != null) {
                           setState(() {
-                            _selectedImage = photo.path;
+                            _selectedImage = photo;
                           });
                         }
                         Navigator.of(context).pop();
@@ -130,31 +130,12 @@ class _MyCustomFormState extends State<MyCustomForm> {
                       XFile? photo = await getImageFromCamera();
                       if (photo != null) {
                         setState(() {
-                          _selectedImage = photo.path;
+                          _selectedImage = photo;
                         });
                       }
                       Navigator.of(context).pop();
                     },
                   ),
-                  ListTile(
-                    leading: Icon(Icons.delete_forever, color: Colors.red),
-                    title: Text(
-                      'Delete',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                    onTap: () {
-                      dataController.deleteProfilePicture();
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => EditAccountScreen(
-                                userInfo: dataController.getLocalData(),
-                                delete: true,
-                              )));
-                    },
-                  )
                 ],
               ),
             ),
@@ -225,8 +206,8 @@ class _MyCustomFormState extends State<MyCustomForm> {
                                 style: BorderStyle.solid),
                           ),
                           onPressed: () {
-
-                              postController.createPost(event: _eventController.text, dateCreated: DateTime.now(), tags: _tags, imageUrl: _selectedImage);
+                              postController.uploadPostPic(_selectedImage!);
+                              postController.createPost(event: _eventController.text, dateCreated: DateTime.now(), tags: _tags, imageUrl: _selectedImage!.path);
                               Navigator.pop(context);
 
                           },

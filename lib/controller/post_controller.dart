@@ -1,4 +1,5 @@
 import 'package:campus_plus/model/clean_user_model.dart';
+import 'package:image_picker/image_picker.dart';
 import '../model/post_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,8 @@ import 'data_controller.dart';
 class PostController{
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
+
+
 
   Future<bool> createPost(
       {required String event,
@@ -22,7 +25,9 @@ class PostController{
         users: [user],
         userIds: [],
         imageUrl: imageUrl,
+
     );
+
     return post.createPost();
   }
 
@@ -68,7 +73,10 @@ class PostController{
     }
     return posts;
   }
-
+  Future<String> uploadPostPic(XFile image) async {
+    MyPost post = MyPost(createdBy: '', event: '');
+    return post.uploadPostPic(image);
+  }
 
   Future<List<MyPost>> getMyPosts() async{
     final myCreatedPosts = await MyPost.getMyCreatedPosts();

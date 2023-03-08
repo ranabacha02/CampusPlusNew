@@ -54,7 +54,7 @@ class MainPost extends StatelessWidget {
                         ],
                         image: post.imageUrl != null ? DecorationImage(
                           image: AssetImage(post.imageUrl),
-                          fit: BoxFit.fitHeight,
+                          fit: BoxFit.fitWidth,
                         ) : null,
                       ),
                     ), back: Container(
