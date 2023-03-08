@@ -90,11 +90,11 @@ class _ChatFileUploadsState extends State<ChatFileUploads> {
         builder: (BuildContext bc) {
           return SafeArea(
             child: Container(
-              child: new Wrap(
+              child: Wrap(
                 children: <Widget>[
-                  new ListTile(
-                      leading: new Icon(Icons.photo_library),
-                      title: new Text('Gallery'),
+                  ListTile(
+                      leading: const Icon(Icons.photo_library),
+                      title: const Text('Gallery'),
                       onTap: () async {
                         File? photo = await imgFromGallery();
                         print("photo from image gallery: " + photo.toString());

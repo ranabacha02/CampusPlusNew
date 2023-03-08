@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/model/post_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -37,29 +38,31 @@ class MainPost extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   InkWell(
-                    child:FlipCard(
-                      direction: FlipDirection.HORIZONTAL,
-                    front: Container(
-                      margin: EdgeInsets.all(10.0),
-                      width: double.infinity,
-                      height: 400.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(25.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black45,
-                            offset: Offset(0, 5),
-                            blurRadius: 8.0,
+                      child:FlipCard(
+                        direction: FlipDirection.HORIZONTAL,
+                        front: Container(
+                          margin: EdgeInsets.all(10.0),
+                          width: double.infinity,
+                          height: 400.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(25.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black45,
+                                offset: Offset(0, 5),
+                                blurRadius: 8.0,
+                              ),
+                            ],
+                            image: post.imageUrl != null ? DecorationImage(
+                                image:
+                                    CachedNetworkImageProvider(post.imageUrl),
+                                fit: BoxFit.fill,
+                              )
+                            : null,
                           ),
-                        ],
-                        image: post.imageUrl != null ? DecorationImage(
-                          image: AssetImage(post.imageUrl),
-                          fit: BoxFit.fitWidth,
-                        ) : null,
-                      ),
-                    ), back: Container(
-                      child: Text(
-                        post.event,
+                        ), back: Container(
+                        child: Text(
+                          post.caption,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                         style: const TextStyle(
@@ -69,8 +72,8 @@ class MainPost extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                  )
+                      ),
+                      )
                   ),
                   ListTile(
                     leading: Container(
@@ -102,7 +105,6 @@ class MainPost extends StatelessWidget {
 }
 
 
-
 class ToggleMenu extends StatefulWidget {
   const ToggleMenu({
     Key? key,
@@ -111,6 +113,7 @@ class ToggleMenu extends StatefulWidget {
   }) : super(key: key);
   final String postId;
   final Function refreshPosts;
+
   @override
   State<ToggleMenu> createState() => _ToggleMenuState();
 }

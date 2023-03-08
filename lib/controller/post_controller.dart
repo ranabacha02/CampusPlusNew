@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:campus_plus/model/clean_user_model.dart';
 import 'package:image_picker/image_picker.dart';
 import '../model/post_model.dart';
@@ -5,38 +7,33 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'data_controller.dart';
 
-class PostController{
+class PostController {
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
 
-
   Future<bool> createPost(
-      {required String event,
-        required DateTime dateCreated,
-        required List<String> tags,
-      required String imageUrl}) async {
-    CleanUser user = CleanUser.fromMyUser(dataController.getLocalData());
-    MyPost post= MyPost(
-        createdBy: auth.currentUser!.uid,
-        event: event,
-        dateCreated: dateCreated,
-        tags: tags,
-        users: [user],
-        userIds: [],
-        imageUrl: imageUrl,
-
+      {required String caption,
+      required DateTime dateCreated,
+      required List<String> tags,
+      required File image}) async {
+    MyPost post = MyPost(
+      createdBy: auth.currentUser!.uid,
+      image: image,
+      caption: caption,
+      dateCreated: dateCreated,
+      tags: tags,
     );
 
     return post.createPost();
   }
 
-  Future<bool> joinPost(String postId) async {
-    return MyPost.joinPost(postId);
+  Future<bool> likePost(String postId) async {
+    return MyPost.likePost(postId);
   }
 
-  Future<bool> leavePost(String postId) async {
-    return MyPost.leavePost(postId);
+  Future<bool> unlikePost(String postId) async {
+    return MyPost.unlikePost(postId);
   }
 
   Future<bool> removePost(String postId) async {
@@ -72,10 +69,6 @@ class PostController{
       return taggedPosts;
     }
     return posts;
-  }
-  Future<String> uploadPostPic(XFile image) async {
-    MyPost post = MyPost(createdBy: '', event: '');
-    return post.uploadPostPic(image);
   }
 
   Future<List<MyPost>> getMyPosts() async{
