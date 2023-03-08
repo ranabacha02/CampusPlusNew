@@ -394,7 +394,7 @@ RealmChat? getChatRealmObject(String chatId) {
   return realm.find<RealmChat>(chatId);
 }
 
-getLiveRealmChatObject(String chatId) {
+Stream<RealmObjectChanges<RealmChat>>? getLiveRealmChatObject(String chatId) {
   realm.write(() => realm
       .find<RealmChat>(chatId)
       ?.messages

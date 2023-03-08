@@ -4,6 +4,7 @@ import 'package:campus_plus/controller/chat_controller.dart';
 import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/model/chat_model.dart';
 import 'package:campus_plus/views/new_chat_screen.dart';
+import 'package:campus_plus/widgets/chat_tile_updated.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -171,12 +172,12 @@ class _MessagingSectionScreenState extends State<MessagingSectionScreen> {
                       itemBuilder: (context, index) {
                         int reverseIndex =
                             snapshot.requireData.object.chatsId.length - index - 1;
-                        return ChatTile(
-                          chatId: getId(
+                        return ChatTileUpdated(
+                      chatId: getId(
                           snapshot.requireData.object.chatsId[reverseIndex]),
-                          expected: name,
-                        );
-                      },
+                      expected: name,
+                    );
+                  },
                     ));
               } else {
                 return noGroupWidget();
