@@ -56,6 +56,11 @@ class _ScheduleState extends State<Schedule> {
         endTime: cleanEventEndTime,
         color: Colors.black,
       ));
+      events = events.map((key, value) => MapEntry(key, value.isNotEmpty ? value : [CleanCalendarEvent( card.event,
+
+        startTime: cleanEventStartTime,
+        endTime: cleanEventEndTime,
+        color: Colors.black,)]));
 
     }
     setState(() => {
@@ -99,7 +104,7 @@ class _ScheduleState extends State<Schedule> {
                   onDateSelected: (date){
                     return _handleData(date);
                   },
-                  events: {},
+                  events: events,
                   isExpandable: true,
                   dayOfWeekStyle: const TextStyle(
                     fontSize: 15,
@@ -115,51 +120,13 @@ class _ScheduleState extends State<Schedule> {
 
                 ),
               ),
-              _buildEventList()
             ],
           ),
         ),
       ),
     );
   }
-  Widget _buildEventList() {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.all(0.0),
-        itemBuilder: (BuildContext context, int index) {
-          final CleanCalendarEvent event = selectedEvent[index];
-          return ListTile(
-            contentPadding:
-            EdgeInsets.only(left: 2.0, right: 8.0, top: -10.0, bottom: 2.0),
-            leading: Container(
-              width: 10.0,
-              color: event.color,
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(event.summary),
-                Text(
-                  DateFormat('MMM d, h:mm a').format(event.startTime),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-            subtitle:
-            event.description.isNotEmpty ? Text(event.description) : null,
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-            ),
-            onTap: () {},
-          );
-        },
-        itemCount: selectedEvent.length,
-      ),
-    );
-  }
+
 
 
 
