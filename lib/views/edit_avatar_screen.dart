@@ -12,31 +12,32 @@ import 'package:page_transition/page_transition.dart';
 
 import '../controller/auth_controller.dart';
 import '../controller/data_controller.dart';
+import '../widgets/avatar_image_file_picker.dart';
 import '../widgets/image_file_picker.dart';
 import '../utils/app_colors.dart';
 import '../widgets/nav_bar.dart';
+import 'package:random_avatar/random_avatar.dart';
 
-class EditAccountScreen extends StatefulWidget {
+class EditAvatarScreen extends StatefulWidget {
   final MyUser userInfo;
   bool delete;
-  File? photo;
   File? avatarphoto;
-  Image? displayImage;
   Image? displayAvatarImage;
 
-  EditAccountScreen({required this.userInfo,
+
+
+
+  EditAvatarScreen({required this.userInfo,
     required this.delete,
-    this.photo,
     this.avatarphoto,
-    this.displayAvatarImage,
-    this.displayImage});
+    this.displayAvatarImage});
 
   @override
-  _EditAccountScreenState createState() => _EditAccountScreenState(
-      delete: delete, photo: photo, displayImage: displayImage);
+  _EditAvatarScreenState createState() => _EditAvatarScreenState(
+      delete: delete, avatarphoto: avatarphoto, displayAvatarImage: displayAvatarImage);
 }
 
-class _EditAccountScreenState extends State<EditAccountScreen> {
+class _EditAvatarScreenState extends State<EditAvatarScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Size size = WidgetsBinding.instance.window.physicalSize /
@@ -50,25 +51,22 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
   TextEditingController descriptionController = TextEditingController();
   TextEditingController nicknameController = TextEditingController();
 
+  
   late AuthController authController;
 
   //CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
   late EditProfileController editProfileController;
 
-  Image? displayImage;
-  File? photo;
+  Image? displayAvatarImage;
   File? avatarphoto;
-
   bool delete;
 
-  _EditAccountScreenState({required this.delete, this.photo, this.displayImage});
+  _EditAvatarScreenState({required this.delete, this.avatarphoto, this.displayAvatarImage});
 
   late DataController dataController;
   late MyUser userInfo;
   bool showPassword = false;
-
-
 
   @override
   void initState() {
@@ -87,9 +85,8 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
     graduationYearController.text = userInfo.graduationYear.toString();
     mobileNumberController.text = userInfo.mobilePhoneNumber.toString();
     descriptionController.text = userInfo.description.toString();
-    nicknameController.text = userInfo.nickname.toString();
-
-    displayImage ??= Image.asset("assets/default_profile.jpg");
+    nicknameController.text = userInfo.nickname;
+    displayAvatarImage ??= Image.asset("assets/default_profile.jpg");
 
     return Scaffold(
         appBar: AppBar(
@@ -113,15 +110,15 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                   PageTransition(
                       type: PageTransitionType.topToBottomPop,
                       child: NavBarView(index: 4),
-                      childCurrent: EditAccountScreen(
+                      childCurrent: EditAvatarScreen(
                         userInfo: userInfo,
                         delete: false,
-                        displayImage: photo == null ? null : Image.file(photo!),
+                        displayAvatarImage: avatarphoto == null ? null : Image.file(avatarphoto!),
                       )))
             },
           ),
           title: Text(
-            "Edit Profile",
+            "Edit Avatar",
             style: TextStyle(
               fontSize: 20,
               color: AppColors.aubRed,
@@ -138,21 +135,19 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
               ),
               onPressed: () {
                 if (_formKey.currentState!.validate()) {
-                  dataController.updateProfile(
+                  dataController.updateAvatar(
                     firstName: firstNameController.text.trim(),
                     lastName: lastNameController.text.trim(),
                     major: majorController.text.trim(),
                     graduationYear:
-                        int.parse(graduationYearController.text.trim()),
+                    int.parse(graduationYearController.text.trim()),
                     mobilePhoneNumber:
-                        int.parse(mobileNumberController.text.trim()),
-                    context: context,
-                    photo: photo,
-                    delete: false,
+                    int.parse(mobileNumberController.text.trim()),
                     description: descriptionController.text.trim(),
-                    nickname: nicknameController.text.trim(), deleteavatar: false,
-                  )
-                  ;
+                    nickname: nicknameController.text.trim(),
+                    avatarphoto: avatarphoto,
+                    deleteavatar: false, context2: context,
+                  );
                 }
               },
             )
@@ -167,7 +162,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
             child: ListView(
               children: [
                 const Text(
-                  "Edit Profile",
+                  "Edit Avatar",
                   style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(
@@ -176,7 +171,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                 Center(
                   child: Stack(
                     children: [
-                      ImageUploads(displayImage: displayImage),
+                      AvatarImageUploads(displayAvatarImage: displayAvatarImage),
                     ],
                   ),
                 ),
@@ -189,72 +184,17 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       buildTextField(
-                          "First Name", "", false, firstNameController,
-                          (String input) {
-                        if (input.removeAllWhitespace == "") {
-                          return "First name cannot be empty";
-                        }
-                        if (!input.isAlphabetOnly) {
-                          return 'First name can only contains letters';
-                        }
-                        return null;
-                      }, false),
-                      buildTextField("Last Name", "", false, lastNameController,
-                          (String input) {
-                        if (input.removeAllWhitespace == "") {
-                          return "Last name cannot be empty";
-                        }
-                        if (!input.isAlphabetOnly) {
-                          return 'Last name can only contains letters';
-                        }
-                        return null;
-                      }, false),
-                      buildTextField("Major", "", false, majorController,
-                          (String input) {
-                        if (input.removeAllWhitespace == "") {
-                          return "Major cannot be empty";
-                        }
-                        if (!input.isAlphabetOnly) {
-                          return 'Major can only contains letters';
-                        }
-                        return null;
-                      }, false),
+                          "Nickname", "", false, nicknameController,
+                              (String input) {
+                            if (input.removeAllWhitespace == "") {
+                              return "First name cannot be empty";
+                            }
+                            if (!input.isAlphabetOnly) {
+                              return 'First name can only contains letters';
+                            }
+                            return null;
+                          }, false),
                       // To do: check the input and make sure it's one of the options
-                      buildTextField("Graduation Year", "", false,
-                          graduationYearController, (String input) {
-                        if (input.removeAllWhitespace == "") {
-                          return "Graduation year cannot be empty";
-                        }
-                        if (int.tryParse(input) == null) {
-                          return 'Invalid format. Please enter only numbers';
-                        } else {
-                          int gradYear = int.parse(input);
-                          int currentYear = DateTime.now().year;
-                          if (gradYear < currentYear) {
-                            return 'Graduation year cannot be in the past.';
-                          }
-                          return null;
-                        }
-                      }, false),
-                      buildTextField(
-                          "Mobile Number", "", false, mobileNumberController,
-                          (String input) {
-                        if (input.removeAllWhitespace == "") {
-                          return "Mobile phone number cannot be empty";
-                        }
-                        if (int.tryParse(input) == null) {
-                          return 'Invalid format. Please enter only numbers';
-                        }
-                        return null;
-                      }, false),
-                      buildTextField(
-                          "Description",
-                          "",
-                          false,
-                          descriptionController,
-                          (String input) {},
-                          maxLength: 150,
-                          true),
                     ],
                   ),
                 ),
@@ -308,4 +248,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
       ),
     );
   }
+
+
 }

@@ -35,6 +35,7 @@ class _LoginViewState extends State<LoginView> {
   TextEditingController lastNameController = TextEditingController();
   TextEditingController mobileNumberController = TextEditingController();
   TextEditingController majorController = TextEditingController();
+  TextEditingController nicknameController = TextEditingController();
   TextEditingController gradYearController = TextEditingController();
   Gender? selectedGender = null;
   Faculty? selectedDepartment = null;
@@ -49,6 +50,8 @@ class _LoginViewState extends State<LoginView> {
     'Item 4',
     'Item 5',
   ];
+
+
 
   void setSelectedRadio(int val) {
     setState(() {
@@ -342,6 +345,16 @@ class _LoginViewState extends State<LoginView> {
                   }
                   return null;
                 }, false),
+                buildTextField('Nickname', '', false, nicknameController,
+                        (String input) {
+                      if (input.removeAllWhitespace.isEmpty) {
+                        return 'Anonymous Nickname is required';
+                      }
+                      if (!input.isAlphabetOnly) {
+                        return 'Nickname can only contain letters';
+                      }
+                      return null;
+                    }, false),
                 buildTextField('Graduation Year', '', false, gradYearController,
                     (String input) {
                   if (input.removeAllWhitespace.isEmpty) {
@@ -419,6 +432,7 @@ class _LoginViewState extends State<LoginView> {
                                     mobileNumber: int.parse(
                                         mobileNumberController.text.trim()),
                                     major: majorController.text.trim(),
+                                    nickname: nicknameController.text.trim(),
                                     graduationYear: int.parse(
                                         gradYearController.text.trim()),
                                     gender: selectedGender!.gender,

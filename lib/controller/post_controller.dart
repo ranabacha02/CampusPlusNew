@@ -11,7 +11,6 @@ class PostController {
   FirebaseAuth auth = FirebaseAuth.instance;
   DataController dataController = Get.put(DataController());
 
-
   Future<bool> createPost(
       {required String caption,
       required DateTime dateCreated,

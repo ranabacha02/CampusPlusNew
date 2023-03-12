@@ -5,7 +5,7 @@ import 'package:campus_plus/controller/data_controller.dart';
 import 'package:campus_plus/localStorage/realm/realm_firestore_syncing.dart';
 import 'package:campus_plus/views/recent_activity_screen.dart';
 import 'package:campus_plus/views/signIn_signUp_screen.dart';
-import 'package:campus_plus/views/account_settings_screen.dart';
+import 'package:campus_plus/views/edit_avatar_screen.dart';
 import 'package:campus_plus/views/tutoring_profile.dart';
 import 'package:campus_plus/widgets/user_profile_picture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,7 +42,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final realm = getRealmObject();
 
   Image? displayImage;
-
+  Image? displayAvatarImage;
   @override
   void initState() {
     super.initState();
@@ -202,7 +202,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      AccountSettingsScreen()))
+                                      EditAvatarScreen(
+                                        userInfo: userInfo,
+                                        delete: false,
+                                        // photo: auth.currentUser!.photoURL != null ?
+                                        //  _fileFromImageUrl(auth.currentUser!.photoURL ):
+                                        // null,
+                                        displayAvatarImage: displayAvatarImage,
+                                      ),))
                         },
                         //width: 0.512,
                       ),
@@ -232,13 +239,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       width: Get.width,
                       child: buttonWithRightIcon(
-                        text: "Rental Profile",
+                        text: "Select Your Avatar",
                         onpress: () => {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      AccountSettingsScreen()))
+                                      EditAvatarScreen(
+                                        userInfo: userInfo,
+                                        delete: false,
+                                        // photo: auth.currentUser!.photoURL != null ?
+                                        //  _fileFromImageUrl(auth.currentUser!.photoURL ):
+                                        // null,
+                                          displayAvatarImage: displayAvatarImage,
+                                      ),))
                         }, //0.513
                       ),
                     ),

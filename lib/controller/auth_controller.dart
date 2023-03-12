@@ -64,7 +64,8 @@ class AuthController extends GetxController {
       String? department,
       int? graduationYear,
       String? major,
-      int? mobileNumber}) {
+      int? mobileNumber,
+        String? nickname,}) {
     ///here we have to provide two things
     ///1- email
     ///2- password
@@ -81,7 +82,7 @@ class AuthController extends GetxController {
             "Please verify your e-mail.");
         Get.to(() => LoginView());
         dataController.addUser(
-            email, firstName, lastName, gender, department, graduationYear, major, mobileNumber);
+            email, firstName, lastName, gender, department, graduationYear, major, mobileNumber, nickname);
       }).catchError((e) {
         /// print error information
         Get.snackbar("Error in authentication:", "$e");
@@ -99,7 +100,8 @@ class AuthController extends GetxController {
       String? department,
       int? graduationYear,
       String? major,
-      int? mobileNumber}) {
+      int? mobileNumber,
+        String? nickname}) {
     DataController dataController = Get.put(DataController());
     int n = 0;
     Timer timer = Timer.periodic(Duration(seconds: 1), (timer) async {
@@ -107,7 +109,7 @@ class AuthController extends GetxController {
       auth.currentUser!.reload();
       if (auth.currentUser!.emailVerified) {
         dataController.addUser(
-            email, firstName, lastName, gender, department, graduationYear, major, mobileNumber);
+            email, firstName, lastName, gender, department, graduationYear, major, mobileNumber, nickname);
         auth.currentUser?.updateDisplayName(firstName! + " " + lastName!);
 
         /// Navigate user to profile screen

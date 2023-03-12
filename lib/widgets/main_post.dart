@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:campus_plus/model/post_model.dart';
+import 'package:campus_plus/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../controller/data_controller.dart';
 import '../controller/post_controller.dart';
 import 'package:flip_card/flip_card.dart';
 
@@ -65,19 +67,19 @@ class MainPost extends StatelessWidget {
                                       height: 50.0,
                                       width: 50.0,
                                       image: AssetImage(
-                                          "idget.post.authorImageUrl"),
+                                          DataController().getLocalData().AvatarPictureURL),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
                                 ),
                               ),
                               title: Text(
-                                "Author Name",
+                                DataController().getLocalData().nickname,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              subtitle: Text("Time ago"),
+                              subtitle: Text(post.dateCreated.toString()),
                             ),
                           ),
                         ],

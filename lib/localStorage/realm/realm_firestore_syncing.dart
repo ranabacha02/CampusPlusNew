@@ -40,6 +40,8 @@ RealmUser toRealmUser(Map<String, dynamic> snapshot) {
       snapshot['mobilePhoneNumber'],
       snapshot['description'],
       snapshot['profilePictureURL'] ?? "",
+      snapshot['nickname'],
+      snapshot['AvatarPictureURL'] ?? "",
       chatsId: List<String>.from(snapshot['chatsId'] ??= []),
       rentals: List<String>.from(snapshot['rentals'] ??= []),
       tutoringClasses: List<String>.from(snapshot['tutoringClasses'] ??= []));

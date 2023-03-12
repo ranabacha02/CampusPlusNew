@@ -22,6 +22,8 @@ class MyUser {
   String description;
   String profilePictureURL;
   String userId;
+  String nickname;
+  String AvatarPictureURL;
   CollectionReference users = FirebaseFirestore.instance.collection('Users');
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -40,6 +42,8 @@ class MyUser {
     DateTime? lastLogged,
     String? description,
     profilePictureURL,
+    String? nickname,
+    AvatarPictureURL,
     userId,
   })  : firstName = firstName ?? "",
         lastName = lastName ?? "",
@@ -55,6 +59,8 @@ class MyUser {
         lastLogged = lastLogged ?? DateTime.now(),
         description = description ?? "",
         profilePictureURL = profilePictureURL ?? "",
+        nickname = nickname ?? "",
+        AvatarPictureURL = AvatarPictureURL ?? "",
         userId = userId ?? "";
 
   MyUser.fromFirestore(Map<String, dynamic> snapshot):
@@ -72,7 +78,9 @@ class MyUser {
         description = snapshot['description'],
         lastLogged = DateTime.now(),
         profilePictureURL = snapshot['profilePictureURL'],
-        userId = snapshot['userId'];
+        userId = snapshot['userId'],
+        nickname = snapshot['nickname'],
+      AvatarPictureURL = snapshot['AvatarPictureURL'];
 
   MyUser.fromRealmUser(RealmUser realmUser)
       : firstName = realmUser.firstName,
@@ -89,7 +97,9 @@ class MyUser {
         description = realmUser.description,
         lastLogged = realmUser.lastLogged,
         profilePictureURL = realmUser.profilePictureURL,
-        userId = realmUser.userId;
+        userId = realmUser.userId,
+        nickname = realmUser.nickname,
+        AvatarPictureURL = realmUser.AvatarPictureURL;
 
   Map<String, Object?> toFirestore() {
     return {
@@ -105,7 +115,9 @@ class MyUser {
       'chatsId': chatsId,
       'tutoringClasses': tutoringClasses,
       'lastLogged': lastLogged,
-      'description': description
+      'description': description,
+      'nickname': nickname,
+      'AvatarPictureURL': AvatarPictureURL
     };
   }
 
@@ -124,6 +136,8 @@ class MyUser {
           'userId': auth.currentUser!.uid,
           'chatsId': [],
           'description': description,
+      'nickname': nickname,
+      'AvatarPictureURL': AvatarPictureURL,
         })
         .then((value) => print("user added"))
         .catchError(
@@ -138,6 +152,8 @@ class MyUser {
     int? mobilePhoneNumber,
     File? photo,
     String? description,
+    File? avatarphoto,
+    String? nickname,
   }) {
     users.doc(auth.currentUser!.uid).update({
       'firstName': firstName,
@@ -146,6 +162,8 @@ class MyUser {
       'mobilePhoneNumber': mobilePhoneNumber,
       'graduationYear': graduationYear,
       'description': description,
+      'AvatarPictureURL': AvatarPictureURL,
+      'nickname': nickname,
     }).then((value) async {
       print("user updated");
     });
@@ -195,5 +213,32 @@ class MyUser {
     users.doc(auth.currentUser!.uid).update({'chatsId': updatedChatsId});
 
     //get the corresponding chat, remove member from the member list, if the updated member list is empty then delete the whole chat
+  }
+
+  UploadTask uploadAvatarPic(File image) {
+    final storage = FirebaseStorage.instance;
+    var storageRef =
+    storage.ref().child("users/profiles/${auth.currentUser!.uid}");
+    var uploadTask = storageRef.putFile(image)
+      ..then((p0) {
+        p0.ref.getDownloadURL().then((value) {
+          auth.currentUser!.updatePhotoURL(value);
+          users.doc(auth.currentUser!.uid).update({'profilePictureURL': value});
+        });
+      });
+
+    return uploadTask;
+  }
+
+  Future deleteAvatarPicture() {
+    final storage = FirebaseStorage.instance;
+    var storageRef =
+    storage.ref().child("users/profiles/${auth.currentUser!.uid}");
+    var task = storageRef.delete()
+      ..then((value) {
+        auth.currentUser!.updatePhotoURL("");
+        users.doc(auth.currentUser!.uid).update({'profilePictureURL': null});
+      });
+    return task;
   }
 }

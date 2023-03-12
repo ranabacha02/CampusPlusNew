@@ -20,7 +20,9 @@ class RealmUser extends _RealmUser
     DateTime lastLogged,
     int mobilePhoneNumber,
     String description,
-    String profilePictureURL, {
+    String profilePictureURL,
+      String nickname,
+      String AvatarPictureURL,{
     Iterable<String> rentals = const [],
     Iterable<String> chatsId = const [],
     Iterable<String> tutoringClasses = const [],
@@ -37,6 +39,8 @@ class RealmUser extends _RealmUser
     RealmObjectBase.set(this, 'mobilePhoneNumber', mobilePhoneNumber);
     RealmObjectBase.set(this, 'description', description);
     RealmObjectBase.set(this, 'profilePictureURL', profilePictureURL);
+    RealmObjectBase.set(this, 'nickname', nickname);
+    RealmObjectBase.set(this, 'AvatarPictureURL', AvatarPictureURL);
     RealmObjectBase.set<RealmList<String>>(
         this, 'rentals', RealmList<String>(rentals));
     RealmObjectBase.set<RealmList<String>>(
@@ -49,6 +53,8 @@ class RealmUser extends _RealmUser
 
   @override
   String get userId => RealmObjectBase.get<String>(this, 'userId') as String;
+
+
   @override
   set userId(String value) => RealmObjectBase.set(this, 'userId', value);
 
@@ -142,6 +148,21 @@ class RealmUser extends _RealmUser
   set profilePictureURL(String value) =>
       RealmObjectBase.set(this, 'profilePictureURL', value);
 
+
+  @override
+  String get nickname =>
+      RealmObjectBase.get<String>(this, 'nickname') as String;
+  @override
+  set nickname(String value) =>
+      RealmObjectBase.set(this, 'nickname', value);
+
+  @override
+  String get AvatarPictureURL =>
+      RealmObjectBase.get<String>(this, 'AvatarPictureURL') as String;
+  @override
+  set AvatarPictureURL(String value) =>
+      RealmObjectBase.set(this, 'AvatarPictureURL', value);
+
   @override
   Stream<RealmObjectChanges<RealmUser>> get changes =>
       RealmObjectBase.getChanges<RealmUser>(this);
@@ -172,6 +193,8 @@ class RealmUser extends _RealmUser
           collectionType: RealmCollectionType.list),
       SchemaProperty('description', RealmPropertyType.string),
       SchemaProperty('profilePictureURL', RealmPropertyType.string),
+      SchemaProperty('nickname', RealmPropertyType.string),
+      SchemaProperty('AvatarPictureURL', RealmPropertyType.string),
     ]);
   }
 }
