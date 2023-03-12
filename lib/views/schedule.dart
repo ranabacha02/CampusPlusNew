@@ -51,13 +51,11 @@ class _ScheduleState extends State<Schedule> {
       }
       events[cleanEventDate]?.add(CleanCalendarEvent(
         card.event,
-
         startTime: cleanEventStartTime,
         endTime: cleanEventEndTime,
         color: Colors.black,
       ));
       events = events.map((key, value) => MapEntry(key, value.isNotEmpty ? value : [CleanCalendarEvent( card.event,
-
         startTime: cleanEventStartTime,
         endTime: cleanEventEndTime,
         color: Colors.black,)]));
@@ -98,17 +96,53 @@ class _ScheduleState extends State<Schedule> {
                   eventColor: Colors.green,
                   eventDoneColor: Colors.amber,
                   bottomBarColor: AppColors.aubRed,
-
                   onRangeSelected: (range) {
                   },
                   onDateSelected: (date){
                     return _handleData(date);
                   },
                   events: events,
+                  eventListBuilder: (BuildContext context, List<CleanCalendarEvent> events) {
+                    return Expanded(
+                      child: ListView.builder(
+                        itemCount: events.length,
+                        itemBuilder: (BuildContext context, int index) {
+                    final CleanCalendarEvent event = selectedEvent[index];
+                    return ListTile(
+                    contentPadding:
+                    EdgeInsets.only(left: 2.0, right: 8.0, top: -10.0, bottom: 2.0),
+                    leading: Container(
+                    width: 10.0,
+                    color: event.color,
+                    ),
+                    title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                    Text(event.summary),
+                    Text(
+                    DateFormat('MMM d, h:mm a').format(event.startTime),
+                    style: TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.grey,
+                    ),
+                    ),
+                    ],
+                    ),
+                    subtitle:
+                    event.description.isNotEmpty ? Text(event.description) : null,
+                    trailing: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                    onTap: () {},
+                    );
+                    },
+                      ),
+                    );
+                  },
                   isExpandable: true,
                   dayOfWeekStyle: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.black12,
+                    fontSize: 14,
+                    color: Colors.black,
                     fontWeight: FontWeight.w100,
                   ),
                   bottomBarTextStyle: const TextStyle(
@@ -119,14 +153,16 @@ class _ScheduleState extends State<Schedule> {
                   weekDays: const ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
 
                 ),
+
               ),
+
+
             ],
           ),
         ),
       ),
     );
   }
-
 
 
 
