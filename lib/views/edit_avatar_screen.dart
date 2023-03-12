@@ -20,7 +20,7 @@ import 'package:random_avatar/random_avatar.dart';
 
 class EditAvatarScreen extends StatefulWidget {
   final MyUser userInfo;
-  bool delete;
+  bool deleteavatar;
   File? avatarphoto;
   Image? displayAvatarImage;
 
@@ -28,13 +28,13 @@ class EditAvatarScreen extends StatefulWidget {
 
 
   EditAvatarScreen({required this.userInfo,
-    required this.delete,
+    required this.deleteavatar,
     this.avatarphoto,
     this.displayAvatarImage});
 
   @override
   _EditAvatarScreenState createState() => _EditAvatarScreenState(
-      delete: delete, avatarphoto: avatarphoto, displayAvatarImage: displayAvatarImage);
+      deleteavatar: deleteavatar, avatarphoto: avatarphoto, displayAvatarImage: displayAvatarImage);
 }
 
 class _EditAvatarScreenState extends State<EditAvatarScreen> {
@@ -60,9 +60,9 @@ class _EditAvatarScreenState extends State<EditAvatarScreen> {
 
   Image? displayAvatarImage;
   File? avatarphoto;
-  bool delete;
+  bool deleteavatar;
 
-  _EditAvatarScreenState({required this.delete, this.avatarphoto, this.displayAvatarImage});
+  _EditAvatarScreenState({required this.deleteavatar, this.avatarphoto, this.displayAvatarImage});
 
   late DataController dataController;
   late MyUser userInfo;
@@ -112,7 +112,7 @@ class _EditAvatarScreenState extends State<EditAvatarScreen> {
                       child: NavBarView(index: 4),
                       childCurrent: EditAvatarScreen(
                         userInfo: userInfo,
-                        delete: false,
+                        deleteavatar: false,
                         displayAvatarImage: avatarphoto == null ? null : Image.file(avatarphoto!),
                       )))
             },

@@ -20,15 +20,12 @@ class EditAccountScreen extends StatefulWidget {
   final MyUser userInfo;
   bool delete;
   File? photo;
-  File? avatarphoto;
   Image? displayImage;
-  Image? displayAvatarImage;
+
 
   EditAccountScreen({required this.userInfo,
     required this.delete,
     this.photo,
-    this.avatarphoto,
-    this.displayAvatarImage,
     this.displayImage});
 
   @override
@@ -58,8 +55,6 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
 
   Image? displayImage;
   File? photo;
-  File? avatarphoto;
-
   bool delete;
 
   _EditAccountScreenState({required this.delete, this.photo, this.displayImage});
@@ -150,7 +145,7 @@ class _EditAccountScreenState extends State<EditAccountScreen> {
                     photo: photo,
                     delete: false,
                     description: descriptionController.text.trim(),
-                    nickname: nicknameController.text.trim(), deleteavatar: false,
+                    nickname: nicknameController.text.trim(),
                   )
                   ;
                 }

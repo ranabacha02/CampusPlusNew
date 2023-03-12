@@ -133,14 +133,14 @@ class _AvatarImageUploadsState extends State<AvatarImageUploads> {
                             type: PageTransitionType.topToBottomPop,
                             child: EditAvatarScreen(
                               userInfo: dataController.getLocalData(),
-                              delete: false,
+                              deleteavatar: false,
                               avatarphoto: avatarphoto,
                               displayAvatarImage:
                               avatarphoto.isNull ? null : Image.file(avatarphoto!),
                             ),
                             childCurrent: EditAvatarScreen(
                                 userInfo: dataController.getLocalData(),
-                                delete: false),
+                                deleteavatar: false),
                           ),
                         );
                       }),
@@ -154,7 +154,7 @@ class _AvatarImageUploadsState extends State<AvatarImageUploads> {
                           MaterialPageRoute(
                               builder: (context) => EditAvatarScreen(
                                 userInfo: dataController.getLocalData(),
-                                delete: false,
+                                deleteavatar: false,
                                 avatarphoto: avatarphoto,
                                 displayAvatarImage: avatarphoto.isNull
                                     ? null
@@ -177,7 +177,7 @@ class _AvatarImageUploadsState extends State<AvatarImageUploads> {
                           MaterialPageRoute(
                               builder: (context) => EditAvatarScreen(
                                 userInfo: dataController.getLocalData(),
-                                delete: true,
+                                deleteavatar: true,
                               )));
                     },
                   )

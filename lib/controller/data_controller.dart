@@ -72,7 +72,7 @@ class DataController extends GetxController {
         String? nickname,
       required BuildContext context,
       File? photo,
-        File? avatarphoto,required bool deleteavatar,
+        //File? avatarphoto,required bool deleteavatar,
       required bool delete}) async {
 
     MyUser userInfo = getLocalData();
@@ -219,7 +219,7 @@ class DataController extends GetxController {
           child: NavBarView(index: 4),
           childCurrent: EditAvatarScreen(
             userInfo: userInfo,
-            delete: false,
+            deleteavatar: false,
             displayAvatarImage: avatarphoto == null ? null : Image.file(avatarphoto),
           ),
         ));

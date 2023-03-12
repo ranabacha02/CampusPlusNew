@@ -204,7 +204,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) =>
                                       EditAvatarScreen(
                                         userInfo: userInfo,
-                                        delete: false,
+                                        deleteavatar: false,
                                         // photo: auth.currentUser!.photoURL != null ?
                                         //  _fileFromImageUrl(auth.currentUser!.photoURL ):
                                         // null,
@@ -247,7 +247,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) =>
                                       EditAvatarScreen(
                                         userInfo: userInfo,
-                                        delete: false,
+                                        deleteavatar: false,
                                         // photo: auth.currentUser!.photoURL != null ?
                                         //  _fileFromImageUrl(auth.currentUser!.photoURL ):
                                         // null,
