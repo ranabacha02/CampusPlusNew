@@ -36,14 +36,57 @@ class MainPost extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 10.0),
               child: Column(
-                children: <Widget>[
+                children: <Widget>[Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Column(
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.8,
+                            child: ListTile(
+                              leading: Container(
+                                width: 50.0,
+                                height: 50.0,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black45,
+                                      offset: Offset(0, 2),
+                                      blurRadius: 6.0,
+                                    ),
+                                  ],
+                                ),
+                                child: CircleAvatar(
+                                  child: ClipOval(
+                                    child: Image(
+                                      height: 50.0,
+                                      width: 50.0,
+                                      image: AssetImage(
+                                          "idget.post.authorImageUrl"),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                "Author Name",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text("Time ago"),
+                            ),
+                          ),
+                        ],
+                      ),
                   InkWell(
-                      child:FlipCard(
-                        direction: FlipDirection.HORIZONTAL,
-                        front: Container(
+                      child:Container(
                           margin: EdgeInsets.all(10.0),
                           width: double.infinity,
-                          height: 400.0,
+                          height: 350.0,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(25.0),
                             boxShadow: [
@@ -60,9 +103,16 @@ class MainPost extends StatelessWidget {
                               )
                             : null,
                           ),
-                        ), back: Container(
-                        child: Text(
-                          post.caption,
+
+                      )
+
+                  ),
+                  ListTile(
+                    leading: Container(
+                      width: 100.0,
+                      height: 40.0,
+                      child: Text(
+                        post.caption,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 3,
                         style: const TextStyle(
@@ -72,13 +122,7 @@ class MainPost extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
-                      ),
-                      )
-                  ),
-                  ListTile(
-                    leading: Container(
-                      width: 50.0,
-                      height: 50.0,
+
                     ),
                     trailing: IconButton(
                       icon:  ToggleMenu(refreshPosts: refreshPosts, postId: post.id),
@@ -99,7 +143,10 @@ class MainPost extends StatelessWidget {
           ],
         ),
       ),
-    );;
+    ],
+    ),
+    ),
+    );
   }
 
 }
